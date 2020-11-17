@@ -1,0 +1,25 @@
+on: push
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: npm install frontend
+        run: |
+          cd frontend
+          npm install
+      - name: run tests
+        run: |
+         cd frontend
+         npm run test
+      - name: build frontend
+        run: |
+          cd frontend
+          npm run build
