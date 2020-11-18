@@ -6,8 +6,10 @@ import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/signin")
+@RequestMapping("/api/signin")
 public class SignInController {
     private final GameService gameService;
 
@@ -15,9 +17,8 @@ public class SignInController {
         this.gameService = gameService;
     }
 
-    @PostMapping
-    public Game signIn(@RequestBody SignInUserDto signInUserDto){
-
-        return gameService.initNewGame(signInUserDto);
+    @PostMapping({"/","/{gameId}"})
+    public Game signIn(@PathVariable Optional<String> gameId,  @RequestBody SignInUserDto signInUserDto){
+        return gameService.userSignIn(gameId, signInUserDto);
     }
 }

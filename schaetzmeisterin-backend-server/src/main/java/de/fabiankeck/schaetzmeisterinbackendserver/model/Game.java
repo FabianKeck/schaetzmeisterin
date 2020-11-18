@@ -10,11 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Game {
+    String id;
     List<Player> players;
-
-
-
-
-
-
 }
