@@ -2,6 +2,16 @@ import React, { useContext } from 'react';
 import GameContext from '../../context/GameContext';
 
 export default function GamePage() {
-  const { user } = useContext(GameContext);
-  return <p>You are logged in as {user};</p>;
+  const { user, game } = useContext(GameContext);
+  return (
+    <>
+      <p>You are logged in as {user}</p>
+      <p>So for these users have joined the game</p>
+      <ul>
+        {game?.players?.map((player) => (
+          <li>{player.name}</li>
+        ))}
+      </ul>
+    </>
+  );
 }

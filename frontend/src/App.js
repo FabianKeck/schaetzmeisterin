@@ -8,8 +8,8 @@ export default function App() {
   return (
     <GameContextProvider>
       <Switch>
-        <Route path={'/game'} component={GamePage} />
-        <Route path={'/'} component={SignInPage} />
+        <Route path={'/game/:gameid'} component={GamePage} />
+        <Route path={'/signin/:gameid?'} component={SignInPage} />
       </Switch>
     </GameContextProvider>
   );

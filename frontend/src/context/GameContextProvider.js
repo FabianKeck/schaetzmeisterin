@@ -6,11 +6,12 @@ export default function GameContextProvider({ children }) {
   const [game, setGame] = useState({});
   const [user, setUser] = useState('');
 
-  const signInWithUser = (user) => {
-    return signIn({ user })
-      .then((response) => response.data)
-      .then((game) => setGame(game))
-      .then(() => setUser(user));
+  const signInWithUser = (user, gameId) => {
+    return signIn({ name: user }, gameId).then((game) => {
+      setGame(game);
+      setUser(user);
+      return game;
+    });
   };
 
   return (
