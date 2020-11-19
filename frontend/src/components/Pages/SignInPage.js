@@ -14,7 +14,7 @@ export default function SignInPage() {
       <h1>sign In Page</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Please Enter Your Name to sign in to game {gameid}
+          Please Enter your name to sign in to game {gameid}
           <input value={name} onChange={handleChange} />
         </label>
         <button>Sign in</button>

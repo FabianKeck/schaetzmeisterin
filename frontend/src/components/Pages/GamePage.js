@@ -9,7 +9,7 @@ export default function GamePage() {
       <p>So for these users have joined the game</p>
       <ul>
         {game?.players?.map((player) => (
-          <li>{player.name}</li>
+          <li key={player.name}>{player.name}</li>
         ))}
       </ul>
     </>
