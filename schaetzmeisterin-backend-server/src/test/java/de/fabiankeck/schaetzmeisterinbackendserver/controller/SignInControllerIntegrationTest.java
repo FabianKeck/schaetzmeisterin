@@ -5,21 +5,16 @@ import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;

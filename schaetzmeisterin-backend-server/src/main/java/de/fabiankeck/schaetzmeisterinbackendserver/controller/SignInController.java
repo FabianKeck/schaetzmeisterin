@@ -3,7 +3,6 @@ package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
