@@ -6,7 +6,7 @@ import { Route, MemoryRouter as Router } from 'react-router-dom';
 import GameContext from '../../context/GameContext';
 
 describe('Component-test:: SingInPage: ', () => {
-  xit('calls signInInWithUser, when Button is clicked', () => {
+  xit('calls signInWithUser, when Button is clicked', () => {
     //given
     const signInWithUser = jest.fn();
 
