@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import GameContext from '../../context/GameContext';
+import Header from '../commons/Header';
+import styled from 'styled-components/macro';
 
 export default function SignInPage() {
   const { gameid } = useParams();
@@ -11,15 +13,15 @@ export default function SignInPage() {
 
   return (
     <>
-      <h1>sign In Page</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Please Enter Your Name to sign in to game {gameid}
-          <input value={name} onChange={handleChange} />
-        </label>
-        <button>Sign in</button>
+      <Header>Sign in </Header>
+      <FormStyled onSubmit={handleSubmit}>
+        <LabelStyled>
+          Please Enter Your Name to sign in to game {gameid}:
+          <InputStyled value={name} onChange={handleChange} />
+        </LabelStyled>
+        <ButtonStyled>Sign in</ButtonStyled>
         <p>{signInFailed}</p>
-      </form>
+      </FormStyled>
     </>
   );
   function handleChange(event) {
@@ -36,3 +38,27 @@ export default function SignInPage() {
       });
   }
 }
+
+const FormStyled = styled.form`
+  display: grid;
+  gap: var(--size-m);
+  grid-auto-rows: min-content;
+  grid-template-columns: 1fr;
+  padding: var(--size-m);
+`;
+
+const ButtonStyled = styled.button`
+  font-size: 1em;
+  border-radius: var(--size-s);
+  background-color: var(--green-75);
+  border: 1px solid var(--green-main);
+`;
+
+const InputStyled = styled.input`
+  display: block;
+`;
+
+const LabelStyled = styled.label`
+  display: grid;
+  grid-auto-rows: min-content;
+`;
