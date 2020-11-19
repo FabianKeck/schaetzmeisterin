@@ -1,17 +1,37 @@
 import React, { useContext } from 'react';
 import GameContext from '../../context/GameContext';
+import Header from '../commons/Header';
+import styled from 'styled-components/macro';
 
 export default function GamePage() {
   const { user, game } = useContext(GameContext);
   return (
     <>
-      <p>You are logged in as {user}</p>
-      <p>So for these users have joined the game</p>
-      <ul>
-        {game?.players?.map((player) => (
-          <li>{player.name}</li>
-        ))}
-      </ul>
+      <Header>New Game</Header>
+      <GamePageStyled>
+        <p>You are logged in as {user}</p>
+        <p>So for these users have joined the game</p>
+        <UlStyled>
+          {game?.players?.map((player) => (
+            <li key={player.name}>{player.name}</li>
+          ))}
+        </UlStyled>
+      </GamePageStyled>
     </>
   );
 }
+const GamePageStyled = styled.div`
+  display: grid;
+  grid-gap: var(--size-s);
+  grid-auto-rows: min-content;
+  padding: var(--size-s);
+
+  p {
+    margin: 0;
+  }
+`;
+const UlStyled = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: var(--size-l);
+`;
