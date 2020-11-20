@@ -1,10 +1,16 @@
 import React from 'react';
-function App() {
+import { Switch, Route } from 'react-router-dom';
+import SignInPage from './components/Pages/SignInPage';
+import GameContextProvider from './context/GameContextProvider';
+import GamePage from './components/Pages/GamePage';
+
+export default function App() {
   return (
-    <div className="App">
-      Schätzmeisterin
-    </div>
+    <GameContextProvider>
+      <Switch>
+        <Route path={'/game/:gameid'} component={GamePage} />
+        <Route path={'/signin/:gameid?'} component={SignInPage} />
+      </Switch>
+    </GameContextProvider>
   );
 }
-
-export default App;
