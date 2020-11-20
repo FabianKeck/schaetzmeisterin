@@ -31,7 +31,7 @@ describe('Sign in integration-test:', () => {
     userEvent.click(button);
 
     await waitFor(() => {
-      expect(axios.post).toBeCalledWith('/api/signin/', player);
+      expect(axios.post).toBeCalledWith('/signin/', player);
     });
     await waitFor(() => {
       expect(getAllByText(/john/i)[0]).toBeInTheDocument();

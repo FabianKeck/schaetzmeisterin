@@ -42,7 +42,7 @@ class SignInControllerIntegrationTest {
         SignInUserDto signInDto = new SignInUserDto("Jörg");
         //when
         when(idUtils.createId()).thenReturn("id");
-        ResponseEntity<Game> response = restTemplate.postForEntity("http://localhost:" + port + "/api/signin/", signInDto, Game.class);
+        ResponseEntity<Game> response = restTemplate.postForEntity("http://localhost:" + port + "/signin/", signInDto, Game.class);
 
          //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
@@ -57,10 +57,10 @@ class SignInControllerIntegrationTest {
         SignInUserDto secondUser = new SignInUserDto("Hans");
 
         when(idUtils.createId()).thenReturn("id");
-        restTemplate.postForEntity("http://localhost:" + port + "/api/signin/", firstUser, Game.class);
+        restTemplate.postForEntity("http://localhost:" + port + "/signin/", firstUser, Game.class);
 
         //when
-        ResponseEntity<Game> response = restTemplate.postForEntity("http://localhost:" + port + "/api/signin/id", secondUser, Game.class);
+        ResponseEntity<Game> response = restTemplate.postForEntity("http://localhost:" + port + "/signin/id", secondUser, Game.class);
 
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));

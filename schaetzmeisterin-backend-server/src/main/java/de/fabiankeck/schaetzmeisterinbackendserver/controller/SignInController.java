@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/signin")
+@RequestMapping("/signin")
 public class SignInController {
     private final GameService gameService;
 
