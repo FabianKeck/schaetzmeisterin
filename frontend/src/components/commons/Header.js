@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 
-export default function ({ children }) {
+export default function Header({ children }) {
   return (
     <HeaderStyled>
       <HeadingStyled>{children}</HeadingStyled>
