@@ -10,7 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 
 @Service
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -32,15 +34,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authorization.replace("Bearer: ","").trim();
+        String token = authorization.replace("Bearer ","").trim();
         try {
             Claims claims = jwtUtils.parseToken(token);
-            SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(claims.getSubject(),"", Collections.emptyList()));
+            if (claims.getExpiration().after(Date.from(Instant.now()))) {
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(claims.getSubject(),"", Collections.emptyList()));
+            }
         } catch (Exception e){
             System.out.println(e);
         }
         filterChain.doFilter(request,response);
     }
+
 
 }
