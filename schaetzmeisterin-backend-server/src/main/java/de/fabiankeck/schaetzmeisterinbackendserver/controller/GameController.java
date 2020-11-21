@@ -20,7 +20,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping({"/signin","siginin/{gameId}"})
+    @PostMapping({"/signin/{gameId}","/signin"})
     public Game signIn(@PathVariable Optional<String> gameId, Principal principal){
 
         return gameService.userSignIn(principal.getName(), gameId );

@@ -29,12 +29,11 @@ class GameServiceTest {
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
     public void userSignInTest(){
         //given
-        SignInUserDto signInUserDto = new SignInUserDto("Fabian");
 
 
         //when
         when(idUtils.createId()).thenReturn("id");
-        Game actual = gameService.userSignIn(Optional.empty(),signInUserDto);
+        Game actual = gameService.userSignIn("Fabian",Optional.empty());
         Game expected = new Game( "id", List.of(new Player("Fabian")));
         //then
         assertThat(actual,is(expected));
@@ -44,15 +43,15 @@ class GameServiceTest {
     @DisplayName("userSignIn with GameId should return the updated game")
     public void userSignInTestWithId(){
         //given
-        SignInUserDto oldUser = new SignInUserDto("Jan");
+        String oldUser = "Jan";
         when(idUtils.createId()).thenReturn("id");
-        Game oldGame = gameService.userSignIn(Optional.empty(),oldUser);
+        Game oldGame = gameService.userSignIn(oldUser,Optional.empty());
 
-        SignInUserDto newUser = new SignInUserDto("Fabian");
+        String newUser = "Fabian";
 
 
         //when
-        Game actual = gameService.userSignIn(Optional.of("id"),newUser);
+        Game actual = gameService.userSignIn(newUser,Optional.of("id"));
         //then
         assertThat(actual.getId(),is("id"));
         assertThat(actual.getPlayers(),containsInAnyOrder(new Player("Jan"), new Player("Fabian") ));
@@ -61,11 +60,11 @@ class GameServiceTest {
     @DisplayName("userSignIn with invalid GameId should throw Httpstatus-exception")
     public void signInWithInvalidId(){
         //given
-        SignInUserDto signInUserDto = new SignInUserDto("Jan");
+        String signInUserDto = "Jan";
         //when
 
       try {
-          gameService.userSignIn(Optional.of("id"),signInUserDto);
+          gameService.userSignIn(signInUserDto,Optional.of("id"));
           fail();
       } catch (Exception e) {
           assertThat(e.getMessage(),is(HttpStatus.NOT_FOUND.toString()));

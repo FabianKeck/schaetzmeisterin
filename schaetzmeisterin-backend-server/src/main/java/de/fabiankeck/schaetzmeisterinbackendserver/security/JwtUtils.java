@@ -17,9 +17,10 @@ import java.util.HashMap;
 public class JwtUtils {
     @Value("${jwt.secretkey}")
     private String secretKey;
-    public String createToken(SignInUserDto signInUserDto, HashMap<Object, Object> objectObjectHashMap) {
+    public String createToken(String username, HashMap<String, Object> claims) {
         return Jwts.builder()
-                .setSubject(signInUserDto.getName())
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
