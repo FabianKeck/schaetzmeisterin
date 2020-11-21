@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import GameContext from './GameContext';
-import { signIn } from '../Service/SignInService';
+import { signIn } from '../service/SignInService';
 
 export default function GameContextProvider({ children }) {
   const [game, setGame] = useState({});
