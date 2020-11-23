@@ -2,14 +2,16 @@ import React, { useContext } from 'react';
 import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
+import UserContext from '../../context/UserContext';
 
-export default function GamePage() {
-  const { user, game } = useContext(GameContext);
+export default function GameStagingPage() {
+  const { game } = useContext(GameContext);
+  const { userData } = useContext(UserContext);
   return (
     <>
       <Header>New Game</Header>
       <GamePageStyled>
-        <p>You are logged in as {user}</p>
+        <p>You are logged in as {userData?.sub}</p>
         <p>So for these users have joined the game</p>
         <UlStyled>
           {game?.players?.map((player) => (

@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import SignInPage from './components/pages/SignInPage';
 import GameContextProvider from './context/GameContextProvider';
-import GamePage from './components/pages/GamePage';
+import GameStagingPage from './components/pages/GameStagingPage';
 import styled from 'styled-components/macro';
 import UserContextProvider from './context/UserContextProvider';
 
@@ -12,7 +12,7 @@ export default function App() {
       <GameContextProvider>
         <PageLayout>
           <Switch>
-            <Route path={'/game/:gameid'} component={GamePage} />
+            <Route path={'/game/:gameid'} component={GameStagingPage} />
             <Route path={'/signin/:gameid?'} component={SignInPage} />
           </Switch>
         </PageLayout>

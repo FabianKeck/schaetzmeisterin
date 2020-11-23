@@ -6,5 +6,5 @@ const header = (token) => ({
   },
 });
 
-export const signInGame = (token, gameId) =>
-  axios.post('/api/game/signin' + gameId, header(token));
+export const signInGamePost = (token, gameId) =>
+  axios.post('/api/game/signin' + gameId, null, header(token));

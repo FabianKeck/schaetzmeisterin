@@ -22,6 +22,7 @@ export default function UserContextProvider({ children }) {
         saveTokenToLocalStorage(token);
         try {
           const decoded = jwtDecode(token);
+          console.log(decoded);
           setUserData(decoded);
           saveUserDataToLocalStorage(decoded);
         } catch (e) {

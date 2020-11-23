@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import GameContext from './GameContext';
-import { signIn } from '../service/SignInService';
+import { signInGamePost } from '../service/GameService';
+import UserContext from '../context/UserContext';
 
 export default function GameContextProvider({ children }) {
   const [game, setGame] = useState({});
-  const [user, setUser] = useState('');
+  const { token } = useContext(UserContext);
 
-  const signInWithUser = (user, gameId) => {
-    return signIn({ name: user }, gameId).then((game) => {
-      setGame(game);
-      setUser(user);
-      return game;
-    });
+  const signInGame = (gameId) => {
+    return signInGamePost(token, gameId)
+      .then((response) => response.data)
+      .then((game) => {
+        setGame(game);
+        return game;
+      });
   };
 
   return (
-    <GameContext.Provider value={{ game, user, signInWithUser }}>
+    <GameContext.Provider value={{ game, signInGame }}>
       {children}
     </GameContext.Provider>
   );
