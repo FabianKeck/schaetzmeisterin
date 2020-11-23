@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^7.26.6",
+    "jsonwebtoken": "^8.5.1",
     "prettier": "^2.1.2"
   }
 }

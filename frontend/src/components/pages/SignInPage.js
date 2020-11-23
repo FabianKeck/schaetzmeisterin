@@ -11,7 +11,7 @@ export default function SignInPage() {
   const [name, setName] = useState('');
   const [signInFailed, setSignInFailed] = useState('');
   const { userSignIn } = useContext(UserContext);
-  const { signInGame, game } = useContext(GameContext);
+  const { signInGame } = useContext(GameContext);
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function SignInPage() {
         setSignInFailed('Sign in failed, please try again');
       })
       .then(() => signInGame(gameid ? gameid : ''))
-      .then(() => history.push('game/id/' + game?.id));
+      .then((game) => history.push('game/id/' + game?.id));
   }
 }
 
