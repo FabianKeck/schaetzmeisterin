@@ -26,7 +26,7 @@ export default function GameStagingPage() {
   );
   function onStart() {
     startGame(game.id);
-    history.push('/game/');
+    history.push('/game/' + game.id);
   }
 }
 const GamePageStyled = styled.div`
