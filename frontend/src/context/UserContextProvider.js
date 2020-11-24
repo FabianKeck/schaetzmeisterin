@@ -11,7 +11,7 @@ import {
 
 export default function UserContextProvider({ children }) {
   const [token, setToken] = useState(loadTokenFromLocalStorage());
-  const [userData, setUserData] = useState(loadUserDataFromLocalStorage);
+  const [userData, setUserData] = useState(loadUserDataFromLocalStorage());
 
   const userSignIn = (username) => {
     return axios
