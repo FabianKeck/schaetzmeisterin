@@ -14,6 +14,7 @@ describe('Sign in integration-test:', () => {
     const playerName = 'john';
     const playerId = '123';
     const game = { id: 'gameId', players: [{ name: playerName }] };
+    //then
     axios.get = jest.fn(
       () =>
         new Promise((resolved) => {
@@ -27,7 +28,6 @@ describe('Sign in integration-test:', () => {
         })
     );
 
-    //then
     const { getByRole, getByLabelText, getAllByText } = render(
       <Router initialEntries={['/signin/']}>
         <App />

@@ -11,10 +11,10 @@ import {
 
 export default function UserContextProvider({ children }) {
   const [token, setToken] = useState(loadTokenFromLocalStorage());
-  const [userData, setUserData] = useState(loadUserDataFromLocalStorage);
+  const [userData, setUserData] = useState(loadUserDataFromLocalStorage());
 
-  const userSignIn = (username) =>
-    axios
+  const userSignIn = (username) => {
+    return axios
       .get('/signin/?username=' + username)
       .then((response) => response.data)
       .then((token) => {
@@ -27,7 +27,9 @@ export default function UserContextProvider({ children }) {
         } catch (e) {
           console.log(e);
         }
+        return token;
       });
+  };
 
   return (
     <UserContext.Provider value={{ userData, token, userSignIn }}>
