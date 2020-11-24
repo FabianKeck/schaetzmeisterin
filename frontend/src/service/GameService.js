@@ -6,9 +6,10 @@ const header = (token) => ({
   },
 });
 
-export const signInGamePost = (token, gameId) => {
+export const signInGamePost = (token, username, gameId) => {
   const url = '/api/game/signin/' + (gameId ? gameId : '');
-  return axios.post(url, null, header(token));
+  console.log('Ganmeservice' + username);
+  return axios.post(url, { name: username }, header(token));
 };
 
 export const startGame = (token, gameId) => {
