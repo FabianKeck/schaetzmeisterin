@@ -10,7 +10,6 @@ export default function GameContextProvider({ children }) {
   function signInGame(gameId, username) {
     return userSignIn(username)
       .then((token) => {
-        console.log(username);
         return signInGamePost(token, username, gameId);
       })
       .then((response) => response.data)
