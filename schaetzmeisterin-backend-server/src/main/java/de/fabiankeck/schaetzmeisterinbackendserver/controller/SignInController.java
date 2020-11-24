@@ -1,23 +1,22 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
+import de.fabiankeck.schaetzmeisterinbackendserver.Service.SignInService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/signin")
+@RequestMapping("/signin")
 public class SignInController {
-    private final GameService gameService;
+    private final SignInService signInService;
 
-    public SignInController(GameService gameService) {
-        this.gameService = gameService;
+    public SignInController(SignInService signInService) {
+        this.signInService = signInService;
     }
 
-    @PostMapping({"/","/{gameId}"})
-    public Game signIn(@PathVariable Optional<String> gameId,  @RequestBody SignInUserDto signInUserDto){
-        return gameService.userSignIn(gameId, signInUserDto);
+    @GetMapping("/")
+    public String signIn( @RequestParam String username){
+
+        return signInService.signIn(username);
     }
 }

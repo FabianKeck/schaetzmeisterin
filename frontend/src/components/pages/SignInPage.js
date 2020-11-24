@@ -1,15 +1,15 @@
 import React, { useContext, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import GameContext from '../../context/GameContext';
+import { useParams, useHistory } from 'react-router-dom';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
+import GameContext from '../../context/GameContext';
 
 export default function SignInPage() {
   const { gameid } = useParams();
   const history = useHistory();
   const [name, setName] = useState('');
   const [signInFailed, setSignInFailed] = useState('');
-  const { signInWithUser } = useContext(GameContext);
+  const { signInGame } = useContext(GameContext);
 
   return (
     <>
@@ -29,13 +29,12 @@ export default function SignInPage() {
   }
   function handleSubmit(event) {
     event.preventDefault();
-    signInWithUser(name, gameid ? gameid : '')
-      .then((data) => {
-        history.push('/game/' + data.id);
-      })
+    console.log(gameid);
+    signInGame(gameid, name)
       .catch(() => {
         setSignInFailed('Sign in failed, please try again');
-      });
+      })
+      .then((game) => history.push('/game/staged/' + game?.id));
   }
 }
 

@@ -24,10 +24,10 @@ public class GameService {
     }
 
 
-    public Game userSignIn(Optional<String> gameId, SignInUserDto signInUserDto) {
+    public Game userSignIn( String userName,Optional<String> gameId) {
         Game game =  getGameById(gameId);
 
-        addPlayer(game, new Player(signInUserDto.getName()));
+        addPlayer(game, new Player(userName));
         return game;
     }
 
@@ -51,5 +51,9 @@ public class GameService {
         Game newGame = new Game(idUtils.createId(), List.of());
         games.add(newGame);
         return newGame;
+    }
+
+    public void clearGames(){
+        games.clear();
     }
 }
