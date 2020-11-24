@@ -70,7 +70,7 @@ class GameControllerIntegrationTest {
                 .compact();
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<String > request= new HttpEntity<>(username,headers);
+        HttpEntity<SignInUserDto > request= new HttpEntity<>(new SignInUserDto(username),headers);
         String url = "http://localhost:"+port+"/api/game/signin";
         //when
         when(idUtils.createId()).thenReturn("id");
@@ -107,7 +107,7 @@ class GameControllerIntegrationTest {
             //createGame withFirst user
         HttpHeaders createHeaders = new HttpHeaders();
         createHeaders.setBearerAuth(token1);
-        HttpEntity<String> createRequest= new HttpEntity<>(username1,createHeaders);
+        HttpEntity<SignInUserDto> createRequest= new HttpEntity<>(new SignInUserDto(username1),createHeaders);
         String createUrl = "http://localhost:"+port+"/api/game/signin";
         when(idUtils.createId()).thenReturn("id2");
         restTemplate.exchange(createUrl, HttpMethod.POST, createRequest, Game.class);
@@ -115,7 +115,7 @@ class GameControllerIntegrationTest {
         //when
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token2);
-        HttpEntity<String> request= new HttpEntity<>(username2,headers);
+        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto(username2),headers);
         String url = "http://localhost:"+port+"/api/game/signin/id2";
         ResponseEntity<Game> response = restTemplate.exchange(url, HttpMethod.POST, request, Game.class);
 
