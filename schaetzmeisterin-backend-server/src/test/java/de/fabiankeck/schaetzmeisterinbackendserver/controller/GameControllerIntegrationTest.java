@@ -22,7 +22,9 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -57,16 +59,18 @@ class GameControllerIntegrationTest {
     @DisplayName("Post on /signin without gameId should return new Game")
     void signInNewTest(){
         //given
+        String username= "John";
+        HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", "123"));
         String token = Jwts.builder()
-                .setSubject("John")
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1L))))
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
-
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<Void> request= new HttpEntity<>(null,headers);
+        HttpEntity<String > request= new HttpEntity<>(username,headers);
         String url = "http://localhost:"+port+"/api/game/signin";
         //when
         when(idUtils.createId()).thenReturn("id");
@@ -74,21 +78,28 @@ class GameControllerIntegrationTest {
 
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
-        assertThat(response.getBody(),is(new Game("id",List.of(new Player("John")))));
+        assertThat(response.getBody(),is(new Game("id",List.of(new Player("123","John")))));
     }
 
     @Test
-    @DisplayName("Post on /signin with gameId should return new Game")
+    @DisplayName("Post on /signin with gameId should return updated Game")
     void signInExistingTest(){
         //given
+        String username1= "John";
+        String playerId1 = "123";
+        HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", playerId1));
         String token1 = Jwts.builder()
-                .setSubject("John")
+                .setClaims(claims)
+                .setSubject(username1)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1L))))
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
+        String username2= "Doe";
+        String playerId2 = "456";
         String token2 = Jwts.builder()
-                .setSubject("Doe")
+                .setClaims(new HashMap<>(Map.of("playerId", playerId2)))
+                .setSubject(username2)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1L))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
@@ -96,7 +107,7 @@ class GameControllerIntegrationTest {
             //createGame withFirst user
         HttpHeaders createHeaders = new HttpHeaders();
         createHeaders.setBearerAuth(token1);
-        HttpEntity<Void> createRequest= new HttpEntity<>(null,createHeaders);
+        HttpEntity<String> createRequest= new HttpEntity<>(username1,createHeaders);
         String createUrl = "http://localhost:"+port+"/api/game/signin";
         when(idUtils.createId()).thenReturn("id2");
         restTemplate.exchange(createUrl, HttpMethod.POST, createRequest, Game.class);
@@ -104,7 +115,7 @@ class GameControllerIntegrationTest {
         //when
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token2);
-        HttpEntity<Void> request= new HttpEntity<>(null,headers);
+        HttpEntity<String> request= new HttpEntity<>(username2,headers);
         String url = "http://localhost:"+port+"/api/game/signin/id2";
         ResponseEntity<Game> response = restTemplate.exchange(url, HttpMethod.POST, request, Game.class);
 
@@ -113,7 +124,7 @@ class GameControllerIntegrationTest {
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(response.getBody().getId(),is("id2"));
-        assertThat(response.getBody().getPlayers(),containsInAnyOrder(new Player("John"),
-                new Player("Doe")));
+        assertThat(response.getBody().getPlayers(),containsInAnyOrder(new Player(playerId1,username1),
+                new Player(playerId2,username2)));
     }
 }

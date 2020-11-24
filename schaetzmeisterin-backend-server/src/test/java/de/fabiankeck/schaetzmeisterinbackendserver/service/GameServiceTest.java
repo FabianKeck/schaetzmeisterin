@@ -1,14 +1,12 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,9 +30,9 @@ class GameServiceTest {
 
 
         //when
-        when(idUtils.createId()).thenReturn("id");
-        Game actual = gameService.userSignIn("Fabian",Optional.empty());
-        Game expected = new Game( "id", List.of(new Player("Fabian")));
+        when(idUtils.createId()).thenReturn("GameId");
+        Game actual = gameService.userSignIn("123", "Fabian",Optional.empty());
+        Game expected = new Game( "GameId", List.of(new Player("123","Fabian")));
         //then
         assertThat(actual,is(expected));
         verify(idUtils).createId();
@@ -43,18 +41,20 @@ class GameServiceTest {
     @DisplayName("userSignIn with GameId should return the updated game")
     public void userSignInTestWithId(){
         //given
-        String oldUser = "Jan";
-        when(idUtils.createId()).thenReturn("id");
-        Game oldGame = gameService.userSignIn(oldUser,Optional.empty());
+        String oldUserName = "Jan";
 
-        String newUser = "Fabian";
+        when(idUtils.createId()).thenReturn("GameId");
+        gameService.userSignIn("123", oldUserName,Optional.empty());
+
+        String newUserName = "Fabian";
 
 
         //when
-        Game actual = gameService.userSignIn(newUser,Optional.of("id"));
+
+        Game actual = gameService.userSignIn("456", newUserName,Optional.of("GameId"));
         //then
-        assertThat(actual.getId(),is("id"));
-        assertThat(actual.getPlayers(),containsInAnyOrder(new Player("Jan"), new Player("Fabian") ));
+        assertThat(actual.getId(),is("GameId"));
+        assertThat(actual.getPlayers(),containsInAnyOrder(new Player("123","Jan"), new Player("456","Fabian") ));
     }
   @Test
     @DisplayName("userSignIn with invalid GameId should throw Httpstatus-exception")
@@ -64,7 +64,7 @@ class GameServiceTest {
         //when
 
       try {
-          gameService.userSignIn(signInUserDto,Optional.of("id"));
+          gameService.userSignIn("123", signInUserDto,Optional.of("id"));
           fail();
       } catch (Exception e) {
           assertThat(e.getMessage(),is(HttpStatus.NOT_FOUND.toString()));
