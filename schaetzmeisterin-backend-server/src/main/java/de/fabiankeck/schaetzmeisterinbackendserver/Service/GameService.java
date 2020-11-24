@@ -3,6 +3,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.Service;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
@@ -31,15 +32,29 @@ public class GameService {
         return game;
     }
 
-    public Game startGame(String gameId, String id) {
+    public Game startGame(String gameId, String userId) {
         Game game= getGameById(gameId);
-        game.getPlayerActions().keySet()
-                .stream().
-                filter((player -> Objects.equals(player.getId(),id)))
-                .findAny()
+        getUserById(userId,game)
                 .orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
         game.setStarted(true);
         return  game;
+    }
+    public Game ask(String gameId, String userId, Question question) {
+        Game game = getGameById(gameId);
+        Player player = getUserById(userId, game).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        if(game.getPlayerActions().get(player).equals(GameAction.ASK)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        game.getCurrentQuestionRound().setQuestion(question);
+        return game;
+    }
+
+    private Optional<Player> getUserById(String userId, Game game) {
+        return   game.getPlayerActions()
+                .keySet()
+                .stream()
+                .filter((player -> Objects.equals(player.getId(),userId)))
+                .findAny();
     }
 
 
@@ -72,4 +87,5 @@ public class GameService {
         }
         return getGameById(gameId.get());
     }
+
 }
