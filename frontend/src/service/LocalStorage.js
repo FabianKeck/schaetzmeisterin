@@ -14,6 +14,6 @@ export const loadUserDataFromLocalStorage = () => {
   try {
     return JSON.parse(raw);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
