@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +34,7 @@ class GameServiceTest {
         //when
         when(idUtils.createId()).thenReturn("GameId");
         Game actual = gameService.userSignIn("123", "Fabian",Optional.empty());
-        Game expected = new Game( "GameId", List.of(new Player("123","Fabian")));
+        Game expected = Game.builder().id( "GameId").playerActions(Map.of(new Player("123","Fabian"), GameAction.WAIT)).build();
         //then
         assertThat(actual,is(expected));
         verify(idUtils).createId();
@@ -54,7 +56,7 @@ class GameServiceTest {
         Game actual = gameService.userSignIn("456", newUserName,Optional.of("GameId"));
         //then
         assertThat(actual.getId(),is("GameId"));
-        assertThat(actual.getPlayers(),containsInAnyOrder(new Player("123","Jan"), new Player("456","Fabian") ));
+        assertThat(actual.getPlayerActions().keySet(),containsInAnyOrder(new Player("123","Jan"), new Player("456","Fabian") ));
     }
   @Test
     @DisplayName("userSignIn with invalid GameId should throw Httpstatus-exception")
