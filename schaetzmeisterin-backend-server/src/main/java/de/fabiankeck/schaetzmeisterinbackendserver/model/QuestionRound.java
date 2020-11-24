@@ -14,5 +14,5 @@ import java.util.HashMap;
 @Builder
 public class QuestionRound {
     private Question question;
-    private HashMap<Player, Double>  guesses;
+    private HashMap<String, Double>  playerGuesses;
 }

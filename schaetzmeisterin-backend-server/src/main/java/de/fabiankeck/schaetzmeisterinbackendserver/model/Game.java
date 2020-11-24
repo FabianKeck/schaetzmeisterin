@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 @Data
@@ -15,7 +14,7 @@ import java.util.Map;
 @Builder
 public class Game {
     private String id;
-    private Map<Player,GameAction> playerActions;
+    private Map<String,GameAction> playerActions;
     private boolean started =false;
     private QuestionRound currentQuestionRound;
 }

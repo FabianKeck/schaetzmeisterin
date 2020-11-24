@@ -71,7 +71,7 @@ class GameControllerIntegrationTest {
                 .compact();
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<SignInUserDto > request= new HttpEntity<>(new SignInUserDto(username),headers);
+        HttpEntity<Void > request= new HttpEntity<>(null,headers);
         String url = "http://localhost:"+port+"/api/game/signin";
         //when
         when(idUtils.createId()).thenReturn("id");
@@ -79,15 +79,15 @@ class GameControllerIntegrationTest {
         System.out.println(response.getBody());
 
         //then
-        /*
+
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(response.getBody(),is(
                 Game.builder().id("id")
-                        .playerActions(Map.of(new Player("123","John"), GameAction.WAIT))
+                        .playerActions(Map.of("123", GameAction.WAIT))
                         .build()
         ));
 
-         */
+
     }
 
     @Test
@@ -116,7 +116,7 @@ class GameControllerIntegrationTest {
             //createGame withFirst user
         HttpHeaders createHeaders = new HttpHeaders();
         createHeaders.setBearerAuth(token1);
-        HttpEntity<SignInUserDto> createRequest= new HttpEntity<>(new SignInUserDto(username1),createHeaders);
+        HttpEntity<Void> createRequest= new HttpEntity<>(null,createHeaders);
         String createUrl = "http://localhost:"+port+"/api/game/signin";
         when(idUtils.createId()).thenReturn("id2");
         restTemplate.exchange(createUrl, HttpMethod.POST, createRequest, Game.class);
@@ -124,16 +124,13 @@ class GameControllerIntegrationTest {
         //when
         HttpHeaders headers= new HttpHeaders();
         headers.setBearerAuth(token2);
-        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto(username2),headers);
+        HttpEntity<Void> request= new HttpEntity<>(null,headers);
         String url = "http://localhost:"+port+"/api/game/signin/id2";
         ResponseEntity<Game> response = restTemplate.exchange(url, HttpMethod.POST, request, Game.class);
-
-
 
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(response.getBody().getId(),is("id2"));
-        assertThat(response.getBody().getPlayerActions().keySet(),containsInAnyOrder(new Player(playerId1,username1),
-                new Player(playerId2,username2)));
+        assertThat(response.getBody().getPlayerActions().keySet(),containsInAnyOrder(playerId1, playerId2));
     }
 }

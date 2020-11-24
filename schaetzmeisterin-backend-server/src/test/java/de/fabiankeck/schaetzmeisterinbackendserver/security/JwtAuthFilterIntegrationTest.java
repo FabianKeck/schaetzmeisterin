@@ -42,13 +42,11 @@ class JwtAuthFilterIntegrationTest {
 
     @Autowired
     GameService gameService;
+
     @BeforeEach
     void clear(){
         gameService.clearGames();
     }
-
-
-
 
     @Test
     void PostWithValidTokenShouldReturn200Ok(){
@@ -86,7 +84,7 @@ class JwtAuthFilterIntegrationTest {
         String url = "http://localhost:"+port+"/api/game/signin";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto("1"),headers );
+        HttpEntity<Void> request= new HttpEntity<>(null,headers );
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST , request,String.class);
 
@@ -106,7 +104,7 @@ class JwtAuthFilterIntegrationTest {
         String url = "http://localhost:"+port+"/api/game/signin";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto("1"),headers );
+        HttpEntity<Void> request= new HttpEntity<>(null,headers );
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST , request,String.class);
 

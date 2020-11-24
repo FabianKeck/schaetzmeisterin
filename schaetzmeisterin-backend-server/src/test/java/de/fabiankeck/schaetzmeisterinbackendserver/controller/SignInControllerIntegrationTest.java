@@ -1,10 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
-import de.fabiankeck.schaetzmeisterinbackendserver.security.JwtUtils;
+
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
+
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -75,7 +72,6 @@ class SignInControllerIntegrationTest {
     @DisplayName("Get without param should throw")
     public void getTestWithoutParam(){
         //given
-        String username= "Jane";
         String url = "http://localhost:"+port+ "/signin/";
         //when
         when(idUtils.createId()).thenReturn("id");
