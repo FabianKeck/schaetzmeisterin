@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
-import UserContext from '../../context/UserContext';
 import GameContext from '../../context/GameContext';
 
 export default function SignInPage() {
@@ -10,7 +9,6 @@ export default function SignInPage() {
   const history = useHistory();
   const [name, setName] = useState('');
   const [signInFailed, setSignInFailed] = useState('');
-  const { userSignIn } = useContext(UserContext);
   const { signInGame } = useContext(GameContext);
 
   return (
@@ -31,12 +29,12 @@ export default function SignInPage() {
   }
   function handleSubmit(event) {
     event.preventDefault();
-    userSignIn(name)
+    console.log(gameid);
+    signInGame(gameid, name)
       .catch(() => {
         setSignInFailed('Sign in failed, please try again');
       })
-      .then(() => signInGame(gameid ? gameid : ''))
-      .then((game) => history.push('game/id/' + game?.id));
+      .then((game) => history.push('/game/staged/' + game?.id));
   }
 }
 
