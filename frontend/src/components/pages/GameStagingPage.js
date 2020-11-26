@@ -16,9 +16,10 @@ export default function GameStagingPage() {
         <p>You are logged in as {userData?.sub}</p>
         <p>So far these users have joined the game</p>
         <UlStyled>
-          {Object.keys(game?.playerActions).map((id) => (
-            <li key={id}>{id}</li>
-          ))}
+          {game.playerNames &&
+            Object.entries(game.playerNames).map(([key, value]) => (
+              <li key={key}>{value}</li>
+            ))}
         </UlStyled>
         <ButtonStyled onClick={onStart}>Start Game!</ButtonStyled>
       </GamePageStyled>

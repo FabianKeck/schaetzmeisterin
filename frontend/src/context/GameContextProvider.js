@@ -12,6 +12,7 @@ export default function GameContextProvider({ children }) {
       .then((token) => signInGamePost(token, gameId))
       .then((response) => response.data)
       .then((game) => {
+        console.log(game);
         setGame(game);
         return game;
       });
