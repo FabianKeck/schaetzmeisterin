@@ -41,6 +41,7 @@ public class GameService {
         game.getPlayerActions().keySet().stream().filter(id-> Objects.equals(id,userId)).findAny()
                 .orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
         game.setStarted(true);
+        gameDao.save(game);
         return  game;
     }
     public Game ask(String gameId, String userId, Question question) {
@@ -62,13 +63,11 @@ public class GameService {
     }
 
     private Game initNewGame() {
-        Game newGame =  Game.builder()
+        return Game.builder()
                 .id(idUtils.createId())
                 .playerActions(new HashMap<>())
                 .playerNames(new HashMap<>())
                 .build();
-        gameDao.save(newGame);
-        return newGame;
     }
 
 

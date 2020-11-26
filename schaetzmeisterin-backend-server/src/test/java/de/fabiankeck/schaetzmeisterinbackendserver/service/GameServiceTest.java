@@ -10,6 +10,7 @@ import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,7 +103,75 @@ class GameServiceTest {
           assertThat(e.getMessage(),is(HttpStatus.NOT_FOUND.toString()));
       }
     }
-    //todo startGameTest
-    //todo askTest
+
+    @Test
+    @DisplayName("startGame with vaild userId should return updated Game")
+    public void startGameTest(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game initial= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+
+        //when
+        Game actual = gameService.startGame(gameId, initialUser.getId());
+
+        //then
+        Game expected = Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(), initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(), GameAction.WAIT)))
+                .started(true)
+                .build();
+        assertThat(actual, is(expected));
+        verify(gameDao).save(expected);
+
+    }
+     @Test
+    @DisplayName("startGame with invalid userId should throw ")
+    public void startGameInvaildUser(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game initial= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+
+        //when
+         try{
+             gameService.startGame(gameId, "otherId");
+             fail();
+         }catch (Exception e){
+             //
+         }
+    }
+
+    @Test
+    @DisplayName("userSignIn with started game should throw")
+    void signInStartedTest(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game game= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+        //when
+        try{
+            gameService.userSignIn(initialUser.getId(),Optional.of(gameId));
+            fail();
+        }catch (Exception e){
+            //
+        }
+
+    }
 
 }

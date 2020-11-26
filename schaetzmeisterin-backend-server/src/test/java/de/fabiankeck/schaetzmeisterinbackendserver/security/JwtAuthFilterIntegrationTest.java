@@ -1,7 +1,12 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.security;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,13 +47,21 @@ class JwtAuthFilterIntegrationTest {
 
     @Autowired
     GameService gameService;
+    @Autowired
+    GameDao gameDao;
+    @Autowired
+    SmUserDao userDao;
 
     @BeforeEach
-
+    void setup(){
+        gameDao.deleteAll();
+        userDao.deleteAll();
+    }
 
     @Test
     void PostWithValidTokenShouldReturn200Ok(){
         String username= "john";
+        userDao.save(SmUser.builder().id("123").username(username).build());
         HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", "123"));
         String token = Jwts.builder()
                 .setClaims(claims)
