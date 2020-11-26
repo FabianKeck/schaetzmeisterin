@@ -29,7 +29,6 @@ export default function SignInPage() {
   }
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(gameid);
     signInGame(gameid, name)
       .catch(() => {
         setSignInFailed('Sign in failed, please try again');
