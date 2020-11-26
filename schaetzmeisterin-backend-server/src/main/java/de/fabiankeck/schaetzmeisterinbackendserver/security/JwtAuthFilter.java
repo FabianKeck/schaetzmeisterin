@@ -39,7 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Claims claims = jwtUtils.parseToken(token);
             if (claims.getExpiration().after(Date.from(Instant.now()))) {
                 SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken(claims.getSubject(),"", Collections.emptyList()));
+                        new UsernamePasswordAuthenticationToken(claims.get("playerId",String.class),"", Collections.emptyList()));
             }
         } catch (Exception e){
             System.out.println(e);

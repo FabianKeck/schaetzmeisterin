@@ -1,6 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.security;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,6 +22,8 @@ import static org.hamcrest.Matchers.is;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,16 +52,19 @@ class JwtAuthFilterIntegrationTest {
 
     @Test
     void PostWithValidTokenShouldReturn200Ok(){
+        String username= "john";
+        HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", "123"));
         String token = Jwts.builder()
-                .setSubject("john")
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1L))))
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
         String url = "http://localhost:"+port+"/api/game/signin";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<String> request= new HttpEntity<>("",headers );
+        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto("1"),headers );
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST , request,String.class);
 
@@ -68,16 +74,19 @@ class JwtAuthFilterIntegrationTest {
 
     @Test
     void PostWithExpiredTokenShouldReturn403Forbidden(){
+        String username= "john";
+        HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", "123"));
         String token = Jwts.builder()
-                .setSubject("john")
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().minus(Duration.ofHours(1))))
+                .setExpiration(Date.from(Instant.now().minus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
         String url = "http://localhost:"+port+"/api/game/signin";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<String> request= new HttpEntity<>("",headers );
+        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto("1"),headers );
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST , request,String.class);
 
@@ -85,16 +94,19 @@ class JwtAuthFilterIntegrationTest {
     }
     @Test
     void PostWithTokenwithWrongKeyShouldReturn403Forbidden(){
+        String username= "john";
+        HashMap<String, Object> claims = new HashMap<>(Map.of("playerId", "123"));
         String token = Jwts.builder()
-                .setSubject("john")
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1))))
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(5))))
                 .signWith(SignatureAlgorithm.HS256,"wrongKey")
                 .compact();
         String url = "http://localhost:"+port+"/api/game/signin";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
-        HttpEntity<String> request= new HttpEntity<>("",headers );
+        HttpEntity<SignInUserDto> request= new HttpEntity<>(new SignInUserDto("1"),headers );
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST , request,String.class);
 

@@ -1,6 +1,5 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Service;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
@@ -24,10 +23,10 @@ public class GameService {
     }
 
 
-    public Game userSignIn( String userName,Optional<String> gameId) {
+    public Game userSignIn(String id, String userName, Optional<String> gameId) {
         Game game =  getGameById(gameId);
 
-        addPlayer(game, new Player(userName));
+        addPlayer(game, new Player(id,userName));
         return game;
     }
 

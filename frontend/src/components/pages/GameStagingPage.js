@@ -1,12 +1,14 @@
 import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
 
 export default function GameStagingPage() {
-  const { game } = useContext(GameContext);
+  const { game, startGame } = useContext(GameContext);
   const { userData } = useContext(UserContext);
+  const history = useHistory();
   return (
     <>
       <Header>New Game</Header>
@@ -18,9 +20,14 @@ export default function GameStagingPage() {
             <li key={player.name}>{player.name}</li>
           ))}
         </UlStyled>
+        <ButtonStyled onClick={onStart}>Start Game!</ButtonStyled>
       </GamePageStyled>
     </>
   );
+  function onStart() {
+    startGame(game.id);
+    history.push('/game/' + game.id);
+  }
 }
 const GamePageStyled = styled.div`
   display: grid;
@@ -31,6 +38,13 @@ const GamePageStyled = styled.div`
   p {
     margin: 0;
   }
+`;
+
+const ButtonStyled = styled.button`
+  font-size: 1em;
+  border-radius: var(--size-s);
+  background-color: var(--green-75);
+  border: 1px solid var(--green-main);
 `;
 const UlStyled = styled.ul`
   list-style: none;
