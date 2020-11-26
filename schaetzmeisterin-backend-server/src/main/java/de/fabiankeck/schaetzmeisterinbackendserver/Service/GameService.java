@@ -1,31 +1,32 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Service;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.sound.midi.Patch;
 import java.util.*;
 
 
 @Service
 public class GameService {
-    private final List<Game> games = new ArrayList<>();
+    private final GameDao gameDao;
     private final IdUtils idUtils;
+    private final SmUserDao userDao;
 
-    public GameService(IdUtils idUtils) {
+    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao) {
+        this.gameDao = gameDao;
         this.idUtils = idUtils;
+        this.userDao = userDao;
     }
 
 
     public Game userSignIn(String userId, Optional<String> gameId) {
-        //ToDo remove unused Variable username
         Game game =  getGameById(gameId);
 
         if(game.isStarted()){
@@ -36,14 +37,14 @@ public class GameService {
     }
 
     public Game startGame(String gameId, String userId) {
-        Game game= getGameById(gameId);
+        Game game = gameDao.findById(gameId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         game.getPlayerActions().keySet().stream().filter(id-> Objects.equals(id,userId)).findAny()
                 .orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
         game.setStarted(true);
         return  game;
     }
     public Game ask(String gameId, String userId, Question question) {
-        Game game = getGameById(gameId);
+        Game game = gameDao.findById(gameId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
         game.getPlayerActions().keySet().stream().filter(id-> Objects.equals(id,userId)).findAny().orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
         if(game.getPlayerActions().get(userId).equals(GameAction.ASK)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -54,33 +55,28 @@ public class GameService {
 
 
     private void addPlayer(Game game, String userId){
-        HashMap<String,GameAction> newPlayerActions = new HashMap<>(game.getPlayerActions());
-        newPlayerActions.put(userId, GameAction.WAIT);
-        game.setPlayerActions(newPlayerActions);
+        String username = userDao.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUsername();
+        game.getPlayerNames().put(userId,username);
+        game.getPlayerActions().put(userId, GameAction.WAIT);
+        gameDao.save(game);
     }
 
     private Game initNewGame() {
-        Game newGame =  Game.builder().id(idUtils.createId()).playerActions(new HashMap<>()).build();
-        games.add(newGame);
+        Game newGame =  Game.builder()
+                .id(idUtils.createId())
+                .playerActions(new HashMap<>())
+                .playerNames(new HashMap<>())
+                .build();
+        gameDao.save(newGame);
         return newGame;
     }
 
-    public void clearGames(){
-        games.clear();
-    }
 
-
-    private Game getGameById(String gameId) {
-        return games.stream()
-                .filter(game -> Objects.equals(gameId, game.getId()))
-                .findAny()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
     private Game getGameById(Optional<String> gameId){
         if(gameId.isEmpty()){
             return initNewGame();
         }
-        return getGameById(gameId.get());
+        return gameDao.findById(gameId.get()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }

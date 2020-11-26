@@ -44,9 +44,7 @@ class JwtAuthFilterIntegrationTest {
     GameService gameService;
 
     @BeforeEach
-    void clear(){
-        gameService.clearGames();
-    }
+
 
     @Test
     void PostWithValidTokenShouldReturn200Ok(){
