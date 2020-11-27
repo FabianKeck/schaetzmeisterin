@@ -1,20 +1,17 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.SignInService;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.security.JwtUtils;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.HashMap;
 import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class SignInServiceTest {
 
@@ -24,8 +21,10 @@ class SignInServiceTest {
 
     IdUtils idUtils = mock(IdUtils.class);
 
+    SmUserDao userDao= mock(SmUserDao.class);
 
-    SignInService signInService = new SignInService(jwtUtils, idUtils);
+
+    SignInService signInService = new SignInService(userDao, jwtUtils, idUtils);
 
 
     @Test
@@ -33,13 +32,16 @@ class SignInServiceTest {
         //given
         String username = "Jane";
         String expectedToken = "expectedToken" ;
+        SmUser user = new SmUser("id","Jane");
 
         //when
         when(idUtils.createId()).thenReturn("id");
         when(jwtUtils.createToken(username,new HashMap<>(Map.of("playerId",idUtils.createId()))))
                 .thenReturn(expectedToken);
+        when(userDao.save( user)).thenReturn(user);
         String actual=  signInService.signIn(username);
         assertThat(actual, is(expectedToken));
+        verify(userDao).save(user);
 
     }
 

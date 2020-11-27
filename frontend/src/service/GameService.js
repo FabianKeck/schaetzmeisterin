@@ -6,12 +6,11 @@ const header = (token) => ({
   },
 });
 
-export const signInGamePost = (token, username, gameId) => {
+export const signInGamePost = (token, gameId) => {
   const url = '/api/game/signin/' + (gameId ? gameId : '');
-  console.log('Ganmeservice' + username);
-  return axios.post(url, { name: username }, header(token));
+  return axios.post(url, null, header(token));
 };
 
 export const startGame = (token, gameId) => {
-  axios.post('/api/game/startgame/' + gameId, null, header(token));
+  return axios.post('/api/game/startgame/' + gameId, null, header(token));
 };

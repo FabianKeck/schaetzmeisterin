@@ -1,14 +1,19 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,53 +26,152 @@ import static org.mockito.Mockito.*;
 class GameServiceTest {
 
     IdUtils idUtils = mock(IdUtils.class);
-    GameService gameService = new GameService(idUtils);
+    SmUserDao userDao= mock(SmUserDao.class);
+    GameDao gameDao = mock(GameDao.class);
+    GameService gameService = new GameService(gameDao, idUtils, userDao);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
     public void userSignInTest(){
         //given
 
+        String gameId= "gameId";
+        SmUser user = SmUser.builder()
+                .id("123")
+                .username("John")
+                .build();
+        when(idUtils.createId()).thenReturn(gameId);
+
+        Game expected = Game.builder()
+                .id( gameId)
+                .playerNames(new HashMap<>(Map.of(user.getId(),user.getUsername())))
+                .playerActions(new HashMap<>(Map.of(user.getId(), GameAction.WAIT)))
+                .build();
 
         //when
-        when(idUtils.createId()).thenReturn("GameId");
-        Game actual = gameService.userSignIn("123", "Fabian",Optional.empty());
-        Game expected = new Game( "GameId", List.of(new Player("123","Fabian")));
+
+        when(userDao.findById(user.getId())).thenReturn(Optional.of(user));
+        when(gameDao.save(expected)).thenReturn(expected);
+        Game actual = gameService.userSignIn("123" ,Optional.empty());
         //then
         assertThat(actual,is(expected));
         verify(idUtils).createId();
+        verify(gameDao).save(expected);
     }
     @Test
     @DisplayName("userSignIn with GameId should return the updated game")
     public void userSignInTestWithId(){
         //given
-        String oldUserName = "Jan";
-
-        when(idUtils.createId()).thenReturn("GameId");
-        gameService.userSignIn("123", oldUserName,Optional.empty());
-
-        String newUserName = "Fabian";
-
-
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        SmUser userToAdd = SmUser.builder().id("456").username("John").build();
+        when(idUtils.createId()).thenReturn(gameId);
+        Game initial= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .build();
+        Game updated =  Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername(),
+                        userToAdd.getId(),userToAdd.getUsername()
+                        )))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT,
+                        userToAdd.getId(),GameAction.WAIT
+                )))
+                .build();
         //when
-
-        Game actual = gameService.userSignIn("456", newUserName,Optional.of("GameId"));
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        when(gameDao.save(updated)).thenReturn(updated);
+        when(userDao.findById(userToAdd.getId())).thenReturn(Optional.of(userToAdd));
+        Game actual = gameService.userSignIn(userToAdd.getId(),Optional.of(gameId));
         //then
-        assertThat(actual.getId(),is("GameId"));
-        assertThat(actual.getPlayers(),containsInAnyOrder(new Player("123","Jan"), new Player("456","Fabian") ));
+        assertThat(actual.getId(),is(gameId));
+        assertThat(actual.getPlayerActions().keySet(),containsInAnyOrder("123","456"));
+        verify(gameDao).findById(gameId);
+        verify(gameDao).save(updated);
     }
   @Test
     @DisplayName("userSignIn with invalid GameId should throw Httpstatus-exception")
     public void signInWithInvalidId(){
-        //given
-        String signInUserDto = "Jan";
         //when
 
       try {
-          gameService.userSignIn("123", signInUserDto,Optional.of("id"));
+          gameService.userSignIn("123",Optional.of("id"));
           fail();
       } catch (Exception e) {
           assertThat(e.getMessage(),is(HttpStatus.NOT_FOUND.toString()));
       }
     }
+
+    @Test
+    @DisplayName("startGame with vaild userId should return updated Game")
+    public void startGameTest(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game initial= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+
+        //when
+        Game actual = gameService.startGame(gameId, initialUser.getId());
+
+        //then
+        Game expected = Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(), initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(), GameAction.WAIT)))
+                .started(true)
+                .build();
+        assertThat(actual, is(expected));
+        verify(gameDao).save(expected);
+
+    }
+     @Test
+    @DisplayName("startGame with invalid userId should throw ")
+    public void startGameInvaildUser(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game initial= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+
+        //when
+         try{
+             gameService.startGame(gameId, "otherId");
+             fail();
+         }catch (Exception e){
+             //
+         }
+    }
+
+    @Test
+    @DisplayName("userSignIn with started game should throw")
+    void signInStartedTest(){
+        String gameId ="gameId";
+        SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
+        Game game= Game.builder()
+                .id(gameId)
+                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
+                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+        //when
+        try{
+            gameService.userSignIn(initialUser.getId(),Optional.of(gameId));
+            fail();
+        }catch (Exception e){
+            //
+        }
+
+    }
+
 }
