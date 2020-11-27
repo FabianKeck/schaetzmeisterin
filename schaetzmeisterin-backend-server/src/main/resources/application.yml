@@ -2,5 +2,3 @@ spring:
   data:
     mongodb:
       database: schaetzmeisterin
-      host: localhost
-      port: 27017

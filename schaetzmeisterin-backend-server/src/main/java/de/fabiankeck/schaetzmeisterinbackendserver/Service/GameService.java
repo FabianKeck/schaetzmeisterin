@@ -6,6 +6,7 @@ import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +20,8 @@ public class GameService {
     private final IdUtils idUtils;
     private final SmUserDao userDao;
 
+
+    @Autowired
     public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;

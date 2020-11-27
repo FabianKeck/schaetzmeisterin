@@ -25,10 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -43,9 +40,6 @@ class GameControllerIntegrationTest {
     @LocalServerPort
     private int port;
 
-    @Value("${jwt.secretkey}")
-    private String secretKey;
-
     @Autowired
     TestRestTemplate restTemplate;
 
@@ -54,6 +48,7 @@ class GameControllerIntegrationTest {
 
     @Autowired
     GameDao gameDao;
+
     @Autowired
     SmUserDao userDao;
 
@@ -129,7 +124,7 @@ class GameControllerIntegrationTest {
 
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
-        assertThat(response.getBody().getId(),is(gameId));
+        assertThat(Objects.requireNonNull(response.getBody()).getId(),is(gameId));
         assertThat(response.getBody().getPlayerActions().keySet(),containsInAnyOrder(playerId1, playerId2));
     }
 }
