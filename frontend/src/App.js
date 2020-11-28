@@ -5,6 +5,7 @@ import GameContextProvider from './context/GameContextProvider';
 import GameStagingPage from './components/pages/GameStagingPage';
 import styled from 'styled-components/macro';
 import UserContextProvider from './context/UserContextProvider';
+import PlayPage from './components/pages/PlayPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Switch>
             <Route path={'/game/staged/:gameid'} component={GameStagingPage} />
             <Route path={'/signin/:gameid?'} component={SignInPage} />
+            <Route path={'/play'} component={PlayPage} />
           </Switch>
         </PageLayout>
       </GameContextProvider>

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import GameContext from './GameContext';
-import { signInGamePost, startGamePost } from '../service/GameService';
+import { signInGamePost, startGamePost, betPost } from '../service/GameService';
 import UserContext from '../context/UserContext';
 
 export default function GameContextProvider({ children }) {
@@ -19,8 +19,10 @@ export default function GameContextProvider({ children }) {
   }
   const startGame = (gameId) => startGamePost(token, gameId);
 
+  const bet = () => betPost(token, game.id);
+
   return (
-    <GameContext.Provider value={{ game, signInGame, startGame }}>
+    <GameContext.Provider value={{ game, signInGame, startGame, bet }}>
       {children}
     </GameContext.Provider>
   );
