@@ -16,18 +16,17 @@ export default function GameStagingPage() {
         <p>You are logged in as {userData?.sub}</p>
         <p>So far these users have joined the game</p>
         <UlStyled>
-          {game.playerNames &&
-            Object.entries(game.playerNames).map(([key, value]) => (
-              <li key={key}>{value}</li>
-            ))}
+          {game?.players.map((player) => (
+            <li key={player.id}>{player.name}</li>
+          ))}
         </UlStyled>
         <ButtonStyled onClick={onStart}>Start Game!</ButtonStyled>
       </GamePageStyled>
     </>
   );
   function onStart() {
-    startGame(game.id);
-    history.push('/game/' + game.id);
+    console.log(game.id);
+    startGame(game.id).then(history.push('/game/' + game.id));
   }
 }
 const GamePageStyled = styled.div`
