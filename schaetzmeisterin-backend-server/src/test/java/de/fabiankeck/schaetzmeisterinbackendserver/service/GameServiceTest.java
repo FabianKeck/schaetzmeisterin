@@ -5,16 +5,17 @@ import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.method.P;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -44,8 +45,7 @@ class GameServiceTest {
 
         Game expected = Game.builder()
                 .id( gameId)
-                .playerNames(new HashMap<>(Map.of(user.getId(),user.getUsername())))
-                .playerActions(new HashMap<>(Map.of(user.getId(), GameAction.WAIT)))
+                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).gameAction(GameAction.WAIT).build()))
                 .build();
 
         //when
@@ -68,17 +68,14 @@ class GameServiceTest {
         when(idUtils.createId()).thenReturn(gameId);
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build())))
                 .build();
         Game updated =  Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername(),
-                        userToAdd.getId(),userToAdd.getUsername()
-                        )))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT,
-                        userToAdd.getId(),GameAction.WAIT
-                )))
+                .players(List.of(
+                        Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build(),
+                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).gameAction(GameAction.WAIT).build()
+                ))
                 .build();
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
@@ -87,7 +84,7 @@ class GameServiceTest {
         Game actual = gameService.userSignIn(userToAdd.getId(),Optional.of(gameId));
         //then
         assertThat(actual.getId(),is(gameId));
-        assertThat(actual.getPlayerActions().keySet(),containsInAnyOrder("123","456"));
+        assertThat(actual.getPlayers().stream().map(Player::getId).collect(Collectors.toList()), containsInAnyOrder("123","456"));
         verify(gameDao).findById(gameId);
         verify(gameDao).save(updated);
     }
@@ -111,8 +108,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
 
@@ -122,8 +118,7 @@ class GameServiceTest {
         //then
         Game expected = Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(), initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(), GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .started(true)
                 .build();
         assertThat(actual, is(expected));
@@ -137,8 +132,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
 
@@ -158,8 +152,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game game= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .started(true)
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(game));

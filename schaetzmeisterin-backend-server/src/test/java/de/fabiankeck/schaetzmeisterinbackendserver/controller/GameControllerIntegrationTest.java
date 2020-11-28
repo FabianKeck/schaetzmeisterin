@@ -26,6 +26,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -90,12 +91,7 @@ class GameControllerIntegrationTest {
         //then
 
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
-        assertThat(response.getBody(),is(
-                Game.builder().id(gameId)
-                        .playerActions(new HashMap<>(Map.of(user.getId(), GameAction.WAIT)))
-                        .playerNames(new HashMap<>(Map.of(user.getId(),user.getUsername())))
-                        .build()
-        ));
+        assertThat(Objects.requireNonNull(response.getBody()).getId(),is(gameId));
 
 
     }
@@ -125,6 +121,6 @@ class GameControllerIntegrationTest {
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getId(),is(gameId));
-        assertThat(response.getBody().getPlayerActions().keySet(),containsInAnyOrder(playerId1, playerId2));
+        assertThat(response.getBody().getPlayers().stream().map(Player::getId).collect(Collectors.toList()), containsInAnyOrder(playerId1, playerId2));
     }
 }

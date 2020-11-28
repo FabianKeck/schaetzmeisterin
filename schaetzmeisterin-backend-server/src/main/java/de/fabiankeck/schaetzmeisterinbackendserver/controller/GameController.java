@@ -1,10 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -29,10 +26,7 @@ public class GameController {
         return gameService.startGame(gameId,principal.getName());
     }
 
-    @PostMapping("ask/{gameId}")
-    public Game ask(@PathVariable String gameId, Principal principal, Question question){
-        return gameService.ask(gameId,principal.getName(),question);
-    }
+
 
     /*
     post quesiton
