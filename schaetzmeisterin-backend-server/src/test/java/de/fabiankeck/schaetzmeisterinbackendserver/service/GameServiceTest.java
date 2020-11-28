@@ -45,7 +45,7 @@ class GameServiceTest {
 
         Game expected = Game.builder()
                 .id( gameId)
-                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).gameAction(GameAction.WAIT).build()))
+                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).build()))
                 .build();
 
         //when
@@ -74,7 +74,7 @@ class GameServiceTest {
                 .id(gameId)
                 .players(List.of(
                         Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build(),
-                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).gameAction(GameAction.WAIT).build()
+                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).build()
                 ))
                 .build();
         //when

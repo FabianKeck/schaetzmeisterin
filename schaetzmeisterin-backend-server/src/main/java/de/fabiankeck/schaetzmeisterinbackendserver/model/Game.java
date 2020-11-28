@@ -19,6 +19,7 @@ import java.util.Map;
 public class Game {
     private String id;
     private boolean started =false;
+    private int activePlayerIndex;
     private List<Player> players;
 
 }

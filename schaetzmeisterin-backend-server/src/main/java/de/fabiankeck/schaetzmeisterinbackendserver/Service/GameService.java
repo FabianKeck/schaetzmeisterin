@@ -45,13 +45,30 @@ public class GameService {
         gameDao.save(game);
         return  game;
     }
+    public Game bet(String gameId, String userId) {
+        Game game = getGameWithVaildUser(gameId,userId);
+        Player player = game.getPlayers().get(game.getActivePlayerIndex());
+        if(player == null || player.getId().equals(userId)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        markNextPlayerActive(game);
+        //invoke sse
+        return game;
 
+    }
+
+    private void markNextPlayerActive(Game game) {
+        if(game.getActivePlayerIndex()>= game.getPlayers().size()-1){
+            game.setActivePlayerIndex(0);
+        }
+        game.setActivePlayerIndex(game.getActivePlayerIndex()+1);
+    }
 
 
     private void addPlayer(Game game, String userId){
 
         String username = userDao.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUsername();
-        game.getPlayers().add(Player.builder().id(userId).name(username).gameAction(GameAction.WAIT).build());
+        game.getPlayers().add(Player.builder().id(userId).name(username).build());
         gameDao.save(game);
     }
 
@@ -74,5 +91,6 @@ public class GameService {
         game.getPlayers().stream().filter((player -> player.getId().equals(userId))).findAny().orElseThrow(()->new ResponseStatusException(HttpStatus.FORBIDDEN));
         return game;
     }
+
 
 }
