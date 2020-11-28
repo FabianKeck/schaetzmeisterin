@@ -48,7 +48,7 @@ public class GameService {
     public Game bet(String gameId, String userId) {
         Game game = getGameWithVaildUser(gameId,userId);
         Player player = game.getPlayers().get(game.getActivePlayerIndex());
-        if(player == null || player.getId().equals(userId)){
+        if(player == null || !player.getId().equals(userId)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         markNextPlayerActive(game);

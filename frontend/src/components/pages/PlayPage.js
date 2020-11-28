@@ -11,13 +11,16 @@ export default function PlayPage() {
     setPlayerData(
       game?.players?.find((player) => player.id === userData.playerId)
     );
+    console.log(userData.playerId);
   }, [game, userData]);
 
   return (
     <>
       <Header>Playing</Header>
       <p>{JSON.stringify(playerData)}</p>
-      {userData.gameAction === 'BET' && <button onClick={bet}>bet!</button>}
+      {game?.players[game.activePlayerIndex].id === userData.playerId && (
+        <button onClick={bet}>bet!</button>
+      )}
     </>
   );
 }
