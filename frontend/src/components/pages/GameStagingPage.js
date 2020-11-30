@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
 import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
 
 export default function GameStagingPage() {
-  const { game, startGame } = useContext(GameContext);
+  const { game, startGame, startGameLoop } = useContext(GameContext);
   const { userData } = useContext(UserContext);
-  const history = useHistory();
+  useEffect(startGameLoop, []);
+
   return (
     <>
       <Header>New Game</Header>
@@ -26,7 +26,7 @@ export default function GameStagingPage() {
   );
   function onStart() {
     console.log(game.id);
-    startGame(game.id).then(history.push('/play/' + game.id));
+    startGame(game.id);
   }
 }
 const GamePageStyled = styled.div`

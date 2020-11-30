@@ -33,7 +33,7 @@ export default function SignInPage() {
       .catch(() => {
         setSignInFailed('Sign in failed, please try again');
       })
-      .then((game) => history.push('/game/staged/' + game?.id));
+      .then((game) => history.push('/game/' + game?.id));
   }
 }
 

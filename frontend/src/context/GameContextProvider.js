@@ -1,6 +1,11 @@
 import React, { useState, useContext } from 'react';
 import GameContext from './GameContext';
-import { signInGamePost, startGamePost, betPost } from '../service/GameService';
+import {
+  signInGamePost,
+  startGamePost,
+  betPost,
+  getGame,
+} from '../service/GameService';
 import UserContext from '../context/UserContext';
 
 export default function GameContextProvider({ children }) {
@@ -17,12 +22,26 @@ export default function GameContextProvider({ children }) {
         return game;
       });
   }
-  const startGame = (gameId) => startGamePost(token, gameId);
+  const startGame = (gameId) =>
+    startGamePost(token, gameId)
+      .then((response) => response.data)
+      .then(setGame);
 
-  const bet = () => betPost(token, game.id);
+  const startGameLoop = () =>
+    setInterval(
+      () => getGame(token, game.id).then((response) => setGame(response.data)),
+      5000
+    );
+
+  const bet = () =>
+    betPost(token, game.id)
+      .then((response) => response.data)
+      .then(setGame);
 
   return (
-    <GameContext.Provider value={{ game, signInGame, startGame, bet }}>
+    <GameContext.Provider
+      value={{ game, signInGame, startGame, bet, startGameLoop }}
+    >
       {children}
     </GameContext.Provider>
   );
