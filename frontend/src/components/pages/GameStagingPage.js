@@ -7,7 +7,7 @@ import UserContext from '../../context/UserContext';
 export default function GameStagingPage() {
   const { game, startGame, startGameLoop } = useContext(GameContext);
   const { userData } = useContext(UserContext);
-  useEffect(startGameLoop, []);
+  useEffect(startGameLoop, [startGameLoop]);
 
   return (
     <>
