@@ -52,7 +52,7 @@ public class GameService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         markNextPlayerActive(game);
-        //invoke sse
+        gameDao.save(game);
         return game;
 
     }
@@ -60,6 +60,7 @@ public class GameService {
     private void markNextPlayerActive(Game game) {
         if(game.getActivePlayerIndex()>= game.getPlayers().size()-1){
             game.setActivePlayerIndex(0);
+            return;
         }
         game.setActivePlayerIndex(game.getActivePlayerIndex()+1);
     }
@@ -93,4 +94,7 @@ public class GameService {
     }
 
 
+    public Game getGame(String gameId, String userId) {
+        return getGameWithVaildUser(gameId,userId);
+    }
 }

@@ -32,6 +32,11 @@ public class GameController {
         return gameService.bet(gameId,principal.getName());
     }
 
+    @GetMapping("{gameId}")
+    public Game getGame(@PathVariable String gameId, Principal principal){
+        return gameService.getGame(gameId,principal.getName());
+    }
+
 
 
 
