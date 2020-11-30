@@ -20,14 +20,12 @@ export default function GameStagingPage() {
             <li key={player.id}>{player.name}</li>
           ))}
         </UlStyled>
-        <ButtonStyled onClick={onStart}>Start Game!</ButtonStyled>
+        <ButtonStyled onClick={() => startGame(game.id)}>
+          Start Game!
+        </ButtonStyled>
       </GamePageStyled>
     </>
   );
-  function onStart() {
-    console.log(game.id);
-    startGame(game.id);
-  }
 }
 const GamePageStyled = styled.div`
   display: grid;
