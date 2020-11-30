@@ -26,7 +26,7 @@ export default function GameStagingPage() {
   );
   function onStart() {
     console.log(game.id);
-    startGame(game.id).then(history.push('/play'));
+    startGame(game.id).then(history.push('/play/' + game.id));
   }
 }
 const GamePageStyled = styled.div`

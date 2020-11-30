@@ -15,7 +15,7 @@ export default function App() {
           <Switch>
             <Route path={'/game/staged/:gameid'} component={GameStagingPage} />
             <Route path={'/signin/:gameid?'} component={SignInPage} />
-            <Route path={'/play'} component={PlayPage} />
+            <Route path={'/play/:gameid'} component={PlayPage} />
           </Switch>
         </PageLayout>
       </GameContextProvider>
