@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -17,8 +18,8 @@ import java.util.Map;
 @Document(collection = "game")
 public class Game {
     private String id;
-    private HashMap<String,GameAction> playerActions;
-    private HashMap<String ,String> playerNames;
     private boolean started =false;
-    private QuestionRound currentQuestionRound;
+    private int activePlayerIndex;
+    private List<Player> players;
+
 }

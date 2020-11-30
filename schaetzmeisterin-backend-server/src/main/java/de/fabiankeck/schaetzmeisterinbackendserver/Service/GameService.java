@@ -4,7 +4,7 @@ import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class GameService {
 
 
     public Game userSignIn(String userId, Optional<String> gameId) {
-        Game game =  getGameById(gameId);
+        Game game =  getGameByIdOrInit(gameId);
 
         if(game.isStarted()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -40,45 +40,61 @@ public class GameService {
     }
 
     public Game startGame(String gameId, String userId) {
-        Game game = gameDao.findById(gameId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        game.getPlayerActions().keySet().stream().filter(id-> Objects.equals(id,userId)).findAny()
-                .orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        Game game = getGameWithVaildUser(gameId,userId);
         game.setStarted(true);
         gameDao.save(game);
         return  game;
     }
-    public Game ask(String gameId, String userId, Question question) {
-        Game game = gameDao.findById(gameId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        game.getPlayerActions().keySet().stream().filter(id-> Objects.equals(id,userId)).findAny().orElseThrow( ()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
-        if(game.getPlayerActions().get(userId).equals(GameAction.ASK)){
+    public Game bet(String gameId, String userId) {
+        Game game = getGameWithVaildUser(gameId,userId);
+        Player player = game.getPlayers().get(game.getActivePlayerIndex());
+        if(player == null || !player.getId().equals(userId)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        game.getCurrentQuestionRound().setQuestion(question);
+        markNextPlayerActive(game);
+        gameDao.save(game);
         return game;
+
+    }
+
+    private void markNextPlayerActive(Game game) {
+        if(game.getActivePlayerIndex()>= game.getPlayers().size()-1){
+            game.setActivePlayerIndex(0);
+            return;
+        }
+        game.setActivePlayerIndex(game.getActivePlayerIndex()+1);
     }
 
 
     private void addPlayer(Game game, String userId){
+
         String username = userDao.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUsername();
-        game.getPlayerNames().put(userId,username);
-        game.getPlayerActions().put(userId, GameAction.WAIT);
+        game.getPlayers().add(Player.builder().id(userId).name(username).build());
         gameDao.save(game);
     }
 
     private Game initNewGame() {
         return Game.builder()
                 .id(idUtils.createId())
-                .playerActions(new HashMap<>())
-                .playerNames(new HashMap<>())
+                .players(new ArrayList<>())
                 .build();
     }
 
 
-    private Game getGameById(Optional<String> gameId){
+    private Game getGameByIdOrInit(Optional<String> gameId){
         if(gameId.isEmpty()){
             return initNewGame();
         }
         return gameDao.findById(gameId.get()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
+    private Game getGameWithVaildUser(String gameId, String userId){
+        Game game = gameDao.findById(gameId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        game.getPlayers().stream().filter((player -> player.getId().equals(userId))).findAny().orElseThrow(()->new ResponseStatusException(HttpStatus.FORBIDDEN));
+        return game;
+    }
 
+
+    public Game getGame(String gameId, String userId) {
+        return getGameWithVaildUser(gameId,userId);
+    }
 }

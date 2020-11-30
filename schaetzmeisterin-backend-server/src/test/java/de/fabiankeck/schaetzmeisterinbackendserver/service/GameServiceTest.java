@@ -5,20 +5,22 @@ import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.method.P;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -44,8 +46,7 @@ class GameServiceTest {
 
         Game expected = Game.builder()
                 .id( gameId)
-                .playerNames(new HashMap<>(Map.of(user.getId(),user.getUsername())))
-                .playerActions(new HashMap<>(Map.of(user.getId(), GameAction.WAIT)))
+                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).build()))
                 .build();
 
         //when
@@ -68,17 +69,14 @@ class GameServiceTest {
         when(idUtils.createId()).thenReturn(gameId);
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build())))
                 .build();
         Game updated =  Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername(),
-                        userToAdd.getId(),userToAdd.getUsername()
-                        )))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT,
-                        userToAdd.getId(),GameAction.WAIT
-                )))
+                .players(List.of(
+                        Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build(),
+                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).build()
+                ))
                 .build();
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
@@ -87,7 +85,7 @@ class GameServiceTest {
         Game actual = gameService.userSignIn(userToAdd.getId(),Optional.of(gameId));
         //then
         assertThat(actual.getId(),is(gameId));
-        assertThat(actual.getPlayerActions().keySet(),containsInAnyOrder("123","456"));
+        assertThat(actual.getPlayers().stream().map(Player::getId).collect(Collectors.toList()), containsInAnyOrder("123","456"));
         verify(gameDao).findById(gameId);
         verify(gameDao).save(updated);
     }
@@ -111,8 +109,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
 
@@ -122,8 +119,7 @@ class GameServiceTest {
         //then
         Game expected = Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(), initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(), GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .started(true)
                 .build();
         assertThat(actual, is(expected));
@@ -137,8 +133,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game initial= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
 
@@ -158,8 +153,7 @@ class GameServiceTest {
         SmUser initialUser = SmUser.builder().id("123").username("Jane").build();
         Game game= Game.builder()
                 .id(gameId)
-                .playerNames(new HashMap<>(Map.of(initialUser.getId(),initialUser.getUsername())))
-                .playerActions(new HashMap<>(Map.of(initialUser.getId(),GameAction.WAIT)))
+                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
                 .started(true)
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
@@ -171,6 +165,55 @@ class GameServiceTest {
         }catch (Exception e){
             //
         }
+    }
+    @Test
+    @DisplayName(" Bet with valid user should update game")
+    public void BetWithValidUserTest(){
+        String gameId ="gameId";
+        SmUser firstUSer = SmUser.builder().id("123").username("Jane").build();
+        SmUser secondUser= SmUser.builder().id("456").username("John").build();
+
+        Game game= Game.builder()
+                .id(gameId)
+                .players(List.of(
+                        Player.builder().id(firstUSer.getId()).name(firstUSer.getUsername()).build(),
+                        Player.builder().id(secondUser  .getId()).name(secondUser.getUsername()).build()
+                ))
+                .activePlayerIndex(0)
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+        Game actual = gameService.bet(gameId,firstUSer.getId());
+
+        assertThat(actual.getActivePlayerIndex(),is(1));
+        verify(gameDao).save(actual);
+
+    }
+
+  @Test
+    @DisplayName(" Bet with invalid user should throw and not update game")
+    public void BetWithInvalidUserTest(){
+        String gameId ="gameId";
+        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
+        SmUser secondUser= SmUser.builder().id("456").username("John").build();
+
+        Game game= Game.builder()
+                .id(gameId)
+                .players(List.of(
+                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).build(),
+                        Player.builder().id(secondUser  .getId()).name(secondUser.getUsername()).build()
+                ))
+                .activePlayerIndex(0)
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+
+      assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId()));
+      verify(gameDao, never()).save(any());
+
+
 
     }
 

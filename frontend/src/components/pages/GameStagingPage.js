@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
 import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
 
 export default function GameStagingPage() {
-  const { game, startGame } = useContext(GameContext);
+  const { game, startGame, startGameLoop } = useContext(GameContext);
   const { userData } = useContext(UserContext);
-  const history = useHistory();
+  useEffect(startGameLoop, [startGameLoop]);
+
   return (
     <>
       <Header>New Game</Header>
@@ -16,19 +16,16 @@ export default function GameStagingPage() {
         <p>You are logged in as {userData?.sub}</p>
         <p>So far these users have joined the game</p>
         <UlStyled>
-          {game.playerNames &&
-            Object.entries(game.playerNames).map(([key, value]) => (
-              <li key={key}>{value}</li>
-            ))}
+          {game?.players?.map((player) => (
+            <li key={player.id}>{player.name}</li>
+          ))}
         </UlStyled>
-        <ButtonStyled onClick={onStart}>Start Game!</ButtonStyled>
+        <ButtonStyled onClick={() => startGame(game.id)}>
+          Start Game!
+        </ButtonStyled>
       </GamePageStyled>
     </>
   );
-  function onStart() {
-    startGame(game.id);
-    history.push('/game/' + game.id);
-  }
 }
 const GamePageStyled = styled.div`
   display: grid;

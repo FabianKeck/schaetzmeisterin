@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import SignInPage from './components/pages/SignInPage';
 import GameContextProvider from './context/GameContextProvider';
-import GameStagingPage from './components/pages/GameStagingPage';
 import styled from 'styled-components/macro';
 import UserContextProvider from './context/UserContextProvider';
+import GamePage from './components/pages/GamePage';
+import SignInPage from './components/pages/SignInPage';
 
 export default function App() {
   return (
@@ -12,8 +12,8 @@ export default function App() {
       <GameContextProvider>
         <PageLayout>
           <Switch>
-            <Route path={'/game/staged/:gameid'} component={GameStagingPage} />
             <Route path={'/signin/:gameid?'} component={SignInPage} />
+            <Route path={'/game'} component={GamePage} />
           </Switch>
         </PageLayout>
       </GameContextProvider>

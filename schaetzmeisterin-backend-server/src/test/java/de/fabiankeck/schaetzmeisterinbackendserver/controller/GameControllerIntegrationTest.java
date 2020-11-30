@@ -1,21 +1,15 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -23,14 +17,13 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 
 
@@ -90,12 +83,7 @@ class GameControllerIntegrationTest {
         //then
 
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
-        assertThat(response.getBody(),is(
-                Game.builder().id(gameId)
-                        .playerActions(new HashMap<>(Map.of(user.getId(), GameAction.WAIT)))
-                        .playerNames(new HashMap<>(Map.of(user.getId(),user.getUsername())))
-                        .build()
-        ));
+        assertThat(Objects.requireNonNull(response.getBody()).getId(),is(gameId));
 
 
     }
@@ -117,7 +105,6 @@ class GameControllerIntegrationTest {
         restTemplate.exchange(createUrl, HttpMethod.POST, createRequest, Game.class);
 
         //when
-        HttpHeaders headers= new HttpHeaders();
         HttpEntity<Object> request = getValidAuthenticationEntity(null, username2, playerId2);
         String url = "http://localhost:"+port+"/api/game/signin/"+gameId;
         ResponseEntity<Game> response = restTemplate.exchange(url, HttpMethod.POST, request, Game.class);
@@ -125,6 +112,66 @@ class GameControllerIntegrationTest {
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getId(),is(gameId));
-        assertThat(response.getBody().getPlayerActions().keySet(),containsInAnyOrder(playerId1, playerId2));
+        assertThat(response.getBody().getPlayers().stream().map(Player::getId).collect(Collectors.toList()), containsInAnyOrder(playerId1, playerId2));
     }
+    @Test
+    @DisplayName("post on startGame should return updated Game")
+    public void startTest(){
+        //given
+        String gameId= "gameId";
+        String username1= "John";
+        String playerId1 = "123";
+
+        HttpEntity<Object> signInRequest = getValidAuthenticationEntity(null,username1,playerId1);
+        when(idUtils.createId()).thenReturn(gameId);
+        String signInUrl = "http://localhost:"+port+"/api/game/signin";
+        restTemplate.exchange(signInUrl, HttpMethod.POST, signInRequest, Game.class);
+        //when
+        String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
+        ResponseEntity<Game> response = restTemplate.exchange(startUrl, HttpMethod.POST, signInRequest, Game.class);
+
+        //then
+        assertThat(response.getStatusCode(),is(HttpStatus.OK));
+        assertThat(Objects.requireNonNull(response.getBody()).isStarted(),is(true));
+    }
+     @Test
+    @DisplayName("betRequest on startedGame should return updated Game")
+    public void betTest(){
+        //given
+        String gameId= "gameId";
+        String username1= "John";
+        String playerId1 = "123";
+
+        //sign in first user
+        HttpEntity<Object> firstSignInRequest = getValidAuthenticationEntity(null,username1,playerId1);
+        when(idUtils.createId()).thenReturn(gameId);
+        String signInUrl = "http://localhost:"+port+"/api/game/signin";
+        restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+
+        //signIn second user
+         String username2= "Doe";
+         String playerId2 = "456";
+         HttpEntity<Object> secondSignInRequest = getValidAuthenticationEntity(null,username2,playerId2);
+         String signInUrlId = "http://localhost:"+port+"/api/game/signin/"+gameId;
+         restTemplate.exchange(signInUrlId, HttpMethod.POST, secondSignInRequest, Game.class);
+
+
+         //startGame
+         String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
+         restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+        String betUrl = "http://localhost:"+port+"/api/game/bet/"+gameId;
+         ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+
+
+         //then
+        assertThat(response.getStatusCode(),is(HttpStatus.OK));
+        assertThat(Objects.requireNonNull(response.getBody()).getActivePlayerIndex(),is(1));
+    }
+    
+    
+
+
 }
