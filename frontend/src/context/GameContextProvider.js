@@ -7,9 +7,13 @@ import {
   getGame,
 } from '../service/GameService';
 import UserContext from '../context/UserContext';
+import {
+  loadGameDataFromLocalStorage,
+  saveGameDataToLocalStorage,
+} from '../service/LocalStorage';
 
 export default function GameContextProvider({ children }) {
-  const [game, setGame] = useState({});
+  const [game, setGame] = useState(loadGameDataFromLocalStorage);
   const { userSignIn, token } = useContext(UserContext);
 
   function signInGame(gameId, username) {
@@ -17,7 +21,7 @@ export default function GameContextProvider({ children }) {
       .then((token) => signInGamePost(token, gameId))
       .then((response) => response.data)
       .then((game) => {
-        console.log(game);
+        saveGameDataToLocalStorage(game);
         setGame(game);
         return game;
       });
@@ -25,6 +29,7 @@ export default function GameContextProvider({ children }) {
   const startGame = (gameId) =>
     startGamePost(token, gameId)
       .then((response) => response.data)
+      .then(saveGameDataToLocalStorage)
       .then(setGame);
 
   const startGameLoop = () =>
