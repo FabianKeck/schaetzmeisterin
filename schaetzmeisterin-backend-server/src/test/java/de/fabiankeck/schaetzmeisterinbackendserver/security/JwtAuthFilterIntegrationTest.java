@@ -1,13 +1,10 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.security;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
-import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
@@ -29,8 +25,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = "jwt.secretkey=somesecretkey")

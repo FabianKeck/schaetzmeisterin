@@ -1,9 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.SignInService;
+import de.fabiankeck.schaetzmeisterinbackendserver.service.SignInService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/signin")

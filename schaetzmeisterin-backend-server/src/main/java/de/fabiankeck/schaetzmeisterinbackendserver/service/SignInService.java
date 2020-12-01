@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.Service;
+package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;

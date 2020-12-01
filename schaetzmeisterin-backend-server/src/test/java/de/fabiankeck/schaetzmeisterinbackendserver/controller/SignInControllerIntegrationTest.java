@@ -1,6 +1,6 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import io.jsonwebtoken.Claims;

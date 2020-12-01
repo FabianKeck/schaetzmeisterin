@@ -1,6 +1,5 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.SignInService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.security.JwtUtils;

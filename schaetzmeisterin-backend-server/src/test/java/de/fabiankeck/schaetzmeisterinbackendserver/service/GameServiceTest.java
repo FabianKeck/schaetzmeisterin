@@ -1,6 +1,5 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
