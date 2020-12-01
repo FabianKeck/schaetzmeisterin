@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class Player {
     private String id;
     private String name;
+    private int cash;
+    private int currentBet;
 }
