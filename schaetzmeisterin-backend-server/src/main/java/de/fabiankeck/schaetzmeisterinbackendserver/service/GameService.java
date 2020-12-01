@@ -39,13 +39,13 @@ public class GameService {
     }
 
     public Game startGame(String gameId, String userId) {
-        Game game = getGameWithVaildUser(gameId,userId);
+        Game game = getGameWithValidUser(gameId,userId);
         game.setStarted(true);
         gameDao.save(game);
         return  game;
     }
     public Game bet(String gameId, String userId, int betValue) {
-        Game game = getGameWithVaildUser(gameId,userId);
+        Game game = getGameWithValidUser(gameId,userId);
         Player player = game.getPlayers().get(game.getActivePlayerIndex());
 
         if(player == null || !player.getId().equals(userId)){
@@ -77,11 +77,8 @@ public class GameService {
     }
 
     private void markNextPlayerActive(Game game) {
-        if(game.getActivePlayerIndex()>= game.getPlayers().size()-1){
-            game.setActivePlayerIndex(0);
-            return;
-        }
-        game.setActivePlayerIndex(game.getActivePlayerIndex()+1);
+        int nextPlayerIndex = (game.getActivePlayerIndex()+1) % game.getPlayers().size();
+        game.setActivePlayerIndex(nextPlayerIndex);
     }
 
 
@@ -106,14 +103,14 @@ public class GameService {
         }
         return gameDao.findById(gameId.get()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-    private Game getGameWithVaildUser(String gameId, String userId){
+
+    private Game getGameWithValidUser(String gameId, String userId){
         Game game = gameDao.findById(gameId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         game.getPlayers().stream().filter((player -> player.getId().equals(userId))).findAny().orElseThrow(()->new ResponseStatusException(HttpStatus.FORBIDDEN));
         return game;
     }
 
-
     public Game getGame(String gameId, String userId) {
-        return getGameWithVaildUser(gameId,userId);
+        return getGameWithValidUser(gameId,userId);
     }
 }
