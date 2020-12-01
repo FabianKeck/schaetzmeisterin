@@ -1,10 +1,9 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.security.Principal;
 import java.util.Optional;
