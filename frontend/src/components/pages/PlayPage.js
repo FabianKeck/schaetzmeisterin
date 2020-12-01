@@ -10,7 +10,7 @@ export default function PlayPage() {
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(game?.players[game.activePlayerIndex].id === userData.playerId);
-  }, [game]);
+  }, [game, userData.playerId]);
 
   return (
     <>
