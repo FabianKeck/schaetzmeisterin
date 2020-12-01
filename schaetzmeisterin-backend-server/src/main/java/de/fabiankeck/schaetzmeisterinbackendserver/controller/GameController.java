@@ -28,8 +28,8 @@ public class GameController {
     }
 
     @PostMapping("/bet/{gameId}")
-    public Game bet(@PathVariable String gameId, Principal principal){
-        return gameService.bet(gameId,principal.getName());
+    public Game bet(@PathVariable String gameId, @RequestBody int betValue, Principal principal){
+        return gameService.bet(gameId,principal.getName(),betValue);
     }
 
     @GetMapping("{gameId}")

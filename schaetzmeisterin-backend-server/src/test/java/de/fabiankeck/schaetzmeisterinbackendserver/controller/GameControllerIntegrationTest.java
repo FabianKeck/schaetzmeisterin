@@ -135,15 +135,19 @@ class GameControllerIntegrationTest {
         assertThat(Objects.requireNonNull(response.getBody()).isStarted(),is(true));
     }
      @Test
-    @DisplayName("betRequest on startedGame should return updated Game")
+    @DisplayName("betRequest on startedGame with BetValue in correct range should return updated Game")
     public void betTest(){
         //given
         String gameId= "gameId";
         String username1= "John";
         String playerId1 = "123";
+        String user1Token = login(username1,playerId1);
+        int betValue =2;
 
         //sign in first user
-        HttpEntity<Object> firstSignInRequest = getValidAuthenticationEntity(null,username1,playerId1);
+         HttpHeaders firstUserAuthHeaders = new HttpHeaders();
+         firstUserAuthHeaders.setBearerAuth(user1Token);
+        HttpEntity<Object> firstSignInRequest = new HttpEntity<>(null,firstUserAuthHeaders);
         when(idUtils.createId()).thenReturn(gameId);
         String signInUrl = "http://localhost:"+port+"/api/game/signin";
         restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
@@ -161,14 +165,17 @@ class GameControllerIntegrationTest {
          String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
          restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
 
+         //when
+         HttpEntity<Integer> betEntity = new HttpEntity<>(betValue, firstUserAuthHeaders);
         String betUrl = "http://localhost:"+port+"/api/game/bet/"+gameId;
-         ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+         ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, betEntity, Game.class);
 
 
 
          //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getActivePlayerIndex(),is(1));
+        assertThat(response.getBody().getPlayers().get(0).getCurrentBet(),is(betValue));
     }
     
     
