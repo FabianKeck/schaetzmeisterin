@@ -4,14 +4,12 @@ import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.GameAction;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.method.P;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -46,7 +44,7 @@ class GameServiceTest {
 
         Game expected = Game.builder()
                 .id( gameId)
-                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).build()))
+                .players(List.of(Player.builder().id(user.getId()).cash(100).name(user.getUsername()).build()))
                 .build();
 
         //when
@@ -69,13 +67,13 @@ class GameServiceTest {
         when(idUtils.createId()).thenReturn(gameId);
         Game initial= Game.builder()
                 .id(gameId)
-                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build())))
+                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).cash(100).name(initialUser.getUsername()).build())))
                 .build();
         Game updated =  Game.builder()
                 .id(gameId)
                 .players(List.of(
-                        Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build(),
-                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).build()
+                        Player.builder().id(initialUser.getId()).cash(100).name(initialUser.getUsername()).build(),
+                        Player.builder().id(userToAdd.getId()).cash(100).name(userToAdd.getUsername()).build()
                 ))
                 .build();
         //when
@@ -167,28 +165,78 @@ class GameServiceTest {
         }
     }
     @Test
-    @DisplayName(" Bet with valid user should update game")
+    @DisplayName(" Bet with valid user  and correct bet should update game")
     public void BetWithValidUserTest(){
         String gameId ="gameId";
-        SmUser firstUSer = SmUser.builder().id("123").username("Jane").build();
+        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
         SmUser secondUser= SmUser.builder().id("456").username("John").build();
+        int betValue= 2;
+        int initialCash =100;
 
         Game game= Game.builder()
                 .id(gameId)
                 .players(List.of(
-                        Player.builder().id(firstUSer.getId()).name(firstUSer.getUsername()).build(),
-                        Player.builder().id(secondUser  .getId()).name(secondUser.getUsername()).build()
+                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(initialCash).build(),
+                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(initialCash).build()
                 ))
                 .activePlayerIndex(0)
                 .started(true)
                 .build();
         when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
 
-        Game actual = gameService.bet(gameId,firstUSer.getId());
+        Game actual = gameService.bet(gameId,firstUser.getId(), betValue);
 
         assertThat(actual.getActivePlayerIndex(),is(1));
+        assertThat(actual.getPlayers().get(0).getCurrentBet(),is(betValue));
+        assertThat(actual.getPlayers().get(0).getCash(),is(initialCash-betValue));
         verify(gameDao).save(actual);
 
+    }
+    @Test
+    @DisplayName(" Bet with valid user and too small bet should throw")
+    public void BetWithTooSmallBet(){
+        String gameId ="gameId";
+        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
+        SmUser secondUser= SmUser.builder().id("456").username("John").build();
+        int betValue= 1;
+
+        Game game= Game.builder()
+                .id(gameId)
+                .players(List.of(
+                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
+                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
+                ))
+                .activePlayerIndex(0)
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+        assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
+        verify(gameDao, never()).save(any());
+    }
+    @Test
+    @DisplayName(" Bet with valid user and too Large bet should throw")
+    public void BetWithTooLargeBet(){
+        String gameId ="gameId";
+        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
+        SmUser secondUser= SmUser.builder().id("456").username("John").build();
+        int betValue= 101;
+
+        Game game= Game.builder()
+                .id(gameId)
+                .players(List.of(
+                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
+                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
+                ))
+                .activePlayerIndex(0)
+                .started(true)
+                .build();
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
+
+
+
+        assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
+        verify(gameDao, never()).save(any());
     }
 
   @Test
@@ -197,12 +245,13 @@ class GameServiceTest {
         String gameId ="gameId";
         SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
         SmUser secondUser= SmUser.builder().id("456").username("John").build();
+        int betValue = 2;
 
         Game game= Game.builder()
                 .id(gameId)
                 .players(List.of(
-                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).build(),
-                        Player.builder().id(secondUser  .getId()).name(secondUser.getUsername()).build()
+                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
+                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
                 ))
                 .activePlayerIndex(0)
                 .started(true)
@@ -210,7 +259,7 @@ class GameServiceTest {
         when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
 
 
-      assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId()));
+      assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
       verify(gameDao, never()).save(any());
 
 
