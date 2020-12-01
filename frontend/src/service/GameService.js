@@ -16,7 +16,7 @@ export const startGamePost = (token, gameId) => {
 };
 
 export const betPost = (token, gameId, betValue) =>
-  axios.post('/api/game/bet/' + gameId, betValue, header(token));
+  axios.post('/api/game/bet/' + gameId, { betValue }, header(token));
 
 export const getGame = (token, gameId) =>
   axios.get('/api/game/' + gameId, header(token));

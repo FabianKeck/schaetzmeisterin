@@ -1,6 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Service.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -28,8 +29,8 @@ public class GameController {
     }
 
     @PostMapping("/bet/{gameId}")
-    public Game bet(@PathVariable String gameId, @RequestBody int betValue, Principal principal){
-        return gameService.bet(gameId,principal.getName(),betValue);
+    public Game bet(@PathVariable String gameId, @RequestBody BetDto bet, Principal principal){
+        return gameService.bet(gameId,principal.getName(),bet.getBetValue());
     }
 
     @GetMapping("{gameId}")

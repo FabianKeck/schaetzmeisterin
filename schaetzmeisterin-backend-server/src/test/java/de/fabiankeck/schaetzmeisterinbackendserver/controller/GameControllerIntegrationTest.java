@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
@@ -166,7 +167,7 @@ class GameControllerIntegrationTest {
          restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
 
          //when
-         HttpEntity<Integer> betEntity = new HttpEntity<>(betValue, firstUserAuthHeaders);
+         HttpEntity<BetDto> betEntity = new HttpEntity<>(new BetDto(betValue), firstUserAuthHeaders);
         String betUrl = "http://localhost:"+port+"/api/game/bet/"+gameId;
          ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, betEntity, Game.class);
 
