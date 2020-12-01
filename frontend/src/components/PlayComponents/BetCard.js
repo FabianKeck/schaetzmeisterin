@@ -7,7 +7,6 @@ export default function BetCard({ bet, minBet, cash }) {
   const [betToLarge, setBetTooLarge] = useState(false);
 
   useEffect(() => {
-    //is this necessary, because otherwise it would not update when the minBet and cash change?
     setBetTooLarge(betValue > cash);
     setBetTooSmall(betValue < minBet);
   }, [betValue, cash, minBet]);
