@@ -38,8 +38,8 @@ export default function GameContextProvider({ children }) {
       5000
     );
 
-  const bet = () =>
-    betPost(token, game.id)
+  const bet = (betValue) =>
+    betPost(token, game.id, betValue)
       .then((response) => response.data)
       .then(setGame);
 
