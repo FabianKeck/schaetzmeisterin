@@ -6,5 +6,6 @@ import PlayPage from './PlayPage';
 export default function GamePage() {
   const { game } = useContext(GameContext);
 
+  if (!game) return null;
   return game?.started ? <PlayPage /> : <GameStagingPage />;
 }

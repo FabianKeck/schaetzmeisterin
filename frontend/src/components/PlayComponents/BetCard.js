@@ -12,7 +12,7 @@ export default function BetCard({ bet, minBet, cash }) {
   }, [betValue, cash, minBet]);
 
   return (
-    <BetCardStyled>
+    <BetCardStyled active={!!bet}>
       <div> your cash: {cash}</div>
       <div>Minimum Bet: {minBet}</div>
       {bet && (
@@ -23,6 +23,12 @@ export default function BetCard({ bet, minBet, cash }) {
           </label>
           <button disabled={betTooSmall || betToLarge}> Bet!</button>
         </form>
+      )}
+      {betTooSmall && (
+        <div>Your Bet is too small. Please enter a larger bet</div>
+      )}
+      {betToLarge && (
+        <div> Your bet exceeds your cash. Please enter a smaller Bet</div>
       )}
     </BetCardStyled>
   );
@@ -37,7 +43,8 @@ export default function BetCard({ bet, minBet, cash }) {
 }
 
 const BetCardStyled = styled.div`
-  background-color: var(--blue-25);
+  background-color: ${(props) =>
+    props.active ? 'var(--green-main)' : 'var(--blue-25)'};
   border-radius: var(--size-s);
   display: grid;
   grid-gap: var(--size-s);
