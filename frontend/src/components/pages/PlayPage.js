@@ -5,6 +5,7 @@ import GameContext from '../../context/GameContext';
 import BetCard from '../PlayComponents/BetCard';
 import PlayerCard from '../PlayComponents/PlayerCard';
 import styled from 'styled-components/macro';
+import PotInfo from '../PlayComponents/PotInfo';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -12,13 +13,14 @@ export default function PlayPage() {
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
+    // eslint-disable-next-line
   }, [game, userData.playerId]);
 
   return (
     <PlayPageStyled>
       <Header>Playing</Header>
       <body>
-
+        <PotInfo value={calcPot()} />
         <BetCard
           bet={active && bet}
           minBet={calcMinBet()}
@@ -43,6 +45,12 @@ export default function PlayPage() {
   }
   function isActive(id) {
     return id === game.players[game.activePlayerIndex].id;
+  }
+
+  function calcPot() {
+    return game.players
+      .map((player) => player.currentBet)
+      .reduce((sum, bet) => sum + bet);
   }
 }
 const PlayPageStyled = styled.div`
