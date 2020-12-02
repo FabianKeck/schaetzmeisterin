@@ -20,28 +20,36 @@ export default function GameContextProvider({ children }) {
     return userSignIn(username)
       .then((token) => signInGamePost(token, gameId))
       .then((response) => response.data)
-      .then((game) => {
-        saveGameDataToLocalStorage(game);
-        setGame(game);
-        return game;
-      });
+      .then(setGameAndSaveToLocalStorage);
   }
+
   const startGame = (gameId) =>
     startGamePost(token, gameId)
       .then((response) => response.data)
-      .then(saveGameDataToLocalStorage)
-      .then(setGame);
+      .then(setGameAndSaveToLocalStorage);
 
   const startGameLoop = () =>
     setInterval(
-      () => getGame(token, game.id).then((response) => setGame(response.data)),
+      () =>
+        getGame(token, game.id)
+          .then((response) => {
+            setGame(response.data);
+            return response.data;
+          })
+          .then(setGameAndSaveToLocalStorage),
       5000
     );
 
   const bet = (betValue) =>
     betPost(token, game.id, betValue)
       .then((response) => response.data)
-      .then(setGame);
+      .then(setGameAndSaveToLocalStorage);
+
+  function setGameAndSaveToLocalStorage(game) {
+    setGame(game);
+    saveGameDataToLocalStorage(game);
+    return game;
+  }
 
   return (
     <GameContext.Provider
