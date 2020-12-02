@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import backgroundImage from './assets/background.svg';
 
 export default createGlobalStyle`
   :root{
@@ -31,6 +32,14 @@ export default createGlobalStyle`
     margin: 0;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 
+  }
+  
+  body{
+    background-color: var(--brown-25);
+    background-image: url(${backgroundImage});
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
   }
   
     input, textarea {

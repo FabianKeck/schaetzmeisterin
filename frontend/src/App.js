@@ -25,5 +25,4 @@ const PageLayout = styled.div`
   display: grid;
   grid-template-rows: min-content 1fr;
   height: 100vh;
-  background-color: var(--brown-25);
 `;
