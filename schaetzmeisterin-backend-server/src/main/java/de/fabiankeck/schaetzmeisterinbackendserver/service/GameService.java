@@ -67,13 +67,14 @@ public class GameService {
     }
     private boolean betValueIsInAcceptableRange(Game game, Player player, int betValue){
         boolean betValueIsSmallerThanOrEqualsPlayerCash = betValue <= player.getCash();
-        boolean betValueIsLargerThanOrEqualsLargestCurrentBet = betValue >= game.getPlayers().
+        boolean betValueIsLargerThanOrEqualsMinimumBet = betValue >= game.getPlayers().
                 stream().
                 map((Player::getCurrentBet))
                 .mapToInt(Integer::intValue)
                 .max()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return betValueIsSmallerThanOrEqualsPlayerCash && betValueIsLargerThanOrEqualsLargestCurrentBet;
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                - player.getCurrentBet();
+        return betValueIsSmallerThanOrEqualsPlayerCash && betValueIsLargerThanOrEqualsMinimumBet;
     }
 
     private void markNextPlayerActive(Game game) {
