@@ -21,5 +21,6 @@ public class Game {
     private boolean started =false;
     private int activePlayerIndex;
     private List<Player> players;
+    private BetSession betSession;
 
 }
