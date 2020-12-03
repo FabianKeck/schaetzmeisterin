@@ -8,7 +8,7 @@ export default function GamePage() {
   useEffect(() => {
     startGameLoop();
     return stopGameLoop;
-    // the game Loop should really be only started, when the component ist mounted
+    // ignore changes to: startGameLoop, stopGameLoop
     // eslint-disable-next-line
   }, []);
 
