@@ -22,9 +22,10 @@ export default function PlayPage() {
       <body>
         <PotInfo value={calcPot()} />
         <BetCard
-          bet={active && bet}
+          bet={bet}
           minBet={calcMinBet()}
           cash={getPlayerData().cash}
+          active={active}
         />
         {game.players
           .filter((player) => player.id !== userData.playerId)
@@ -50,7 +51,7 @@ export default function PlayPage() {
   function calcPot() {
     return game.players
       .map((player) => player.currentBet)
-      .reduce((sum, bet) => sum + bet);
+      .reduce((sum, currentBet) => sum + currentBet);
   }
 }
 const PlayPageStyled = styled.div`
