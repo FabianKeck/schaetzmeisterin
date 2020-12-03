@@ -1,11 +1,17 @@
 import React from 'react';
 import styled from 'styled-components/macro';
+import { FaDollarSign, FaUser } from 'react-icons/fa';
 
 export default function PlayerCard({ player, active }) {
   return (
     <PlayerCardStyled active={active}>
-      <p>{player.name}:</p>
-      <p>cash: {player.cash}</p>
+      <p>
+        <FaUser /> {player.name}
+      </p>
+      <p>
+        {' '}
+        <FaDollarSign /> : {player.cash}
+      </p>
       <p>bet: {player.currentBet}</p>
     </PlayerCardStyled>
   );

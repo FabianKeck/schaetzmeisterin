@@ -61,6 +61,7 @@ const PlayPageStyled = styled.div`
 
   body {
     display: grid;
+    overflow: scroll;
     grid-gap: var(--size-xs);
     padding: 0 var(--size-xs);
   }

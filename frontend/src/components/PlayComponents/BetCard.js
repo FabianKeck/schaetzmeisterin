@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import ActionButton from '../commons/ActionButton';
 import Input from '../commons/Input';
+import { FaDollarSign } from 'react-icons/fa';
 
 export default function BetCard({ bet, fold, minBet, cash, active }) {
   const [betValue, setBetValue] = useState(minBet);
@@ -15,10 +16,13 @@ export default function BetCard({ bet, fold, minBet, cash, active }) {
 
   return (
     <BetCardStyled active={active}>
-      <p> your cash: {cash}</p>
-      <p>Minimum Bet: {minBet}</p>
+      <p>
+        {' '}
+        <FaDollarSign /> : {cash}
+      </p>
       {active && (
         <>
+          <p>Minimum Bet: {minBet}</p>
           {minBet ? (
             <ActionButton onClick={handleCall}>call</ActionButton>
           ) : (
