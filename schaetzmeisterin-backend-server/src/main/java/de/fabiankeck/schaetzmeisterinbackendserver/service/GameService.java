@@ -62,8 +62,14 @@ public class GameService {
         markNextPlayerActive(game);
         gameDao.save(game);
         return game;
+    }
 
+    public Game getGame(String gameId, String userId) {
+        return getGameWithValidUser(gameId,userId);
+    }
 
+    public Game fold(String gameId, String playerId) {
+        return null;
     }
     private boolean betValueIsInAcceptableRange(Game game, Player player, int betValue){
         boolean betValueIsSmallerThanOrEqualsPlayerCash = betValue <= player.getCash();
@@ -111,7 +117,4 @@ public class GameService {
         return game;
     }
 
-    public Game getGame(String gameId, String userId) {
-        return getGameWithValidUser(gameId,userId);
-    }
 }

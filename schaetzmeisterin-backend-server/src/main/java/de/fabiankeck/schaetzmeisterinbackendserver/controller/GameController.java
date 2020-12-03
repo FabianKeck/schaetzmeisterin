@@ -32,6 +32,11 @@ public class GameController {
         return gameService.bet(gameId,principal.getName(),bet.getBetValue());
     }
 
+    @PostMapping("/fold/{gameId}")
+    public Game fold(@PathVariable String gameId, Principal principal){
+        return gameService.fold( gameId, principal.getName());
+    }
+
     @GetMapping("{gameId}")
     public Game getGame(@PathVariable String gameId, Principal principal){
         return gameService.getGame(gameId,principal.getName());
