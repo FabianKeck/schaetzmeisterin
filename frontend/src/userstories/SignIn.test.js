@@ -16,9 +16,25 @@ describe('Sign in integration-test:', () => {
     const game = { id: 'gameId', players: [{ name: playerName }] };
     //then
     axios.get = jest.fn(
-      () =>
+      (url) =>
         new Promise((resolved) => {
-          resolved({ data: generateValidToken(playerName, playerId) });
+          resolved({
+            data: url.match(/signin/i)
+              ? generateValidToken(playerName, playerId)
+              : {
+                  id: '54359cc6-3e96-49ad-986e-fc8eeb5d6235',
+                  started: false,
+                  activePlayerIndex: 0,
+                  players: [
+                    {
+                      id: '6ac4a3a2-3808-411c-965d-7370affbe32d',
+                      name: '123',
+                      cash: 100,
+                      currentBet: 0,
+                    },
+                  ],
+                },
+          });
         })
     );
     axios.post = jest.fn(

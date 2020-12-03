@@ -1,13 +1,12 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
 
 export default function GameStagingPage() {
-  const { game, startGame, startGameLoop } = useContext(GameContext);
+  const { game, startGame } = useContext(GameContext);
   const { userData } = useContext(UserContext);
-  useEffect(startGameLoop, [startGameLoop]);
 
   return (
     <>
