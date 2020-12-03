@@ -35,7 +35,7 @@ export default function PlayPage() {
     </PlayPageStyled>
   );
   function getPlayerData() {
-    return game?.players?.find((player) => player.id === userData.playerId);
+    return game.players.find((player) => player.id === userData.playerId);
   }
   function calcMinBet() {
     return (
