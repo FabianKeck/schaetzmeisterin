@@ -9,7 +9,7 @@ import PotInfo from '../PlayComponents/PotInfo';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
-  const { game, bet } = useContext(GameContext);
+  const { game, bet, fold } = useContext(GameContext);
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
@@ -23,6 +23,7 @@ export default function PlayPage() {
         <PotInfo value={calcPot()} />
         <BetCard
           bet={bet}
+          fold={fold}
           minBet={calcMinBet()}
           cash={getPlayerData().cash}
           active={active}
