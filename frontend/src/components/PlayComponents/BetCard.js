@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
-export default function BetCard({ bet, minBet, cash }) {
+export default function BetCard({ bet, fold, minBet, cash }) {
   const [betValue, setBetValue] = useState(minBet);
   const [betTooSmall, setBetTooSmall] = useState(false);
   const [betToLarge, setBetTooLarge] = useState(false);
@@ -15,20 +15,28 @@ export default function BetCard({ bet, minBet, cash }) {
     <BetCardStyled active={!!bet}>
       <div> your cash: {cash}</div>
       <div>Minimum Bet: {minBet}</div>
-      {bet && (
-        <form onSubmit={handleSubmit}>
-          <label>
-            {' '}
-            YourBet: <input value={betValue} onChange={handleChange} />
-          </label>
-          <button disabled={betTooSmall || betToLarge}> Bet!</button>
-        </form>
-      )}
-      {betTooSmall && (
-        <div>Your Bet is too small. Please enter a larger bet</div>
-      )}
-      {betToLarge && (
-        <div> Your bet exceeds your cash. Please enter a smaller Bet</div>
+      {!!bet && (
+        <>
+          <form onSubmit={handleSubmit}>
+            <label>
+              {' '}
+              YourBet: <input value={betValue} onChange={handleChange} />
+            </label>
+            <button disabled={betTooSmall || betToLarge}> raise</button>
+          </form>
+          {minBet ? (
+            <button onClick={handleCall}>call</button>
+          ) : (
+            <button onClick={bet(0)}>check</button>
+          )}
+          <button onClick={fold}> fold</button>
+          {betTooSmall && (
+            <div>Your Bet is too small. Please enter a larger bet</div>
+          )}
+          {betToLarge && (
+            <div> Your bet exceeds your cash. Please enter a smaller Bet</div>
+          )}
+        </>
       )}
     </BetCardStyled>
   );
@@ -36,9 +44,19 @@ export default function BetCard({ bet, minBet, cash }) {
   function handleChange(event) {
     setBetValue(event.target.value);
   }
+
   function handleSubmit(event) {
     event.preventDefault();
+    if (betToLarge || betTooSmall) {
+      return;
+    }
     bet(betValue);
+  }
+  function handleCall() {
+    if (minBet > cash) {
+      return;
+    }
+    bet(minBet);
   }
 }
 
