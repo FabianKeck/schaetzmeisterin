@@ -29,16 +29,18 @@ export default function GameContextProvider({ children }) {
       .then((response) => response.data)
       .then(setGameAndSaveToLocalStorage);
 
-  const startGameLoop = () =>
-    setGameLoopId(
-      setInterval(
-        () =>
-          getGame(token, game.id)
-            .then((response) => response.data)
-            .then(setGameAndSaveToLocalStorage),
-        5000
-      )
-    );
+  const startGameLoop = () => {
+    gameLoopId ||
+      setGameLoopId(
+        setInterval(
+          () =>
+            getGame(token, game.id)
+              .then((response) => response.data)
+              .then(setGameAndSaveToLocalStorage),
+          5000
+        )
+      );
+  };
 
   const stopGameLoop = () => {
     clearInterval(gameLoopId);

@@ -8,7 +8,9 @@ export default function GamePage() {
   useEffect(() => {
     startGameLoop();
     return stopGameLoop;
-  }, [startGameLoop, stopGameLoop]);
+    // the game Loop should really be only started, when the component ist mounted
+    // eslint-disable-next-line
+  }, []);
 
   if (!game) return null;
   return game?.started ? <PlayPage /> : <GameStagingPage />;
