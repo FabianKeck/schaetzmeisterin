@@ -15,6 +15,7 @@ import {
 export default function GameContextProvider({ children }) {
   const [game, setGame] = useState(loadGameDataFromLocalStorage);
   const { userSignIn, token } = useContext(UserContext);
+  const [gameLoopId, setGameLoopId] = useState(0);
 
   function signInGame(gameId, username) {
     return userSignIn(username)
@@ -29,16 +30,20 @@ export default function GameContextProvider({ children }) {
       .then(setGameAndSaveToLocalStorage);
 
   const startGameLoop = () =>
-    setInterval(
-      () =>
-        getGame(token, game.id)
-          .then((response) => {
-            setGame(response.data);
-            return response.data;
-          })
-          .then(setGameAndSaveToLocalStorage),
-      5000
+    setGameLoopId(
+      setInterval(
+        () =>
+          getGame(token, game.id)
+            .then((response) => response.data)
+            .then(setGameAndSaveToLocalStorage),
+        5000
+      )
     );
+
+  const stopGameLoop = () => {
+    clearInterval(gameLoopId);
+    setGameLoopId(0);
+  };
 
   const bet = (betValue) =>
     betPost(token, game.id, betValue)
@@ -53,7 +58,7 @@ export default function GameContextProvider({ children }) {
 
   return (
     <GameContext.Provider
-      value={{ game, signInGame, startGame, bet, startGameLoop }}
+      value={{ game, signInGame, startGame, bet, startGameLoop, stopGameLoop }}
     >
       {children}
     </GameContext.Provider>
