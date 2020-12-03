@@ -27,7 +27,8 @@ class GameServiceTest {
     IdUtils idUtils = mock(IdUtils.class);
     SmUserDao userDao= mock(SmUserDao.class);
     GameDao gameDao = mock(GameDao.class);
-    GameService gameService = new GameService(gameDao, idUtils, userDao);
+    BetSessionService betSessionService = mock(BetSessionService.class);
+    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -114,13 +115,9 @@ class GameServiceTest {
         Game actual = gameService.startGame(gameId, initialUser.getId());
 
         //then
-        Game expected = Game.builder()
-                .id(gameId)
-                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
-                .started(true)
-                .build();
-        assertThat(actual, is(expected));
-        verify(gameDao).save(expected);
+        assertThat(actual.getId(), is(gameId));
+        assertThat(actual.isStarted(),is(true));
+        verify(gameDao).save(any());
 
     }
      @Test
@@ -260,9 +257,6 @@ class GameServiceTest {
 
       assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
       verify(gameDao, never()).save(any());
-
-
-
     }
 
 }

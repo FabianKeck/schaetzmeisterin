@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class BetSession {
-    private int ActivePlayerIndex;
+    private int activePlayerIndex;
     private List<BetSessionPlayer> players;
 }

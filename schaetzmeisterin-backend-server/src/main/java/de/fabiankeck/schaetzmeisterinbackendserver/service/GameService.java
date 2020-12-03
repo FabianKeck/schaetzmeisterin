@@ -2,6 +2,8 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -18,13 +21,15 @@ public class GameService {
     private final GameDao gameDao;
     private final IdUtils idUtils;
     private final SmUserDao userDao;
+    private final BetSessionService betSessionService;
 
 
     @Autowired
-    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao) {
+    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;
         this.userDao = userDao;
+        this.betSessionService = betSessionService;
     }
 
 
@@ -41,25 +46,14 @@ public class GameService {
     public Game startGame(String gameId, String userId) {
         Game game = getGameWithValidUser(gameId,userId);
         game.setStarted(true);
+        game.setBetSession(initBetSession(game));
         gameDao.save(game);
         return  game;
     }
+
     public Game bet(String gameId, String userId, int betValue) {
         Game game = getGameWithValidUser(gameId,userId);
-        Player player = game.getPlayers().get(game.getActivePlayerIndex());
-
-        if(player == null || !player.getId().equals(userId)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        if(!betValueIsInAcceptableRange(game,player,betValue)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        player.setCurrentBet(player.getCurrentBet()+betValue);
-        player.setCash(player.getCash()-betValue);
-
-        markNextPlayerActive(game);
+        betSessionService.bet(game.getBetSession(), userId, betValue);
         gameDao.save(game);
         return game;
     }
@@ -69,23 +63,9 @@ public class GameService {
     }
 
     public Game fold(String gameId, String playerId) {
-        return null;
-    }
-    private boolean betValueIsInAcceptableRange(Game game, Player player, int betValue){
-        boolean betValueIsSmallerThanOrEqualsPlayerCash = betValue <= player.getCash();
-        boolean betValueIsLargerThanOrEqualsMinimumBet = betValue >= game.getPlayers().
-                stream().
-                map((Player::getCurrentBet))
-                .mapToInt(Integer::intValue)
-                .max()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                - player.getCurrentBet();
-        return betValueIsSmallerThanOrEqualsPlayerCash && betValueIsLargerThanOrEqualsMinimumBet;
-    }
-
-    private void markNextPlayerActive(Game game) {
-        int nextPlayerIndex = (game.getActivePlayerIndex()+1) % game.getPlayers().size();
-        game.setActivePlayerIndex(nextPlayerIndex);
+        Game game = getGameWithValidUser(gameId,playerId);
+        betSessionService.fold(game.getBetSession(),playerId);
+        return game;
     }
 
 
@@ -101,6 +81,17 @@ public class GameService {
                 .id(idUtils.createId())
                 .players(new ArrayList<>())
                 .build();
+    }
+
+    private BetSession initBetSession(Game game) {
+        List<BetSessionPlayer> betSessionPlayers = game.getPlayers().stream()
+                .map(player -> BetSessionPlayer.builder()
+                        .id(player.getId())
+                        .name(player.getName())
+                        .cash(100)
+                        .build())
+                .collect(Collectors.toList());
+        return BetSession.builder().players(betSessionPlayers).build();
     }
 
 
