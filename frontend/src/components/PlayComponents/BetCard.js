@@ -12,7 +12,7 @@ export default function BetCard({ bet, fold, minBet, cash }) {
   }, [betValue, cash, minBet]);
 
   return (
-    <BetCardStyled active={!!bet}>
+    <BetCardStyled active={bet}>
       <div> your cash: {cash}</div>
       <div>Minimum Bet: {minBet}</div>
       {!!bet && (
