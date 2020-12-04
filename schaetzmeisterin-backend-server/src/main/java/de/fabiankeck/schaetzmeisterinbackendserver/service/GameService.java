@@ -72,7 +72,7 @@ public class GameService {
     private void addPlayer(Game game, String userId){
 
         String username = userDao.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUsername();
-        game.getPlayers().add(Player.builder().id(userId).name(username).cash(100).build());
+        game.getPlayers().add(Player.builder().id(userId).name(username).build());
         gameDao.save(game);
     }
 
