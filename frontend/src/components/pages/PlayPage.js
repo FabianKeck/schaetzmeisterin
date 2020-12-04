@@ -28,7 +28,7 @@ export default function PlayPage() {
           cash={getPlayerData().cash}
           active={active}
         />
-        {game.players
+        {game.betSession.players
           .filter((player) => player.id !== userData.playerId)
           .map((player) => (
             <PlayerCard player={player} active={isActive(player.id)} />
@@ -37,20 +37,22 @@ export default function PlayPage() {
     </PlayPageStyled>
   );
   function getPlayerData() {
-    return game.players.find((player) => player.id === userData.playerId);
+    return game.betSession.players.find(
+      (player) => player.id === userData.playerId
+    );
   }
   function calcMinBet() {
     return (
-      Math.max(...game.players.map((player) => player.currentBet)) -
+      Math.max(...game.betSession.players.map((player) => player.currentBet)) -
       getPlayerData().currentBet
     );
   }
   function isActive(id) {
-    return id === game.players[game.activePlayerIndex].id;
+    return id === game.betSession.players[game.betSession.activePlayerIndex].id;
   }
 
   function calcPot() {
-    return game.players
+    return game.betSession.players
       .map((player) => player.currentBet)
       .reduce((sum, currentBet) => sum + currentBet);
   }
