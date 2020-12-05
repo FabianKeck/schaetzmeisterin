@@ -20,6 +20,7 @@ export default function PlayerCard({ player, index }) {
 
 const PlayerCardStyled = styled.div`
   border: 1px solid var(--color-golden);
+  font-size: smaller;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -44,8 +45,8 @@ const PlayerCardStyled = styled.div`
 const ShadowDummy = styled.div`
   position: absolute;
   width: 100%;
-  height: 15%;
-  background-color: var(--color-main);
+  height: 7%;
+  background-color: transparent;
   border-radius: var(--size-s);
   bottom: 0;
   box-shadow: 0 var(--size-m) var(--size-m) #222;
