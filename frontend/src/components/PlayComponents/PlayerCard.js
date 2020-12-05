@@ -13,11 +13,13 @@ export default function PlayerCard({ player, index }) {
         {player.cash}
       </p>
       <p>bet: {player.currentBet}</p>
+      <ShadowDummy />
     </PlayerCardStyled>
   );
 }
 
 const PlayerCardStyled = styled.div`
+  border: 1px solid var(--color-golden);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -38,4 +40,14 @@ const PlayerCardStyled = styled.div`
   p {
     margin: 0;
   }
+`;
+const ShadowDummy = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 15%;
+  background-color: var(--color-main);
+  border-radius: var(--size-s);
+  bottom: 0;
+  box-shadow: 0 var(--size-m) var(--size-m) #222;
+  z-index: -1;
 `;

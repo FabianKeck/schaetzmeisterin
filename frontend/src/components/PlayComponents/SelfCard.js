@@ -81,6 +81,7 @@ const SelfCardStyled = styled.div`
   grid-auto-rows: 1fr;
   padding: var(--size-s);
   box-shadow: 2px 2px 2px #222;
+  border: 1px solid var(--color-golden);
 `;
 const Info = styled.div``;
 
