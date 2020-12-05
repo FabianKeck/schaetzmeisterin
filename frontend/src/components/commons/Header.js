@@ -18,5 +18,6 @@ const HeaderStyled = styled.header`
 
 const HeadingStyled = styled.h1`
   margin: 0;
-  color: white;
+  color: var(--color-golden);
+  letter-spacing: 4px;
 `;

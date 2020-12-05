@@ -24,8 +24,7 @@ export default createGlobalStyle`
   
   html, body {
     margin: 0;
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-
+    font-family: 'EB Garamond', serif;
   }
   
   body{
@@ -35,14 +34,13 @@ export default createGlobalStyle`
   background-image: url(${backgroundImage});
     background-repeat: no-repeat;
     background-position: center bottom;
-    background-size: cover;
+    background-size: auto 100%;
+    background-color: var(--color-main);
   }
   
     input, textarea {
     font-size: 1em;
     font-family: inherit;
   }
-  html{
-  justify-content: center;
-  }
+ 
 `;
