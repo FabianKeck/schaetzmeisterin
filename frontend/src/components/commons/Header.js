@@ -12,7 +12,8 @@ export default function Header({ children }) {
 const HeaderStyled = styled.header`
   display: flex;
   justify-content: center;
-  background: var(--blue-main);
+  background: var(--color-main);
+  padding: var(--size-s);
 `;
 
 const HeadingStyled = styled.h1`

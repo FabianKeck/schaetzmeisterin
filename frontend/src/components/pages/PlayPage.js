@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import Header from '../commons/Header';
 import UserContext from '../../context/UserContext';
 import GameContext from '../../context/GameContext';
-import BetCard from '../PlayComponents/BetCard';
-import PlayerCard from '../PlayComponents/PlayerCard';
+import SelfCard from '../PlayComponents/SelfCard';
 import styled from 'styled-components/macro';
-import PotInfo from '../PlayComponents/PotInfo';
+import CardTable from '../PlayComponents/CardTable';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -17,24 +16,25 @@ export default function PlayPage() {
   }, [game, userData.playerId]);
 
   return (
-    <PlayPageStyled>
+    <>
       <Header>Playing</Header>
-      <body>
-        <PotInfo value={calcPot()} />
-        <BetCard
+      <PlayPageStyled>
+        <CardTable
+          players={game.betSession.players.filter(
+            (player) => player.id !== userData.playerId
+          )}
+          potValue={calcPot()}
+        />
+
+        <SelfCard
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}
           cash={getPlayerData().cash}
           active={active}
         />
-        {game.betSession.players
-          .filter((player) => player.id !== userData.playerId)
-          .map((player) => (
-            <PlayerCard player={player} active={isActive(player.id)} />
-          ))}
-      </body>
-    </PlayPageStyled>
+      </PlayPageStyled>
+    </>
   );
   function getPlayerData() {
     return game.betSession.players.find(
@@ -57,15 +57,9 @@ export default function PlayPage() {
       .reduce((sum, currentBet) => sum + currentBet);
   }
 }
-const PlayPageStyled = styled.div`
+const PlayPageStyled = styled.main`
   display: grid;
-  grid-gap: var(--size-xs);
-  grid-auto-rows: min-content;
-
-  body {
-    display: grid;
-    overflow: scroll;
-    grid-gap: var(--size-xs);
-    padding: 0 var(--size-xs);
-  }
+  grid-gap: var(--size-s);
+  padding: var(--size-xs);
+  grid-template-rows: 1fr min-content;
 `;

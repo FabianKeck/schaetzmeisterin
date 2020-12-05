@@ -11,7 +11,13 @@ export default function PotInfo({ value }) {
   );
 }
 const PotInfoStyled = styled.div`
-  background-color: var(--blue-75);
-  border-radius: var(--size-xs);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%/ 100%;
+  border-color: #aaa;
+  background-color: var(--color-table);
   padding: var(--size-s);
+  box-shadow: 3px 3px 3px #111;
+  font-size: large;
 `;

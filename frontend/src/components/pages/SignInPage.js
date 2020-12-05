@@ -15,14 +15,16 @@ export default function SignInPage() {
   return (
     <>
       <Header>Sign in </Header>
-      <FormStyled onSubmit={handleSubmit}>
-        <LabelStyled>
-          Please Enter Your Name to sign in to game {gameid}:
-          <Input value={name} onChange={handleChange} />
-        </LabelStyled>
-        <ButtonStyled>Sign in</ButtonStyled>
-        <p>{signInFailed}</p>
-      </FormStyled>
+      <main>
+        <FormStyled onSubmit={handleSubmit}>
+          <LabelStyled>
+            Please Enter Your Name to sign in to game {gameid}:
+            <Input value={name} onChange={handleChange} />
+          </LabelStyled>
+          <ButtonStyled>Sign in</ButtonStyled>
+          <p>{signInFailed}</p>
+        </FormStyled>
+      </main>
     </>
   );
   function handleChange(event) {

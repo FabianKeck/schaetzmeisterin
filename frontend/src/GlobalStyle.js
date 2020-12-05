@@ -1,25 +1,17 @@
 import { createGlobalStyle } from 'styled-components';
-import backgroundImage from './assets/background.svg';
+import backgroundImage from './assets/poker-table.jpg';
 
 export default createGlobalStyle`
   :root{
-  --brown-main: #6B493B;
-  --brown-75: #8C5F4D;
-  --brown-50: #B37962;
-  --brown-25: #D99377;
+  --color-main:#6A0000;
+  --color-active:#0A761D;
+  --color-black:#1D1B1A;
+  --color-golden:#C59135;
   
+ --red-light: #8B0000;
+ --red-dark: #6A0000;
   
-  --blue-main: #30566B;
-  --blue-75: #3F718C;
-  --blue-50: #5090B3;
-  --blue-25: #62AFD9;
-  --blue-heavy: #254252;
-  
-  
-  --green-main: #42664C;
-  --green-75: #5B8C69;
-  --green-50: #74B386;
-  --green-25: #8DD9A2;
+
   
   --size-xxs: 2px;
    --size-xs: 4px;
@@ -37,15 +29,20 @@ export default createGlobalStyle`
   }
   
   body{
-    background-color: var(--brown-25);
-    background-image: url(${backgroundImage});
+    max-width: 800px;
+  }
+  main{
+  background-image: url(${backgroundImage});
     background-repeat: no-repeat;
     background-position: center bottom;
-    background-size: contain;
+    background-size: cover;
   }
   
     input, textarea {
     font-size: 1em;
     font-family: inherit;
+  }
+  html{
+  justify-content: center;
   }
 `;

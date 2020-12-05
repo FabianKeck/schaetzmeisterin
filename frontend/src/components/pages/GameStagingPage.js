@@ -26,7 +26,7 @@ export default function GameStagingPage() {
     </>
   );
 }
-const GamePageStyled = styled.div`
+const GamePageStyled = styled.main`
   display: grid;
   grid-gap: var(--size-s);
   grid-auto-rows: min-content;

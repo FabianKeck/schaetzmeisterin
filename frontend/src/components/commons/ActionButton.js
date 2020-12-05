@@ -6,9 +6,12 @@ export default function ActionButton({ children, ...rest }) {
 }
 
 const ActionButtonStyled = styled.button`
-  border: 1px solid var(--blue-heavy);
+  border: 1px solid #fff;
   box-shadow: none;
   border-radius: var(--size-xs);
-  background-color: var(--blue-75);
+  background-color: var(--color-active);
   padding: var(--size-xs);
+  :disabled {
+    background: none;
+  }
 `;
