@@ -6,7 +6,7 @@ export default function ActionButton({ children, ...rest }) {
 }
 
 const ActionButtonStyled = styled.button`
-  border: 1px solid #fff;
+  border: 1px solid var(--color-golden);
   box-shadow: none;
   border-radius: var(--size-xs);
   background-color: var(--color-active);
