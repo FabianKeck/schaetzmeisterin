@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import PlayerCard from './PlayerCard';
 import { GiCoins } from 'react-icons/gi';
 
-export default function CardTable({ players, potValue }) {
+export default function CardTable({ players, potValue, activePlayerId }) {
   return (
     <CardTableStyled numPlayers={players.length}>
       {players.map((player, index) => (
@@ -11,6 +11,7 @@ export default function CardTable({ players, potValue }) {
           row={getPlayerRowIndex(index, players.length)}
           column={getPlayerColumnIndex(index, players.length)}
           player={player}
+          active={player.id === activePlayerId}
         />
       ))}
       <PotInfoStyled>

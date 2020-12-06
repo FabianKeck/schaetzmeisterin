@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import { GiPayMoney, GiTwoCoins, GiCheckMark } from 'react-icons/gi';
 
-export default function PlayerCard({ player, row, column }) {
+export default function PlayerCard({ player, row, column, active }) {
   return (
-    <PlayerCardStyled row={row} column={column}>
+    <PlayerCardStyled row={row} column={column} active={active}>
       <p>
         <GiCheckMark /> {player.name}
       </p>
@@ -24,7 +24,7 @@ const PlayerCardStyled = styled.div`
   grid-column: ${(props) => '' + props.column};
   grid-row: ${(props) => '' + props.row};
   position: relative;
-  border: 1px solid var(--color-golden);
+  border: ${(props) => (props.active ? '5px' : '1px')} solid var(--color-golden);
   font-size: smaller;
   padding: var(--size-s);
   display: grid;

@@ -5,6 +5,7 @@ import GameContext from '../../context/GameContext';
 import SelfCard from '../PlayComponents/SelfCard';
 import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
+import QuestionCard from '../PlayComponents/QuestionCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -24,8 +25,11 @@ export default function PlayPage() {
             (player) => player.id !== userData.playerId
           )}
           potValue={calcPot()}
+          activePlayerId={
+            game.betSession.players[game.betSession.activePlayerIndex]
+          }
         />
-
+        <QuestionCard />
         <SelfCard
           bet={bet}
           fold={fold}
@@ -59,7 +63,7 @@ export default function PlayPage() {
 }
 const PlayPageStyled = styled.main`
   display: grid;
-  grid-gap: var(--size-s);
+  grid-gap: var(--size-xs);
   padding: var(--size-xs);
   grid-template-rows: 1fr min-content;
 `;

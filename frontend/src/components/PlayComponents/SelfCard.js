@@ -21,6 +21,7 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
           <GiTwoCoins /> {cash}
         </p>
         <p>Minimum Bet: {minBet}</p>
+        <p> your guess: 97</p>
       </Info>
       <Actions>
         {minBet ? (
@@ -86,6 +87,7 @@ const SelfCardStyled = styled.div`
   p {
     display: flex;
     align-items: center;
+    margin: 0;
   }
 `;
 const Info = styled.div``;
