@@ -17,7 +17,7 @@ export default function PlayPage() {
 
   return (
     <>
-      <Header>Playing</Header>
+      <Header>Schaetzmeisterin</Header>
       <PlayPageStyled>
         <CardTable
           players={game.betSession.players.filter(
