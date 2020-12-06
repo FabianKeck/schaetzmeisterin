@@ -30,7 +30,6 @@ const PlayerCardStyled = styled.div`
   grid-auto-rows: min-content;
   border-radius: var(--size-s);
   background-color: var(--color-main);
-  z-index: 1;
   p {
     margin: 0;
   }
@@ -42,6 +41,5 @@ const ShadowDummy = styled.div`
   background-color: transparent;
   border-radius: var(--size-s);
   bottom: 0;
-  box-shadow: 0 var(--size-m) var(--size-m) #000;
-  z-index: 2;
+  box-shadow: 0 var(--size-s) var(--size-s) #000;
 `;

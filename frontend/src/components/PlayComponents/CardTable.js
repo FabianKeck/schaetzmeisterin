@@ -35,7 +35,7 @@ const CardTableStyled = styled.div`
 
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  grid-gap: var(--size-xs);
+  grid-gap: var(--size-s);
 `;
 
 const PotInfoStyled = styled.div`
