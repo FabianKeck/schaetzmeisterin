@@ -6,24 +6,38 @@ export default function CardTable({ players, potValue }) {
   return (
     <CardTableStyled numPlayers={players.length}>
       {players.map((player, index) => (
-        <PlayerCard player={player} index={index} />
+        <PlayerCard
+          row={getPlayerRowIndex(index, players.length)}
+          column={getPlayerColumnIndex(index, players.length)}
+          player={player}
+        />
       ))}
       <PotInfoStyled>{potValue}</PotInfoStyled>
     </CardTableStyled>
   );
+
+  function getPlayerColumnIndex(playerIndex, numPlayers) {
+    return (
+      Math.max(Math.min(playerIndex - Math.floor(numPlayers / 2 - 2), 3), 0) + 1
+    );
+  }
+
+  function getPlayerRowIndex(playerIndex, numPlayers) {
+    const delta = Math.floor(numPlayers / 2) - 0.5;
+    const dif = playerIndex - delta;
+    const abs = Math.abs(dif);
+    return Math.floor(abs) + 1;
+  }
 }
 
 const CardTableStyled = styled.div`
-  --m: ${(props) => '' + (props.numPlayers + 1)};
-  --tan: ${(props) => '' + Math.tan(Math.PI / props.numPlayers)};
-  --d: 4em; /* image size */
-  --rel: 1; /* how much extra space we want between images, 1 = one image size */
-  --r: calc(0.6 * (1 + var(--rel)) * var(--d) / var(--tan)); /* circle radius */
-  --s: calc(2 * var(--r) + var(--d)); /* container size */
-  position: relative;
-  min-width: var(--s);
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-gap: var(--size-xs);
 `;
 
 const PotInfoStyled = styled.div`
-  position: relative;
+  position: fixed;
 `;
