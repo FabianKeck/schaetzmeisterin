@@ -1,18 +1,20 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { FaDollarSign, FaUser } from 'react-icons/fa';
+import { GiPayMoney, GiTwoCoins, GiCheckMark } from 'react-icons/gi';
 
 export default function PlayerCard({ player, row, column }) {
   return (
     <PlayerCardStyled row={row} column={column}>
       <p>
-        <FaUser /> {player.name}
+        <GiCheckMark /> {player.name}
       </p>
       <p>
-        <FaDollarSign />
+        <GiTwoCoins />
         {player.cash}
       </p>
-      <p>bet: {player.currentBet}</p>
+      <p>
+        <GiPayMoney /> {player.currentBet}
+      </p>
       <ShadowDummy />
     </PlayerCardStyled>
   );
@@ -31,7 +33,10 @@ const PlayerCardStyled = styled.div`
   border-radius: var(--size-s);
   background-color: var(--color-main);
   p {
+    display: flex;
+    justify-content: space-between;
     margin: 0;
+    align-items: center;
   }
 `;
 const ShadowDummy = styled.div`
