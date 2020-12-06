@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import PlayerCard from './PlayerCard';
+import { GiCoins } from 'react-icons/gi';
 
 export default function CardTable({ players, potValue }) {
   return (
@@ -12,7 +13,10 @@ export default function CardTable({ players, potValue }) {
           player={player}
         />
       ))}
-      <PotInfoStyled>{potValue}</PotInfoStyled>
+      <PotInfoStyled>
+        <GiCoins />
+        {potValue}
+      </PotInfoStyled>
     </CardTableStyled>
   );
 
@@ -31,6 +35,7 @@ export default function CardTable({ players, potValue }) {
 }
 
 const CardTableStyled = styled.div`
+  position: relative;
   display: grid;
 
   grid-template-columns: repeat(4, 1fr);
@@ -39,5 +44,11 @@ const CardTableStyled = styled.div`
 `;
 
 const PotInfoStyled = styled.div`
-  position: fixed;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  font-size: x-large;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
 `;
