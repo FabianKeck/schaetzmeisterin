@@ -4,9 +4,9 @@ import PlayerCard from './PlayerCard';
 
 export default function OtherPlayersView({ players }) {
   return (
-    <OtherPlayersViewStyled numColumns={players.size}>
+    <OtherPlayersViewStyled>
       {players.map((player) => (
-        <PlayerCard player={player} />
+        <PlayerCard key={player.id} player={player} />
       ))}
     </OtherPlayersViewStyled>
   );
