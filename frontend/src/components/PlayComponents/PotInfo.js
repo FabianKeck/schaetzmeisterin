@@ -14,7 +14,6 @@ const PotInfoStyled = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 100%/ 100%;
   border-color: #aaa;
   background-color: var(--color-table);
   padding: var(--size-s);

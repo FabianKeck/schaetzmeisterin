@@ -20,7 +20,7 @@ export default function PlayerCard({ player, row, column, active }) {
   );
 }
 
-const PlayerCardStyled = styled.div`
+const PlayerCardStyled = styled.section`
   grid-column: ${(props) => '' + props.column};
   grid-row: ${(props) => '' + props.row};
   position: relative;
@@ -31,7 +31,7 @@ const PlayerCardStyled = styled.div`
   grid-gap: var(--size-xs);
   grid-auto-rows: min-content;
   border-radius: var(--size-s);
-  background-color: var(--color-main);
+  background-color: var(--color-red);
   p {
     display: flex;
     justify-content: space-between;

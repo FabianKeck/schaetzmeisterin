@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import ActionButton from '../commons/ActionButton';
 import Input from '../commons/Input';
@@ -6,23 +6,17 @@ import { GiTwoCoins } from 'react-icons/gi';
 
 export default function SelfCard({ bet, fold, minBet, cash, active }) {
   const [betValue, setBetValue] = useState(minBet);
-  const [betTooSmall, setBetTooSmall] = useState(false);
-  const [betToLarge, setBetTooLarge] = useState(false);
-
-  useEffect(() => {
-    setBetTooLarge(betValue > cash);
-    setBetTooSmall(betValue < minBet);
-  }, [betValue, cash, minBet]);
-
+  const betTooSmall = betValue < minBet;
+  const betTooLarge = betValue > cash;
   return (
     <SelfCardStyled active={active}>
-      <Info>
+      <section>
         <p>
           <GiTwoCoins /> {cash}
         </p>
         <p>Minimum Bet: {minBet}</p>
         <p> your guess: 97</p>
-      </Info>
+      </section>
       <Actions>
         {minBet ? (
           <ActionButton
@@ -37,16 +31,15 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
           </ActionButton>
         )}
         <ActionButton disabled={!active} onClick={fold}>
-          {' '}
           fold
         </ActionButton>
         {betTooSmall && <p>Your Bet is too small. Please enter a larger bet</p>}
-        {betToLarge && (
-          <p> Your bet exceeds your cash. Please enter a smaller Bet</p>
+        {betTooLarge && (
+          <p>Your bet exceeds your cash. Please enter a smaller Bet</p>
         )}
-        <form onSubmit={handleRaise}>
+        <form onSubmit={handleRaiseSubmit}>
           <Input value={betValue} onChange={handleBetValueChange} />
-          <ActionButton disabled={betTooSmall || betToLarge || !active}>
+          <ActionButton disabled={betTooSmall || betTooLarge || !active}>
             raise
           </ActionButton>
         </form>
@@ -58,7 +51,7 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
     setBetValue(event.target.value);
   }
 
-  function handleRaise(event) {
+  function handleRaiseSubmit(event) {
     event.preventDefault();
     bet(betValue);
   }
@@ -71,7 +64,7 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
 }
 
 const SelfCardStyled = styled.div`
-  background-color: var(--color-main);
+  background-color: var(--color-red);
   border-radius: var(--size-s);
   display: grid;
   grid-gap: var(--size-s);
@@ -87,7 +80,6 @@ const SelfCardStyled = styled.div`
     margin: 0;
   }
 `;
-const Info = styled.div``;
 
 const Actions = styled.div`
   display: grid;

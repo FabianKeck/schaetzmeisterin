@@ -3,13 +3,10 @@ import backgroundImage from './assets/poker-table-long.jpg';
 
 export default createGlobalStyle`
   :root{
-  --color-main:#6A0000;
+  --color-red:#6A0000;
   --color-active:#0A761D;
   --color-black:#1D1B1A;
   --color-golden:#C59135;
-  
- --red-light: #8B0000;
- --red-dark: #6A0000;
   
 
   
@@ -35,7 +32,7 @@ export default createGlobalStyle`
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: auto 100%;
-    background-color: var(--color-main);
+    background-color: var(--color-red);
   }
   
     input, textarea {

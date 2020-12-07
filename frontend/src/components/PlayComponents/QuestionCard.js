@@ -11,7 +11,7 @@ export default function QuestionCard({ children }) {
 }
 
 const QuestionCardStyled = styled.div`
-  background-color: var(--color-main);
+  background-color: var(--color-red);
   border-radius: var(--size-s);
   border: 1px solid var(--color-golden);
   padding: var(--size-xs);
