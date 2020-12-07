@@ -20,7 +20,7 @@ export default function PlayerCard({ player, row, column, active }) {
   );
 }
 
-const PlayerCardStyled = styled.div`
+const PlayerCardStyled = styled.section`
   grid-column: ${(props) => '' + props.column};
   grid-row: ${(props) => '' + props.row};
   position: relative;
