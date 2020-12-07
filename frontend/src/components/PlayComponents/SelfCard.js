@@ -25,7 +25,10 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
       </Info>
       <Actions>
         {minBet ? (
-          <ActionButton disabled={!active} onClick={handleCall}>
+          <ActionButton
+            disabled={!active || minBet > cash}
+            onClick={handleCall}
+          >
             call
           </ActionButton>
         ) : (
@@ -57,15 +60,9 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
 
   function handleRaise(event) {
     event.preventDefault();
-    if (betToLarge || betTooSmall) {
-      return;
-    }
     bet(betValue);
   }
   function handleCall() {
-    if (minBet > cash) {
-      return;
-    }
     bet(minBet);
   }
   function handleCheck() {
