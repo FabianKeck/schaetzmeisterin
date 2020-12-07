@@ -6,10 +6,11 @@ import SelfCard from '../PlayComponents/SelfCard';
 import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
+import AskCard from '../PlayComponents/AskCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
-  const { game, bet, fold } = useContext(GameContext);
+  const { game, ask, bet, fold } = useContext(GameContext);
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
@@ -20,6 +21,7 @@ export default function PlayPage() {
     <>
       <Header>Schaetzmeisterin</Header>
       <PlayPageStyled>
+        <AskCard ask={ask} />
         <CardTable
           players={game.betSession.players.filter(
             (player) => player.id !== userData.playerId
