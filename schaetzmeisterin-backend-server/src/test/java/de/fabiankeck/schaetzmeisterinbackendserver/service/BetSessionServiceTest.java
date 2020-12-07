@@ -3,6 +3,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,6 +12,7 @@ import static org.hamcrest.Matchers.is;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -116,7 +118,70 @@ class BetSessionServiceTest {
 
        //then
        assertThat(betSession.getActivePlayerIndex(),is(2));
+
   }
+    @Test
+    @DisplayName("Dealing player should be skipped, when updating active player Index")
+    public void skipsDealingUserTest(){
+        //given
+        BetSession betSession = getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(1).setDealing(true);
+
+        //when
+        betSessionService.bet(betSession,betSession.getPlayers().get(0).getId(),1);
+
+        //then
+        assertThat(betSession.getActivePlayerIndex(),is(2));
+    }
+
+    @Test
+    @DisplayName("ask should set question")
+    public void askSetQuestionTest(){
+        //given
+        BetSession betSession = getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(0).setDealing(true);
+        Question expected= Question.builder().question("'Question").answer(2.5).build();
+
+        //when
+        betSessionService.ask(betSession,betSession.getPlayers().get(0).getId(),expected);
+        Question actual = betSession.getQuestion();
+        //then
+        assertThat(actual.getAnswer(), is(expected.getAnswer()));
+        assertThat(actual.getQuestion(), is(expected.getQuestion()));
+
+    }
+    @Test
+    @DisplayName("Ask should throw if player is not dealing")
+    public void askWithWrongPlayerTest(){
+        //given
+        BetSession betSession = getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(0).setDealing(true);
+        Question expected= Question.builder().question("'Question").answer(2.5).build();
+
+        //when
+        assertThrows(ResponseStatusException.class,()->betSessionService.ask(betSession,betSession.getPlayers().get(1).getId(),expected));
+        //then
+        assertThat(betSession.getQuestion(), is(nullValue()));
+    }
+    @Test
+    @DisplayName("Ask should throw if question is already defined")
+    public void askWithQuestionPlayedTest(){
+        //given
+        BetSession betSession = getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(0).setDealing(true);
+        Question firstQuestion= Question.builder().question("'Question").answer(2.5).build();
+        betSession.setQuestion(firstQuestion);
+        Question newQuestion = Question.builder().question("another Question").answer(0).build();
+
+
+        //when
+        assertThrows(ResponseStatusException.class,()->betSessionService.ask(betSession,betSession.getPlayers().get(0).getId(),newQuestion));
+        //then
+        assertThat(betSession.getQuestion(), is(firstQuestion));
+    }
+
+
+
 
 
     private BetSession getBetSessionWithThreePlayers(){

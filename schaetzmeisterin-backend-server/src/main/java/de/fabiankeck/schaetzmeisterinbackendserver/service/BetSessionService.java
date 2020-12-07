@@ -1,18 +1,25 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.stream.Collectors;
+
 @Log4j2
 @Service
 public class BetSessionService {
+
+    public void ask(BetSession betSession, String playerID, Question question) {
+        BetSessionPlayer player = betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        if(!player.isDealing() || betSession.getQuestion()!=null){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        betSession.setQuestion(question);
+    }
 
     public void bet(BetSession betSession, String playerId, int betValue){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
@@ -33,11 +40,11 @@ public class BetSessionService {
     }
 
     private void markNextPlayerActive(BetSession betSession) {
-        if(betSession.getPlayers().stream().filter(player->!player.isFolded()).findAny().isEmpty()){ //this can be removed, when the BetSessionEvaluation is implemented
+        if(betSession.getPlayers().stream().filter(player->!player.isFolded()).count()<=1){ //this can be removed, when the BetSessionEvaluation is implemented
             throw new IllegalArgumentException("There are no players, that have not folded left");
         }
         int nextPlayerIndex = (betSession.getActivePlayerIndex()+1) % betSession.getPlayers().size();
-        while (betSession.getPlayers().get(nextPlayerIndex).isFolded()){
+        while (betSession.getPlayers().get(nextPlayerIndex).isFolded()|| betSession.getPlayers().get(nextPlayerIndex).isDealing()){
             nextPlayerIndex = (nextPlayerIndex+1)% betSession.getPlayers().size();
         }
         betSession.setActivePlayerIndex(nextPlayerIndex);
@@ -64,6 +71,4 @@ public class BetSessionService {
 
         return player;
     }
-
-
 }

@@ -159,7 +159,7 @@ class GameServiceTest {
         }
     }
     @Test
-    @DisplayName(" Bet with valid user  and correct bet should update game")
+    @DisplayName(" Bet with valid user and correct bet should update game")
     public void BetWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -182,8 +182,36 @@ class GameServiceTest {
         //then
         verify(gameDao).save(updated);
         verify(betSessionService).bet(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
-
     }
+       @Test
+    @DisplayName(" Ask with valid user should return updated Game and sve to DB")
+    public void AskWithValidUserTest(){
+        //given
+        String gameId ="gameId";
+        int betValue = 2;
+        Game initial = getGameWithThreeUsers(gameId);
+        Game updated = getGameWithThreeUsers(gameId);
+        Question question = Question.builder().question("question").answer(1).build();
+        initial.getBetSession().getPlayers().get(0).setDealing(true);
+           updated.getBetSession().getPlayers().get(0).setDealing(true);
+
+
+
+        //when
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        doAnswer(invocationOnMock -> {
+            ((BetSession)invocationOnMock.getArgument(0)).setQuestion(question);
+            return null;
+        }).when(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+
+        gameService.ask(gameId,initial.getPlayers().get(0).getId(), question);
+        //then
+
+        updated.getBetSession().setQuestion(question);
+        verify(gameDao).save(updated);
+        verify(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+    }
+
 
 
     private Game getGameWithThreeUsers(String gameId){
@@ -202,7 +230,6 @@ class GameServiceTest {
                 ).collect(Collectors.toList()))
                 .id(gameId)
                 .build();
-
     }
 
 }

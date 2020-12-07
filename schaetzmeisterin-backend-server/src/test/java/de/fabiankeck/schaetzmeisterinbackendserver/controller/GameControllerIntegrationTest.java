@@ -5,6 +5,7 @@ import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -177,6 +178,50 @@ class GameControllerIntegrationTest {
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getBetSession().getActivePlayerIndex(),is(1));
         assertThat(response.getBody().getBetSession().getPlayers().get(0).getCurrentBet(),is(betValue));
+    }
+
+    @Test
+    @DisplayName("askREquest with valid Question on a started Game should retrun Game")
+    public void askTest(){
+        //given
+        String gameId= "gameId";
+        String username1= "John";
+        String playerId1 = "123";
+        String user1Token = login(username1,playerId1);
+        Question question = Question.builder().question("question").answer(1).build();
+
+        //sign in first user
+        HttpHeaders firstUserAuthHeaders = new HttpHeaders();
+        firstUserAuthHeaders.setBearerAuth(user1Token);
+        HttpEntity<Object> firstSignInRequest = new HttpEntity<>(null,firstUserAuthHeaders);
+        when(idUtils.createId()).thenReturn(gameId);
+        String signInUrl = "http://localhost:"+port+"/api/game/signin";
+        restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+
+        //signIn second user
+        String username2= "Doe";
+        String playerId2 = "456";
+        HttpEntity<Object> secondSignInRequest = getValidAuthenticationEntity(null,username2,playerId2);
+        String signInUrlId = "http://localhost:"+port+"/api/game/signin/"+gameId;
+        restTemplate.exchange(signInUrlId, HttpMethod.POST, secondSignInRequest, Game.class);
+
+
+        //startGame
+        String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
+        restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+        //when
+        HttpEntity<Question> askEntity = new HttpEntity<>(question, firstUserAuthHeaders);
+        String betUrl = "http://localhost:"+port+"/api/game/ask/"+gameId;
+        ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, askEntity, Game.class);
+
+
+
+        //then
+        assertThat(response.getStatusCode(),is(HttpStatus.OK));
+        assertThat(Objects.requireNonNull(response.getBody()).getBetSession().getQuestion(),is(question));
+
     }
     
     
