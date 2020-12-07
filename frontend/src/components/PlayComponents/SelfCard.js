@@ -71,7 +71,7 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
 }
 
 const SelfCardStyled = styled.div`
-  background-color: var(--color-main);
+  background-color: var(--color-red);
   border-radius: var(--size-s);
   display: grid;
   grid-gap: var(--size-s);

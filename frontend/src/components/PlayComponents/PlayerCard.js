@@ -31,7 +31,7 @@ const PlayerCardStyled = styled.div`
   grid-gap: var(--size-xs);
   grid-auto-rows: min-content;
   border-radius: var(--size-s);
-  background-color: var(--color-main);
+  background-color: var(--color-red);
   p {
     display: flex;
     justify-content: space-between;
