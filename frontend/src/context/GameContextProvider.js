@@ -4,6 +4,7 @@ import {
   signInGamePost,
   startGamePost,
   betPost,
+  foldPost,
   getGame,
 } from '../service/GameService';
 import UserContext from '../context/UserContext';
@@ -52,6 +53,12 @@ export default function GameContextProvider({ children }) {
       .then((response) => response.data)
       .then(setGameAndSaveToLocalStorage);
 
+  const fold = () => {
+    foldPost(token, game.id)
+      .then((response) => response.data)
+      .then(setGameAndSaveToLocalStorage());
+  };
+
   function setGameAndSaveToLocalStorage(game) {
     setGame(game);
     saveGameDataToLocalStorage(game);
@@ -60,7 +67,15 @@ export default function GameContextProvider({ children }) {
 
   return (
     <GameContext.Provider
-      value={{ game, signInGame, startGame, bet, startGameLoop, stopGameLoop }}
+      value={{
+        game,
+        signInGame,
+        startGame,
+        bet,
+        startGameLoop,
+        stopGameLoop,
+        fold,
+      }}
     >
       {children}
     </GameContext.Provider>

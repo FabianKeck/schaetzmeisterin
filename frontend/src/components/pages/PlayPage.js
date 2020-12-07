@@ -9,7 +9,7 @@ import PotInfo from '../PlayComponents/PotInfo';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
-  const { game, bet } = useContext(GameContext);
+  const { game, bet, fold } = useContext(GameContext);
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
@@ -22,11 +22,13 @@ export default function PlayPage() {
       <body>
         <PotInfo value={calcPot()} />
         <BetCard
-          bet={active && bet}
+          bet={bet}
+          fold={fold}
           minBet={calcMinBet()}
           cash={getPlayerData().cash}
+          active={active}
         />
-        {game.players
+        {game.betSession.players
           .filter((player) => player.id !== userData.playerId)
           .map((player) => (
             <PlayerCard player={player} active={isActive(player.id)} />
@@ -35,22 +37,24 @@ export default function PlayPage() {
     </PlayPageStyled>
   );
   function getPlayerData() {
-    return game.players.find((player) => player.id === userData.playerId);
+    return game.betSession.players.find(
+      (player) => player.id === userData.playerId
+    );
   }
   function calcMinBet() {
     return (
-      Math.max(...game.players.map((player) => player.currentBet)) -
+      Math.max(...game.betSession.players.map((player) => player.currentBet)) -
       getPlayerData().currentBet
     );
   }
   function isActive(id) {
-    return id === game.players[game.activePlayerIndex].id;
+    return id === game.betSession.players[game.betSession.activePlayerIndex].id;
   }
 
   function calcPot() {
-    return game.players
+    return game.betSession.players
       .map((player) => player.currentBet)
-      .reduce((sum, bet) => sum + bet);
+      .reduce((sum, currentBet) => sum + currentBet);
   }
 }
 const PlayPageStyled = styled.div`
@@ -60,6 +64,7 @@ const PlayPageStyled = styled.div`
 
   body {
     display: grid;
+    overflow: scroll;
     grid-gap: var(--size-xs);
     padding: 0 var(--size-xs);
   }

@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Player {
-    private String id;
-    private String name;
+public class BetSession {
+    private int activePlayerIndex;
+    private List<BetSessionPlayer> players;
 }

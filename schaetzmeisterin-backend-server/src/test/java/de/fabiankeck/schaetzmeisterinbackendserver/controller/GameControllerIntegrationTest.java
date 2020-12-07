@@ -175,8 +175,8 @@ class GameControllerIntegrationTest {
 
          //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
-        assertThat(Objects.requireNonNull(response.getBody()).getActivePlayerIndex(),is(1));
-        assertThat(response.getBody().getPlayers().get(0).getCurrentBet(),is(betValue));
+        assertThat(Objects.requireNonNull(response.getBody()).getBetSession().getActivePlayerIndex(),is(1));
+        assertThat(response.getBody().getBetSession().getPlayers().get(0).getCurrentBet(),is(betValue));
     }
     
     

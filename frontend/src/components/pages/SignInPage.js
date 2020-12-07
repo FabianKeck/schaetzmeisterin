@@ -3,6 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import GameContext from '../../context/GameContext';
+import Input from '../commons/Input';
 
 export default function SignInPage() {
   const { gameid } = useParams();
@@ -17,7 +18,7 @@ export default function SignInPage() {
       <FormStyled onSubmit={handleSubmit}>
         <LabelStyled>
           Please Enter Your Name to sign in to game {gameid}:
-          <InputStyled value={name} onChange={handleChange} />
+          <Input value={name} onChange={handleChange} />
         </LabelStyled>
         <ButtonStyled>Sign in</ButtonStyled>
         <p>{signInFailed}</p>
@@ -52,11 +53,8 @@ const ButtonStyled = styled.button`
   border: 1px solid var(--green-main);
 `;
 
-const InputStyled = styled.input`
-  display: block;
-`;
-
 const LabelStyled = styled.label`
   display: grid;
+  grid-gap: var(--size-xs);
   grid-auto-rows: min-content;
 `;

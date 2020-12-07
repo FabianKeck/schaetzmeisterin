@@ -2,9 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,8 @@ class GameServiceTest {
     IdUtils idUtils = mock(IdUtils.class);
     SmUserDao userDao= mock(SmUserDao.class);
     GameDao gameDao = mock(GameDao.class);
-    GameService gameService = new GameService(gameDao, idUtils, userDao);
+    BetSessionService betSessionService = mock(BetSessionService.class);
+    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -43,7 +42,7 @@ class GameServiceTest {
 
         Game expected = Game.builder()
                 .id( gameId)
-                .players(List.of(Player.builder().id(user.getId()).cash(100).name(user.getUsername()).build()))
+                .players(List.of(Player.builder().id(user.getId()).name(user.getUsername()).build()))
                 .build();
 
         //when
@@ -66,13 +65,13 @@ class GameServiceTest {
         when(idUtils.createId()).thenReturn(gameId);
         Game initial= Game.builder()
                 .id(gameId)
-                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).cash(100).name(initialUser.getUsername()).build())))
+                .players(new ArrayList<>(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build())))
                 .build();
         Game updated =  Game.builder()
                 .id(gameId)
                 .players(List.of(
-                        Player.builder().id(initialUser.getId()).cash(100).name(initialUser.getUsername()).build(),
-                        Player.builder().id(userToAdd.getId()).cash(100).name(userToAdd.getUsername()).build()
+                        Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build(),
+                        Player.builder().id(userToAdd.getId()).name(userToAdd.getUsername()).build()
                 ))
                 .build();
         //when
@@ -114,13 +113,9 @@ class GameServiceTest {
         Game actual = gameService.startGame(gameId, initialUser.getId());
 
         //then
-        Game expected = Game.builder()
-                .id(gameId)
-                .players(List.of(Player.builder().id(initialUser.getId()).name(initialUser.getUsername()).build()))
-                .started(true)
-                .build();
-        assertThat(actual, is(expected));
-        verify(gameDao).save(expected);
+        assertThat(actual.getId(), is(gameId));
+        assertThat(actual.isStarted(),is(true));
+        verify(gameDao).save(any());
 
     }
      @Test
@@ -166,102 +161,47 @@ class GameServiceTest {
     @Test
     @DisplayName(" Bet with valid user  and correct bet should update game")
     public void BetWithValidUserTest(){
+        //given
         String gameId ="gameId";
-        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
-        SmUser secondUser= SmUser.builder().id("456").username("John").build();
-        int betValue= 2;
-        int initialCash =100;
-
-        Game game= Game.builder()
-                .id(gameId)
-                .players(List.of(
-                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(initialCash).build(),
-                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(initialCash).build()
-                ))
-                .activePlayerIndex(0)
-                .started(true)
-                .build();
-        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
-
-        Game actual = gameService.bet(gameId,firstUser.getId(), betValue);
-
-        assertThat(actual.getActivePlayerIndex(),is(1));
-        assertThat(actual.getPlayers().get(0).getCurrentBet(),is(betValue));
-        assertThat(actual.getPlayers().get(0).getCash(),is(initialCash-betValue));
-        verify(gameDao).save(actual);
-
-    }
-    @Test
-    @DisplayName(" Bet with valid user and too small bet should throw")
-    public void BetWithTooSmallBet(){
-        String gameId ="gameId";
-        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
-        SmUser secondUser= SmUser.builder().id("456").username("John").build();
-        int betValue= 1;
-
-        Game game= Game.builder()
-                .id(gameId)
-                .players(List.of(
-                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
-                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
-                ))
-                .activePlayerIndex(0)
-                .started(true)
-                .build();
-        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
-
-        assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
-        verify(gameDao, never()).save(any());
-    }
-    @Test
-    @DisplayName(" Bet with valid user and too Large bet should throw")
-    public void BetWithTooLargeBet(){
-        String gameId ="gameId";
-        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
-        SmUser secondUser= SmUser.builder().id("456").username("John").build();
-        int betValue= 101;
-
-        Game game= Game.builder()
-                .id(gameId)
-                .players(List.of(
-                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
-                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
-                ))
-                .activePlayerIndex(0)
-                .started(true)
-                .build();
-        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
-
-
-
-        assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
-        verify(gameDao, never()).save(any());
-    }
-
-  @Test
-    @DisplayName(" Bet with invalid user should throw and not update game")
-    public void BetWithInvalidUserTest(){
-        String gameId ="gameId";
-        SmUser firstUser = SmUser.builder().id("123").username("Jane").build();
-        SmUser secondUser= SmUser.builder().id("456").username("John").build();
         int betValue = 2;
+        Game initial = getGameWithThreeUsers(gameId);
+        Game updated = getGameWithThreeUsers(gameId);
+        updated.getBetSession().setActivePlayerIndex(1);
+        updated.getBetSession().getPlayers().get(0).setCurrentBet(betValue);
 
-        Game game= Game.builder()
-                .id(gameId)
-                .players(List.of(
-                        Player.builder().id(firstUser.getId()).name(firstUser.getUsername()).currentBet(0).cash(100).build(),
-                        Player.builder().id(secondUser.getId()).name(secondUser.getUsername()).currentBet(2).cash(100).build()
-                ))
-                .activePlayerIndex(0)
-                .started(true)
+        //when
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        doAnswer(invocationOnMock -> {
+            ((BetSession)invocationOnMock.getArgument(0)).setActivePlayerIndex(1);
+            ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(0).setCurrentBet(betValue);
+            return null;
+        }).when(betSessionService).bet(initial.getBetSession(), initial.getPlayers().get(0).getId(),betValue);
+
+
+        gameService.bet(gameId,initial.getPlayers().get(0).getId(), betValue);
+        //then
+        verify(gameDao).save(updated);
+        verify(betSessionService).bet(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
+
+    }
+
+
+    private Game getGameWithThreeUsers(String gameId){
+        BetSessionPlayer player1 = BetSessionPlayer.builder().id("1").name("Jane").cash(100).build();
+        BetSessionPlayer player2 = BetSessionPlayer.builder().id("2").name("John").cash(100).build();
+        BetSessionPlayer player3 = BetSessionPlayer.builder().id("3").name("Doe").cash(100).build();
+        BetSession betSession = BetSession.builder()
+                .players(List.of(player1,player2,player3))
                 .build();
-        when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
-
-
-      assertThrows(ResponseStatusException.class,()->gameService.bet(gameId,secondUser.getId(), betValue));
-      verify(gameDao, never()).save(any());
-
-
+        return Game.builder()
+                .betSession(betSession)
+                .players(betSession.getPlayers().stream().map(betSessionPlayer -> Player.builder()
+                        .name(betSessionPlayer.getName())
+                        .id(betSessionPlayer.getId())
+                        .build()
+                ).collect(Collectors.toList()))
+                .id(gameId)
+                .build();
 
     }
 

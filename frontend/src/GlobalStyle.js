@@ -13,6 +13,7 @@ export default createGlobalStyle`
   --blue-75: #3F718C;
   --blue-50: #5090B3;
   --blue-25: #62AFD9;
+  --blue-heavy: #254252;
   
   
   --green-main: #42664C;
@@ -20,6 +21,7 @@ export default createGlobalStyle`
   --green-50: #74B386;
   --green-25: #8DD9A2;
   
+  --size-xxs: 2px;
    --size-xs: 4px;
    --size-s: 8px;
    --size-m: 12px;
