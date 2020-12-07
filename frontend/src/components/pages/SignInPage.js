@@ -4,6 +4,7 @@ import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import GameContext from '../../context/GameContext';
 import Input from '../commons/Input';
+import ActionButton from '../commons/ActionButton';
 
 export default function SignInPage() {
   const { gameid } = useParams();
@@ -21,8 +22,8 @@ export default function SignInPage() {
             Please Enter Your Name to sign in to game {gameid}:
             <Input value={name} onChange={handleNameChange} />
           </LabelStyled>
-          <ButtonStyled>Sign in</ButtonStyled>
-          <p>{signInFailed}</p>
+          <ActionButton>Sign in</ActionButton>
+          {signInFailed && <p>{signInFailed}</p>}
         </FormStyled>
       </main>
     </>
@@ -46,13 +47,6 @@ const FormStyled = styled.form`
   grid-auto-rows: min-content;
   grid-template-columns: 1fr;
   padding: var(--size-m);
-`;
-
-const ButtonStyled = styled.button`
-  font-size: 1em;
-  border-radius: var(--size-s);
-  background-color: var(--green-75);
-  border: 1px solid var(--green-main);
 `;
 
 const LabelStyled = styled.label`
