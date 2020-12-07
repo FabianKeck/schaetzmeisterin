@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-import backgroundImage from './assets/poker-table.jpg';
+import backgroundImage from './assets/poker-table-long.jpg';
 
 export default createGlobalStyle`
   :root{
@@ -30,7 +30,7 @@ export default createGlobalStyle`
   body{
     max-width: 800px;
   }
-  main{
+  body{
   background-image: url(${backgroundImage});
     background-repeat: no-repeat;
     background-position: center bottom;
