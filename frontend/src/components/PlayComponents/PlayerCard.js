@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 import { GiPayMoney, GiTwoCoins, GiCheckMark } from 'react-icons/gi';
+import { Card } from '../commons/Card';
 
 export default function PlayerCard({ player, row, column, active }) {
   return (
@@ -20,7 +21,7 @@ export default function PlayerCard({ player, row, column, active }) {
   );
 }
 
-const PlayerCardStyled = styled.section`
+const PlayerCardStyled = styled(Card)`
   grid-column: ${(props) => '' + props.column};
   grid-row: ${(props) => '' + props.row};
   position: relative;
@@ -30,8 +31,7 @@ const PlayerCardStyled = styled.section`
   display: grid;
   grid-gap: var(--size-xs);
   grid-auto-rows: min-content;
-  border-radius: var(--size-s);
-  background-color: var(--color-red);
+  box-shadow: none;
   p {
     display: flex;
     justify-content: space-between;

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/macro';
+import { Card } from '../commons/Card';
 
 export default function QuestionCard({ children }) {
   return (
@@ -10,10 +11,7 @@ export default function QuestionCard({ children }) {
   );
 }
 
-const QuestionCardStyled = styled.div`
-  background-color: var(--color-red);
-  border-radius: var(--size-s);
-  border: 1px solid var(--color-golden);
+const QuestionCardStyled = styled(Card)`
   padding: var(--size-xs);
   display: grid;
   grid-gap: var(--size-xs);
