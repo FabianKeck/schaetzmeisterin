@@ -1,14 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/macro';
 
-export default function QuestionCard() {
+export default function QuestionCard({ children }) {
   return (
     <QuestionCardStyled>
       <div>?</div>
-      <p>
-        How many pull requests have been opened by the HH-2020-j1 students
-        during their capstone projetcs?
-      </p>
+      <p>{children}</p>
     </QuestionCardStyled>
   );
 }

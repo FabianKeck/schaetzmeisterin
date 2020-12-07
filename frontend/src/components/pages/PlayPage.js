@@ -7,6 +7,7 @@ import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
 import AskCard from '../PlayComponents/AskCard';
+import AnswerCard from '../PlayComponents/AnswerCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -21,7 +22,6 @@ export default function PlayPage() {
     <>
       <Header>Schaetzmeisterin</Header>
       <PlayPageStyled>
-        <AskCard ask={ask} />
         <CardTable
           players={game.betSession.players.filter(
             (player) => player.id !== userData.playerId
@@ -31,7 +31,12 @@ export default function PlayPage() {
             game.betSession.players[game.betSession.activePlayerIndex]
           }
         />
-        <QuestionCard />
+        {game.betSession.question ? (
+          getQuestionCardOrAnswerCard()
+        ) : (
+          <AskCard ask={ask} />
+        )}
+
         <SelfCard
           bet={bet}
           fold={fold}
@@ -61,6 +66,14 @@ export default function PlayPage() {
     return game.betSession.players
       .map((player) => player.currentBet)
       .reduce((sum, currentBet) => sum + currentBet);
+  }
+
+  function getQuestionCardOrAnswerCard() {
+    return getPlayerData.dealing ? (
+      <QuestionCard>{game.betSession.question.question}</QuestionCard>
+    ) : (
+      <AnswerCard question={game.betSession.question.question} />
+    );
   }
 }
 const PlayPageStyled = styled.main`
