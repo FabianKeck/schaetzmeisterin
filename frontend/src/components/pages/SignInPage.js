@@ -19,7 +19,7 @@ export default function SignInPage() {
         <FormStyled onSubmit={handleSubmit}>
           <LabelStyled>
             Please Enter Your Name to sign in to game {gameid}:
-            <Input value={name} onChange={handleChange} />
+            <Input value={name} onChange={handleNameChange} />
           </LabelStyled>
           <ButtonStyled>Sign in</ButtonStyled>
           <p>{signInFailed}</p>
@@ -27,7 +27,7 @@ export default function SignInPage() {
       </main>
     </>
   );
-  function handleChange(event) {
+  function handleNameChange(event) {
     setName(event.target.value);
   }
   function handleSubmit(event) {
