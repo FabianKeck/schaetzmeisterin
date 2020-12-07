@@ -6,8 +6,10 @@ export default function Input(props) {
 }
 
 const InputStyled = styled.input`
-  padding-left: var(--size-xxs);
-  border: none;
-  border-radius: var(--size-xs);
-  box-shadow: inset 0 0 var(--size-xxs) #000;
+  padding-left: var(--size-xs);
+  border: 1px solid var(--color-golden);
+  border-radius: var(--size-xxs);
+  box-shadow: inset 0 0 var(--size-xs) #000;
+  background-color: var(--color-golden);
+  width: 70%;
 `;

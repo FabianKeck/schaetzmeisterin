@@ -3,6 +3,7 @@ import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
+import ActionButton from '../commons/ActionButton';
 
 export default function GameStagingPage() {
   const { game, startGame } = useContext(GameContext);
@@ -19,14 +20,14 @@ export default function GameStagingPage() {
             <li key={player.id}>{player.name}</li>
           ))}
         </UlStyled>
-        <ButtonStyled onClick={() => startGame(game.id)}>
+        <ActionButton onClick={() => startGame(game.id)}>
           Start Game!
-        </ButtonStyled>
+        </ActionButton>
       </GamePageStyled>
     </>
   );
 }
-const GamePageStyled = styled.div`
+const GamePageStyled = styled.main`
   display: grid;
   grid-gap: var(--size-s);
   grid-auto-rows: min-content;
@@ -37,12 +38,6 @@ const GamePageStyled = styled.div`
   }
 `;
 
-const ButtonStyled = styled.button`
-  font-size: 1em;
-  border-radius: var(--size-s);
-  background-color: var(--green-75);
-  border: 1px solid var(--green-main);
-`;
 const UlStyled = styled.ul`
   list-style: none;
   margin: 0;

@@ -1,30 +1,50 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { FaDollarSign, FaUser } from 'react-icons/fa';
+import { GiPayMoney, GiTwoCoins, GiCheckMark } from 'react-icons/gi';
 
-export default function PlayerCard({ player, active }) {
+export default function PlayerCard({ player, row, column, active }) {
   return (
-    <PlayerCardStyled active={active}>
+    <PlayerCardStyled row={row} column={column} active={active}>
       <p>
-        <FaUser /> {player.name}
+        <GiCheckMark /> {player.name}
       </p>
       <p>
-        {' '}
-        <FaDollarSign /> : {player.cash}
+        <GiTwoCoins />
+        {player.cash}
       </p>
-      <p>bet: {player.currentBet}</p>
+      <p>
+        <GiPayMoney /> {player.currentBet}
+      </p>
+      <ShadowDummy />
     </PlayerCardStyled>
   );
 }
 
-const PlayerCardStyled = styled.div`
+const PlayerCardStyled = styled.section`
+  grid-column: ${(props) => '' + props.column};
+  grid-row: ${(props) => '' + props.row};
+  position: relative;
+  border: ${(props) => (props.active ? '5px' : '1px')} solid var(--color-golden);
+  font-size: smaller;
   padding: var(--size-s);
   display: grid;
   grid-gap: var(--size-xs);
+  grid-auto-rows: min-content;
   border-radius: var(--size-s);
-  background-color: ${(props) =>
-    props.active ? 'var(--green-main)' : 'var(--blue-25)'};
+  background-color: var(--color-red);
   p {
+    display: flex;
+    justify-content: space-between;
     margin: 0;
+    align-items: center;
   }
+`;
+const ShadowDummy = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 7%;
+  background-color: transparent;
+  border-radius: var(--size-s);
+  bottom: 0;
+  box-shadow: 0 var(--size-s) var(--size-s) #000;
 `;
