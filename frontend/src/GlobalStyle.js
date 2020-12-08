@@ -4,7 +4,7 @@ import backgroundImage from './assets/poker-table-long.jpg';
 export default createGlobalStyle`
   :root{
   --color-red:#6A0000;
-  --color-active:#0A761D;
+  --color-green:#0A761D;
   --color-black:#1D1B1A;
   --color-golden:#C59135;
   

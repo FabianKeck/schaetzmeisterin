@@ -2,10 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,15 +48,23 @@ public class GameService {
         return  game;
     }
 
-    public Game bet(String gameId, String userId, int betValue) {
+    public Game getGame(String gameId, String userId) {
+        return getGameWithValidUser(gameId,userId);
+    }
+
+    public Game ask(String gameId, String userId, Question question) {
         Game game = getGameWithValidUser(gameId,userId);
-        betSessionService.bet(game.getBetSession(), userId, betValue);
+        betSessionService.ask(game.getBetSession(),userId,question);
         gameDao.save(game);
         return game;
     }
 
-    public Game getGame(String gameId, String userId) {
-        return getGameWithValidUser(gameId,userId);
+    public Game bet(String gameId, String userId, int betValue) {
+        //assure, that dealer won't bet
+        Game game = getGameWithValidUser(gameId,userId);
+        betSessionService.bet(game.getBetSession(), userId, betValue);
+        gameDao.save(game);
+        return game;
     }
 
     public Game fold(String gameId, String playerId) {
@@ -91,6 +96,7 @@ public class GameService {
                         .cash(100)
                         .build())
                 .collect(Collectors.toList());
+        betSessionPlayers.get(0).setDealing(true);
         return BetSession.builder().players(betSessionPlayers).build();
     }
 

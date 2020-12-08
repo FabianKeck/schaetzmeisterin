@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import ActionButton from '../commons/ActionButton';
 import Input from '../commons/Input';
 import { GiTwoCoins } from 'react-icons/gi';
+import { Card } from '../commons/Card';
 
 export default function SelfCard({ bet, fold, minBet, cash, active }) {
   const [betValue, setBetValue] = useState(minBet);
@@ -63,16 +64,11 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
   }
 }
 
-const SelfCardStyled = styled.div`
-  background-color: var(--color-red);
-  border-radius: var(--size-s);
+const SelfCardStyled = styled(Card)`
   display: grid;
   grid-gap: var(--size-s);
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 1fr;
-  padding: var(--size-s);
-  box-shadow: 2px 2px 2px #222;
-  border: 1px solid var(--color-golden);
 
   p {
     display: flex;
