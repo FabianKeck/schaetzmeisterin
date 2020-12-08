@@ -18,6 +18,7 @@ public class BetSessionService {
         if(!player.isDealing() || betSession.getQuestion()!=null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        markNextPlayerActive(betSession);
         betSession.setQuestion(question);
     }
 
@@ -31,10 +32,9 @@ public class BetSessionService {
     }
 
     public void bet(BetSession betSession, String playerId, int betValue){
-        //todo assure, that dealer won't bet
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
 
-        if(!betValueIsInAcceptableRange(betSession,player,betValue)){
+        if(!betValueIsInAcceptableRange(betSession,player,betValue) || player.isDealing()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 

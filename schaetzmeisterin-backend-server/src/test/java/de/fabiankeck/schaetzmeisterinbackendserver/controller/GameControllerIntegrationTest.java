@@ -140,27 +140,29 @@ class GameControllerIntegrationTest {
     }
      @Test
     @DisplayName("betRequest on startedGame with BetValue in correct range should return updated Game")
-    public void betTest(){
-        //given
-        String gameId= "gameId";
-        String username1= "John";
-        String playerId1 = "123";
-        String user1Token = login(username1,playerId1);
-        int betValue =2;
+    public void betTest(){//given
+         String gameId= "gameId";
+         String username1= "John";
+         String playerId1 = "123";
+         String user1Token = login(username1,playerId1);
 
-        //sign in first user
+
+         //sign in first user
          HttpHeaders firstUserAuthHeaders = new HttpHeaders();
          firstUserAuthHeaders.setBearerAuth(user1Token);
-        HttpEntity<Object> firstSignInRequest = new HttpEntity<>(null,firstUserAuthHeaders);
-        when(idUtils.createId()).thenReturn(gameId);
-        String signInUrl = "http://localhost:"+port+"/api/game/signin";
-        restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+         HttpEntity<Object> firstSignInRequest = new HttpEntity<>(null,firstUserAuthHeaders);
+         when(idUtils.createId()).thenReturn(gameId);
+         String signInUrl = "http://localhost:"+port+"/api/game/signin";
+         restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
 
 
-        //signIn second user
+         //signIn second user
          String username2= "Doe";
          String playerId2 = "456";
-         HttpEntity<Object> secondSignInRequest = getValidAuthenticationEntity(null,username2,playerId2);
+         String user2Token = login(username2,playerId2);
+         HttpHeaders secondUserAuthHeaders = new HttpHeaders();
+         secondUserAuthHeaders.setBearerAuth(user2Token);
+         HttpEntity<Object> secondSignInRequest = new HttpEntity<>(null,secondUserAuthHeaders);
          String signInUrlId = "http://localhost:"+port+"/api/game/signin/"+gameId;
          restTemplate.exchange(signInUrlId, HttpMethod.POST, secondSignInRequest, Game.class);
 
@@ -169,8 +171,21 @@ class GameControllerIntegrationTest {
          String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
          restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
 
+         //askQuestion
+         Question question = Question.builder().question("question").answer(1).build();
+         HttpEntity<Question> askEntity = new HttpEntity<>(question, firstUserAuthHeaders);
+         String askUrl = "http://localhost:"+port+"/api/game/ask/"+gameId;
+         restTemplate.exchange(askUrl, HttpMethod.POST, askEntity, Game.class);
+
+         //guess
+         GuessDto guess = new GuessDto(2.5);
+         HttpEntity<GuessDto> guessEntity = new HttpEntity<>(guess,secondUserAuthHeaders);
+         String getUrl = "http://localhost:"+port+"/api/game/guess/"+gameId;
+         ResponseEntity<Game> guessResponse = restTemplate.exchange(getUrl, HttpMethod.POST, guessEntity, Game.class);
+
          //when
-         HttpEntity<BetDto> betEntity = new HttpEntity<>(new BetDto(betValue), firstUserAuthHeaders);
+         int betValue= 2;
+         HttpEntity<BetDto> betEntity = new HttpEntity<>(new BetDto(betValue), secondUserAuthHeaders);
         String betUrl = "http://localhost:"+port+"/api/game/bet/"+gameId;
          ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, betEntity, Game.class);
 
@@ -179,7 +194,7 @@ class GameControllerIntegrationTest {
          //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getBetSession().getActivePlayerIndex(),is(1));
-        assertThat(response.getBody().getBetSession().getPlayers().get(0).getCurrentBet(),is(betValue));
+        assertThat(response.getBody().getBetSession().getPlayers().get(1).getCurrentBet(),is(betValue));
     }
 
 
