@@ -1,21 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import { Card } from '../commons/Card';
 import Input from '../commons/Input';
 import ActionButton from '../commons/ActionButton';
 
-export default function AnswerCard({ question }) {
+export default function AnswerCard({ question, answer }) {
+  const [guessString, setGuessString] = useState('');
+  const guessIsValidNumberString = !isNaN(guessString) && guessString;
   return (
     <AnswerCardStyled>
       <p>{question.question}</p>
-      <form>
+      <form onSubmit={handleAnswerSubmit}>
         <label>
-          Your guess: <Input />
+          Your guess:
+          <Input
+            value={guessString}
+            onChange={(event) => setGuessString(event.target.value)}
+          />
         </label>
-        <ActionButton>Submit!</ActionButton>
+        <ActionButton disabled={!guessIsValidNumberString}>
+          Submit!
+        </ActionButton>
       </form>
     </AnswerCardStyled>
   );
+
+  function handleAnswerSubmit(event) {
+    event.preventDefault();
+    answer(guessString);
+  }
 }
 
 const AnswerCardStyled = styled(Card)`

@@ -21,6 +21,9 @@ export const getGame = (token, gameId) =>
 export const askPost = (token, gameId, question) =>
   axios.post('/api/game/ask/' + gameId, question, header(token));
 
+export const answerPost = (token, gameId, guess) =>
+  axios.post('/api/game/answer/' + gameId, { guess: guess }, header(token));
+
 export const betPost = (token, gameId, betValue) =>
   axios.post('/api/game/bet/' + gameId, { betValue }, header(token));
 
