@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
@@ -68,6 +69,7 @@ class GameControllerIntegrationTest {
         headers.setBearerAuth(token);
         return new HttpEntity<>(data,headers);
     }
+
     @Test
     @DisplayName("Post on /signin without gameId should return new Game")
     void signInNewTest(){
@@ -180,8 +182,9 @@ class GameControllerIntegrationTest {
         assertThat(response.getBody().getBetSession().getPlayers().get(0).getCurrentBet(),is(betValue));
     }
 
+
     @Test
-    @DisplayName("askREquest with valid Question on a started Game should retrun Game")
+    @DisplayName("askRequest with valid Answer and user on a started Game should return updated Game")
     public void askTest(){
         //given
         String gameId= "gameId";
@@ -211,7 +214,7 @@ class GameControllerIntegrationTest {
         String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
         restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
 
-        //when
+        //ask
         HttpEntity<Question> askEntity = new HttpEntity<>(question, firstUserAuthHeaders);
         String betUrl = "http://localhost:"+port+"/api/game/ask/"+gameId;
         ResponseEntity<Game> response = restTemplate.exchange(betUrl, HttpMethod.POST, askEntity, Game.class);
@@ -221,10 +224,57 @@ class GameControllerIntegrationTest {
         //then
         assertThat(response.getStatusCode(),is(HttpStatus.OK));
         assertThat(Objects.requireNonNull(response.getBody()).getBetSession().getQuestion(),is(question));
-
     }
-    
-    
+
+    @Test
+    @DisplayName("Guess-Request with valid Question on a game with question should return updated Game")
+    public void guessTest(){
+        //given
+        String gameId= "gameId";
+        String username1= "John";
+        String playerId1 = "123";
+        String user1Token = login(username1,playerId1);
 
 
+        //sign in first user
+        HttpHeaders firstUserAuthHeaders = new HttpHeaders();
+        firstUserAuthHeaders.setBearerAuth(user1Token);
+        HttpEntity<Object> firstSignInRequest = new HttpEntity<>(null,firstUserAuthHeaders);
+        when(idUtils.createId()).thenReturn(gameId);
+        String signInUrl = "http://localhost:"+port+"/api/game/signin";
+        restTemplate.exchange(signInUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+
+        //signIn second user
+        String username2= "Doe";
+        String playerId2 = "456";
+        String user2Token = login(username2,playerId2);
+        HttpHeaders secondUserAuthHeaders = new HttpHeaders();
+        secondUserAuthHeaders.setBearerAuth(user2Token);
+        HttpEntity<Object> secondSignInRequest = new HttpEntity<>(null,secondUserAuthHeaders);
+        String signInUrlId = "http://localhost:"+port+"/api/game/signin/"+gameId;
+        restTemplate.exchange(signInUrlId, HttpMethod.POST, secondSignInRequest, Game.class);
+
+
+        //startGame
+        String startUrl = "http://localhost:"+port+"/api/game/startgame/"+gameId;
+        restTemplate.exchange(startUrl, HttpMethod.POST, firstSignInRequest, Game.class);
+
+        //askQuestion
+        Question question = Question.builder().question("question").answer(1).build();
+        HttpEntity<Question> askEntity = new HttpEntity<>(question, firstUserAuthHeaders);
+        String betUrl = "http://localhost:"+port+"/api/game/ask/"+gameId;
+        restTemplate.exchange(betUrl, HttpMethod.POST, askEntity, Game.class);
+
+        //guess
+        GuessDto guess = new GuessDto(2.5);
+        HttpEntity<GuessDto> guessEntity = new HttpEntity<>(guess,secondUserAuthHeaders);
+        String getUrl = "http://localhost:"+port+"/api/game/guess/"+gameId;
+        ResponseEntity<Game> guessResponse = restTemplate.exchange(getUrl, HttpMethod.POST, guessEntity, Game.class);
+
+
+        //then
+        assertThat(guessResponse.getStatusCode(),is(HttpStatus.OK));
+        assertThat(Objects.requireNonNull(guessResponse.getBody()).getBetSession().getPlayers().get(1).getGuess(),is(guess.getGuess()));
+    }
 }
