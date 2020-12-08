@@ -7,6 +7,8 @@ import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
 import AskCard from '../PlayComponents/AskCard';
+import WaitForQuestionCard from '../PlayComponents/WaitForQuestionCard';
+import AnswerCard from '../PlayComponents/AnswerCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -30,12 +32,20 @@ export default function PlayPage() {
             game.betSession.players[game.betSession.activePlayerIndex]
           }
         />
-        {game.betSession.question ? (
-          <QuestionCard>{game.betSession.question.question}</QuestionCard>
-        ) : (
+
+        {!game.betSession.question && getPlayerData().dealing && (
           <AskCard ask={ask} />
         )}
-
+        {!getPlayerData().dealing &&
+          !getPlayerData().answer &&
+          (game.betSession.question ? (
+            <AnswerCard question={game.betSession.question} />
+          ) : (
+            <WaitForQuestionCard />
+          ))}
+        {game.betSession.question && (
+          <QuestionCard>{game.betSession.question.question}</QuestionCard>
+        )}
         <SelfCard
           bet={bet}
           fold={fold}
