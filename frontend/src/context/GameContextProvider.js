@@ -4,7 +4,7 @@ import {
   signInGamePost,
   startGamePost,
   askPost,
-  answerPost,
+  guessPost,
   betPost,
   foldPost,
   getGame,
@@ -55,8 +55,8 @@ export default function GameContextProvider({ children }) {
       .then((response) => response.data)
       .then(setGameAndSaveToLocalStorage);
 
-  const answer = (guess) =>
-    answerPost(token, game.id, guess)
+  const guess = (guess) =>
+    guessPost(token, game.id, guess)
       .then((response) => response.data)
       .then(setGameAndSaveToLocalStorage);
 
@@ -84,7 +84,7 @@ export default function GameContextProvider({ children }) {
         signInGame,
         startGame,
         ask,
-        answer,
+        guess,
         bet,
         startGameLoop,
         stopGameLoop,

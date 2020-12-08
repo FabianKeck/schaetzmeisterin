@@ -4,7 +4,7 @@ import { Card } from '../commons/Card';
 import Input from '../commons/Input';
 import ActionButton from '../commons/ActionButton';
 
-export default function AnswerCard({ question, answer }) {
+export default function AnswerCard({ question, guess }) {
   const [guessString, setGuessString] = useState('');
   const guessIsValidNumberString = !isNaN(guessString) && guessString;
   return (
@@ -27,7 +27,7 @@ export default function AnswerCard({ question, answer }) {
 
   function handleAnswerSubmit(event) {
     event.preventDefault();
-    answer(guessString);
+    guess(guessString);
   }
 }
 

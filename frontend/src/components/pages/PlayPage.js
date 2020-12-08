@@ -12,7 +12,7 @@ import AnswerCard from '../PlayComponents/AnswerCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
-  const { game, ask, answer, bet, fold } = useContext(GameContext);
+  const { game, ask, guess, bet, fold } = useContext(GameContext);
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
@@ -39,7 +39,7 @@ export default function PlayPage() {
         {!getPlayerData().dealing &&
           !getPlayerData().answer &&
           (game.betSession.question ? (
-            <AnswerCard question={game.betSession.question} answer={answer} />
+            <AnswerCard question={game.betSession.question} guess={guess} />
           ) : (
             <WaitForQuestionCard />
           ))}
