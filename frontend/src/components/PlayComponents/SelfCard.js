@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import ActionButton from '../commons/ActionButton';
 import Input from '../commons/Input';
-import { GiTwoCoins } from 'react-icons/gi';
+import { GiTwoCoins, GiCardAceSpades } from 'react-icons/gi';
 import { Card } from '../commons/Card';
 
-export default function SelfCard({ bet, fold, minBet, cash, active }) {
+export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
   const [betValue, setBetValue] = useState(minBet);
   const betTooSmall = betValue < minBet;
   const betTooLarge = betValue > cash;
@@ -16,7 +16,11 @@ export default function SelfCard({ bet, fold, minBet, cash, active }) {
           <GiTwoCoins /> {cash}
         </p>
         <p>Minimum Bet: {minBet}</p>
-        <p> your guess: 97</p>
+        {!!guess && (
+          <p>
+            <GiCardAceSpades /> {guess}
+          </p>
+        )}
       </section>
       <Actions>
         {minBet ? (

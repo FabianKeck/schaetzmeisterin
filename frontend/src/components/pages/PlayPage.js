@@ -37,7 +37,7 @@ export default function PlayPage() {
           <AskCard ask={ask} />
         )}
         {!getPlayerData().dealing &&
-          !getPlayerData().answer &&
+          !getPlayerData().guessed &&
           (game.betSession.question ? (
             <AnswerCard question={game.betSession.question} guess={guess} />
           ) : (
@@ -47,6 +47,7 @@ export default function PlayPage() {
           <QuestionCard>{game.betSession.question.question}</QuestionCard>
         )}
         <SelfCard
+          guess={getPlayerData().guess}
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}
