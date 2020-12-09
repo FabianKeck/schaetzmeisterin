@@ -46,8 +46,8 @@ jobs:
         run: mvn -B package -DskipTests --file schaetzmeisterin-backend-server/pom.xml
       - uses: actions/upload-artifact@v2
         with:
-          name: schaetzmeisterin-build.jar
-          path: schaetzmeisterin-backend-server/target/schaetzmeisterin-build.jar
+          name: schaetzmeisterin.jar
+          path: schaetzmeisterin-backend-server/target/schaetzmeisterin.jar
 
   deploy:
     name: deploy to heroku
@@ -59,7 +59,7 @@ jobs:
         run: mkdir schaetzmeisterin-backend-server/target
       - uses: actions/download-artifact@v2
         with:
-          name: schaetzmeisterin-build.jar
+          name: schaetzmeisterin.jar
           path: schaetzmeisterin-backend-server/target
       - name: login to heroku container
         env:

@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.fabiankeck</groupId>
-	<artifactId>schaetzmeisterin-backend-server</artifactId>
+	<artifactId>schaetzmeisterin</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>schaetzmeisterin-backend-server</name>
+	<name>schaetzmeisterin</name>
 	<description>Backend Server for the Schatzmeisterin-App</description>
 
 	<properties>
@@ -69,6 +69,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>${project.artifactId}</finalName>
 	</build>
 
 </project>
