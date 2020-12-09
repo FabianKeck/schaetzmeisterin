@@ -33,7 +33,9 @@ export default function AnswerCard({ question, guess }) {
 
 const AnswerCardStyled = styled(Card)`
   position: absolute;
-  bottom: 50%;
+  bottom: 20%;
+  left: 50%;
+  transform: translate(-50%, 0);
 
   form {
     display: flex;
