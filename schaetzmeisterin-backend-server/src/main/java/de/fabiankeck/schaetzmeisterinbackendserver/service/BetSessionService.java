@@ -1,12 +1,14 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -40,13 +42,17 @@ public class BetSessionService {
 
         player.setCurrentBet(player.getCurrentBet()+betValue);
         player.setCash(player.getCash()-betValue);
+        player.setBetted(true);
+        evaluateBetSessionIfNecessary(betSession);
 
         markNextPlayerActive(betSession);
     }
     public void fold(BetSession betSession, String playerId){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
         markNextPlayerActive(betSession);
+        player.setBetted(true);
         player.setFolded(true);
+        evaluateBetSessionIfNecessary(betSession);
     }
 
     private void markNextPlayerActive(BetSession betSession) {
@@ -84,4 +90,25 @@ public class BetSessionService {
     private BetSessionPlayer getPlayerIfPresentOrThrow(BetSession betSession, String playerID){
         return betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
     }
+    private void evaluateBetSessionIfNecessary(BetSession betSession) {
+        boolean allPlayersHaveBeenActive = betSession.getPlayers().stream()
+                .anyMatch(player -> !player.isDealing() && !player.isBetted());
+        if (!allPlayersHaveBeenActive) return;
+
+        List<BetSessionPlayer> playersStillBetting = betSession.getPlayers().stream().filter(player -> !player.isDealing() && !player.isFolded()).collect(Collectors.toList());
+        //all players bet is equal ?
+        int aBet = playersStillBetting.get(0).getCurrentBet();
+        if (playersStillBetting.stream().anyMatch(player -> player.getCurrentBet() != aBet)) return;
+
+
+        BetSessionPlayer winner = playersStillBetting.stream().min(Comparator.comparingDouble(player -> Math.abs(player.getGuess() - betSession.getQuestion().getAnswer()))).orElseThrow(() -> new IllegalArgumentException("No Players here"));
+        winner.setCash(winner.getCash()+getPot(betSession));
+
+        betSession.getPlayers().forEach(player->player.setCurrentBet(0));
+    }
+    private int getPot(BetSession betSession){
+        return betSession.getPlayers().stream().mapToInt(BetSessionPlayer::getCurrentBet).sum();
+    }
+
+
 }

@@ -19,4 +19,5 @@ public class BetSessionPlayer {
     private boolean dealing;
     private double guess;
     private boolean guessed;
+    private boolean betted;
 }
