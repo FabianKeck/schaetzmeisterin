@@ -92,10 +92,10 @@ public class BetSessionService {
     }
     private void evaluateBetSessionIfNecessary(BetSession betSession) {
         boolean allPlayersHaveBeenActive = betSession.getPlayers().stream()
-                .anyMatch(player -> !player.isDealing() && !player.isBetted());
+                .allMatch(player -> player.isDealing() || player.isBetted());
         if (!allPlayersHaveBeenActive) return;
 
-        List<BetSessionPlayer> playersStillBetting = betSession.getPlayers().stream().filter(player -> !player.isDealing() && !player.isFolded()).collect(Collectors.toList());
+        List<BetSessionPlayer> playersStillBetting = betSession.getPlayers().stream().filter(player -> !player.isDealing()).filter(player->!player.isFolded()).collect(Collectors.toList());
         //all players bet is equal ?
         int aBet = playersStillBetting.get(0).getCurrentBet();
         if (playersStillBetting.stream().anyMatch(player -> player.getCurrentBet() != aBet)) return;
@@ -104,10 +104,22 @@ public class BetSessionService {
         BetSessionPlayer winner = playersStillBetting.stream().min(Comparator.comparingDouble(player -> Math.abs(player.getGuess() - betSession.getQuestion().getAnswer()))).orElseThrow(() -> new IllegalArgumentException("No Players here"));
         winner.setCash(winner.getCash()+getPot(betSession));
 
-        betSession.getPlayers().forEach(player->player.setCurrentBet(0));
+        initiateNewBetSession(betSession);
     }
     private int getPot(BetSession betSession){
         return betSession.getPlayers().stream().mapToInt(BetSessionPlayer::getCurrentBet).sum();
+    }
+    private void initiateNewBetSession(BetSession betSession){
+
+        int currentDealerIndex= betSession.getPlayers().indexOf(betSession.getPlayers().stream().filter(BetSessionPlayer::isDealing).findAny().orElseThrow(()->new IllegalArgumentException("noPlayerDealing")));
+        betSession.getPlayers().get(currentDealerIndex).setDealing(false);
+        betSession.getPlayers().get((currentDealerIndex+1)%betSession.getPlayers().size()).setDealing(true);
+        betSession.setQuestion(null);
+        betSession.getPlayers().forEach(player->{
+            player.setGuessed(false);
+            player.setBetted(false);
+            player.setCurrentBet(0);
+        });
     }
 
 
