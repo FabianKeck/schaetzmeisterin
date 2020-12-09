@@ -43,7 +43,7 @@ jobs:
           name: frontend-build
           path: schaetzmeisterin-backend-server/src/main/resources/static
       - name: Build with Maven
-        run: mvn -B package -DskipTests --file backend/pom.xml
+        run: mvn -B package -DskipTests --file schaetzmeisterin-backend-server/pom.xml
       - uses: actions/upload-artifact@v2
         with:
           name: backend-build.jar
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: create target folder
-        run: mkdir backend/target
+        run: mkdir backschaetzmeisterin-backend-server/end/target
       - uses: actions/download-artifact@v2
         with:
           name: backend-build.jar
