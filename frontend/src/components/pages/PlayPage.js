@@ -58,6 +58,9 @@ export default function PlayPage() {
           minBet={calcMinBet()}
           cash={playerData.cash}
           active={active}
+          disableActions={
+            askingAndGuessingInProgress || game.betSession.finished
+          }
         />
       </PlayPageStyled>
     </>

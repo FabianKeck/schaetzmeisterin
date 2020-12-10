@@ -5,7 +5,7 @@ import AskCard from './AskCard';
 export default function AskOrWait({ ask, asked }) {
   return asked ? (
     <Card>
-      The other players are currently answering your question please wait
+      The other players are currently answering your question. Please wait.
     </Card>
   ) : (
     <AskCard ask={ask} />

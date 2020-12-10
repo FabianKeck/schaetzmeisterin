@@ -13,6 +13,7 @@ export default function SelfCard({
   minBet,
   cash,
   active,
+  disableActions,
 }) {
   const [betValue, setBetValue] = useState(minBet);
   const betTooSmall = betValue < minBet;
@@ -34,17 +35,20 @@ export default function SelfCard({
       <Actions>
         {minBet ? (
           <ActionButton
-            disabled={!active || minBet > cash}
+            disabled={!active || minBet > cash || disableActions}
             onClick={handleCall}
           >
             call
           </ActionButton>
         ) : (
-          <ActionButton disabled={!active} onClick={handleCheck}>
+          <ActionButton
+            disabled={!active || disableActions}
+            onClick={handleCheck}
+          >
             check
           </ActionButton>
         )}
-        <ActionButton disabled={!active} onClick={fold}>
+        <ActionButton disabled={!active || disableActions} onClick={handleFold}>
           fold
         </ActionButton>
         {betTooSmall && <p>Your Bet is too small. Please enter a larger bet</p>}
@@ -53,7 +57,9 @@ export default function SelfCard({
         )}
         <form onSubmit={handleRaiseSubmit}>
           <Input value={betValue} onChange={handleBetValueChange} />
-          <ActionButton disabled={betTooSmall || betTooLarge || !active}>
+          <ActionButton
+            disabled={betTooSmall || betTooLarge || !active || disableActions}
+          >
             raise
           </ActionButton>
         </form>
@@ -63,6 +69,10 @@ export default function SelfCard({
 
   function handleBetValueChange(event) {
     setBetValue(event.target.value);
+  }
+
+  function handleFold() {
+    fold();
   }
 
   function handleRaiseSubmit(event) {
