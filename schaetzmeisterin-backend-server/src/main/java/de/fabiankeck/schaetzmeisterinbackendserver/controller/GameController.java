@@ -53,13 +53,4 @@ public class GameController {
     public Game getGame(@PathVariable String gameId, Principal principal){
         return gameService.getGame(gameId,principal.getName());
     }
-
-
-
-
-    /*
-    post quesiton
-    answer
-    bid /fold raise check //enum
-     */
 }
