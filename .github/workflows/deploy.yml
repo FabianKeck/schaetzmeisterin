@@ -1,0 +1,75 @@
+name: Deploy Schaetzmeisterin
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  build-frontend:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: npm install frontend
+        run: |
+          cd frontend
+          npm install
+      - name: run build
+        run: |
+          cd frontend
+          npm run build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend-build
+          path: frontend/build/
+
+  build-backend:
+    runs-on: ubuntu-latest
+    needs: build-frontend
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 15
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - uses: actions/download-artifact@v2
+        with:
+          name: frontend-build
+          path: schaetzmeisterin-backend-server/src/main/resources/static
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file schaetzmeisterin-backend-server/pom.xml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: schaetzmeisterin.jar
+          path: schaetzmeisterin-backend-server/target/schaetzmeisterin.jar
+
+  deploy:
+    name: deploy to heroku
+    runs-on: ubuntu-latest
+    needs: build-backend
+    steps:
+      - uses: actions/checkout@v2
+      - name: create target folder
+        run: mkdir schaetzmeisterin-backend-server/target
+      - uses: actions/download-artifact@v2
+        with:
+          name: schaetzmeisterin.jar
+          path: schaetzmeisterin-backend-server/target
+      - name: login to heroku container
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
+      - name: push docker container to heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:push web -a schaetzmeisterin
+      - name: deploy/release docker container to heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release web -a schaetzmeisterin
