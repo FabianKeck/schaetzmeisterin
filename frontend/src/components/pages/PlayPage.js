@@ -8,6 +8,7 @@ import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
 import AskingAndGuessIng from '../PlayComponents/AskingAndGuessIng';
 import FinishedQuestionCard from '../PlayComponents/FinishedQuestionCard';
+import ReactConfetti from 'react-confetti';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -23,6 +24,7 @@ export default function PlayPage() {
   const playerData = game.betSession.players.find(
     (player) => player.id === userData.playerId
   );
+  const partyTime = playerData.winner;
 
   return (
     <>
@@ -72,6 +74,12 @@ export default function PlayPage() {
           }
         />
       </PlayPageStyled>
+      {partyTime && (
+        <div className={partyTime}>
+          Halohier bin ich
+          <ReactConfetti colors={['#C59135']} />
+        </div>
+      )}
     </>
   );
 
