@@ -5,13 +5,22 @@ import Input from '../commons/Input';
 import { GiTwoCoins, GiCardAceSpades } from 'react-icons/gi';
 import { Card } from '../commons/Card';
 
-export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
+export default function SelfCard({
+  name,
+  guess,
+  bet,
+  fold,
+  minBet,
+  cash,
+  active,
+}) {
   const [betValue, setBetValue] = useState(minBet);
   const betTooSmall = betValue < minBet;
   const betTooLarge = betValue > cash;
   return (
     <SelfCardStyled active={active}>
       <section>
+        <p>{name}</p>
         <p>
           <GiTwoCoins /> {cash}
         </p>

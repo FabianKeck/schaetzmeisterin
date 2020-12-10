@@ -6,9 +6,7 @@ import SelfCard from '../PlayComponents/SelfCard';
 import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
-import AskCard from '../PlayComponents/AskCard';
-import WaitForQuestionCard from '../PlayComponents/WaitForQuestionCard';
-import AnswerCard from '../PlayComponents/AnswerCard';
+import AskingAndGuessIng from '../PlayComponents/AskingAndGuessIng';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -18,6 +16,12 @@ export default function PlayPage() {
     setActive(isActive(userData.playerId));
     // eslint-disable-next-line
   }, [game, userData.playerId]);
+  const askingAndGuessingInProgress = game.betSession.players.some(
+    (player) => !(player.dealing || player.guessed)
+  );
+  const playerData = game.betSession.players.find(
+    (player) => player.id === userData.playerId
+  );
 
   return (
     <>
@@ -32,40 +36,37 @@ export default function PlayPage() {
             game.betSession.players[game.betSession.activePlayerIndex]
           }
         />
-
-        {!game.betSession.question && getPlayerData().dealing && (
-          <AskCard ask={ask} />
+        {askingAndGuessingInProgress && (
+          <AskingAndGuessIng
+            name={playerData.name}
+            dealing={playerData.dealing}
+            guessed={playerData.guessed}
+            question={game.betSession.question?.question}
+            ask={ask}
+            guess={guess}
+          />
         )}
-        {!getPlayerData().dealing &&
-          !getPlayerData().guessed &&
-          (game.betSession.question ? (
-            <AnswerCard question={game.betSession.question} guess={guess} />
-          ) : (
-            <WaitForQuestionCard />
-          ))}
+
         {game.betSession.question && (
           <QuestionCard>{game.betSession.question.question}</QuestionCard>
         )}
         <SelfCard
-          guess={getPlayerData().guess}
+          name={playerData.name}
+          guess={playerData.guess}
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}
-          cash={getPlayerData().cash}
+          cash={playerData.cash}
           active={active}
         />
       </PlayPageStyled>
     </>
   );
-  function getPlayerData() {
-    return game.betSession.players.find(
-      (player) => player.id === userData.playerId
-    );
-  }
+
   function calcMinBet() {
     return (
       Math.max(...game.betSession.players.map((player) => player.currentBet)) -
-      getPlayerData().currentBet
+      playerData.currentBet
     );
   }
   function isActive(id) {

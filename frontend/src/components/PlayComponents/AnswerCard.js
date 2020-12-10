@@ -9,7 +9,7 @@ export default function AnswerCard({ question, guess }) {
   const guessIsValidNumberString = !isNaN(guessString) && guessString;
   return (
     <AnswerCardStyled>
-      <p>{question.question}</p>
+      <p>{question}</p>
       <form onSubmit={handleAnswerSubmit}>
         <label>
           Your guess:
