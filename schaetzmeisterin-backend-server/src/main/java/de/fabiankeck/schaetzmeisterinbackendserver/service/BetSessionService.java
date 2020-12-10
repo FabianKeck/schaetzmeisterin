@@ -51,7 +51,6 @@ public class BetSessionService {
     }
     public void fold(BetSession betSession, String playerId){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
-        markNextPlayerActive(betSession);
         player.setBetted(true);
         player.setFolded(true);
         evaluateBetSessionIfNecessary(betSession);
@@ -104,11 +103,18 @@ public class BetSessionService {
 
         List<BetSessionPlayer> playersStillBetting = betSession.getPlayers().stream().filter(player -> !player.isDealing()).filter(player->!player.isFolded()).collect(Collectors.toList());
         //all players bet is equal ?
+        if(playersStillBetting.size()==1){
+            finishBetSessionandDeclareWinner(betSession,playersStillBetting.get(0));
+            return;
+        }
         int aBet = playersStillBetting.get(0).getCurrentBet();
         if (playersStillBetting.stream().anyMatch(player -> player.getCurrentBet() != aBet)) return;
 
 
         BetSessionPlayer winner = playersStillBetting.stream().min(Comparator.comparingDouble(player -> Math.abs(player.getGuess() - betSession.getQuestion().getAnswer()))).orElseThrow(() -> new IllegalArgumentException("No Players here"));
+       finishBetSessionandDeclareWinner(betSession,winner);
+    }
+    private void finishBetSessionandDeclareWinner(BetSession betSession, BetSessionPlayer winner){
         winner.setWinner(true);
         winner.setCash(winner.getCash()+getPot(betSession));
         betSession.setFinished(true);

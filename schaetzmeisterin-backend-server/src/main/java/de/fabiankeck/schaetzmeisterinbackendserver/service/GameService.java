@@ -77,6 +77,7 @@ public class GameService {
     public Game fold(String gameId, String playerId) {
         Game game = getGameWithValidUser(gameId,playerId);
         betSessionService.fold(game.getBetSession(),playerId);
+        gameDao.save(game);
         return game;
     }
 
