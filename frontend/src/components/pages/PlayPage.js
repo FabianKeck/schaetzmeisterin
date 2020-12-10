@@ -7,10 +7,12 @@ import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
 import AskCard from '../PlayComponents/AskCard';
+import WaitForQuestionCard from '../PlayComponents/WaitForQuestionCard';
+import AnswerCard from '../PlayComponents/AnswerCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
-  const { game, ask, bet, fold } = useContext(GameContext);
+  const { game, ask, guess, bet, fold } = useContext(GameContext);
   const [active, setActive] = useState(false);
   useEffect(() => {
     setActive(isActive(userData.playerId));
@@ -30,13 +32,22 @@ export default function PlayPage() {
             game.betSession.players[game.betSession.activePlayerIndex]
           }
         />
-        {game.betSession.question ? (
-          <QuestionCard>{game.betSession.question.question}</QuestionCard>
-        ) : (
+
+        {!game.betSession.question && getPlayerData().dealing && (
           <AskCard ask={ask} />
         )}
-
+        {!getPlayerData().dealing &&
+          !getPlayerData().guessed &&
+          (game.betSession.question ? (
+            <AnswerCard question={game.betSession.question} guess={guess} />
+          ) : (
+            <WaitForQuestionCard />
+          ))}
+        {game.betSession.question && (
+          <QuestionCard>{game.betSession.question.question}</QuestionCard>
+        )}
         <SelfCard
+          guess={getPlayerData().guess}
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}

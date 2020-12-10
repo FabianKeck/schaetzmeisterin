@@ -188,7 +188,6 @@ class GameServiceTest {
     public void AskWithValidUserTest(){
         //given
         String gameId ="gameId";
-        int betValue = 2;
         Game initial = getGameWithThreeUsers(gameId);
         Game updated = getGameWithThreeUsers(gameId);
         Question question = Question.builder().question("question").answer(1).build();
@@ -210,6 +209,38 @@ class GameServiceTest {
         updated.getBetSession().setQuestion(question);
         verify(gameDao).save(updated);
         verify(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+    }
+
+    @Test
+    @DisplayName(" guess with valid user should return updated Game and sve to DB")
+    public void guessWithValidUserTest(){
+        //given
+        String gameId ="gameId";
+        double guess= 2.5;
+        Game initial = getGameWithThreeUsers(gameId);
+        Game updated = getGameWithThreeUsers(gameId);
+        Question question = Question.builder().question("question").answer(1).build();
+        initial.getBetSession().getPlayers().get(0).setDealing(true);
+        initial.getBetSession().setQuestion(question);
+        updated.getBetSession().getPlayers().get(0).setDealing(true);
+        updated.getBetSession().setQuestion(question);
+        updated.getBetSession().getPlayers().get(1).setGuess(guess);
+
+
+
+        //when
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        doAnswer(invocationOnMock -> {
+            ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(1).setGuess(guess);
+            return null;
+        }).when(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+
+        Game actual = gameService.guess(gameId,initial.getPlayers().get(1).getId(), guess);
+        //then
+
+        assertThat(actual,is(updated));
+        verify(gameDao).save(updated);
+        verify(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
     }
 
 

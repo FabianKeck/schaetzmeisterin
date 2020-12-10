@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Input from '../commons/Input';
 import ActionButton from '../commons/ActionButton';
+import { Card } from '../commons/Card';
 
 const initialState = { question: '', answer: '' };
 export default function AskCard({ ask }) {
@@ -54,10 +55,7 @@ export default function AskCard({ ask }) {
   }
 }
 
-const AskCardStyled = styled.div`
-  background-color: var(--color-main);
-  border-radius: var(--size-s);
-  border: 1px solid var(--color-golden);
+const AskCardStyled = styled(Card)`
   box-shadow: var(--size-s) var(--size-s) var(--size-l) var(--size-s) #222;
   position: absolute;
   bottom: 50%;

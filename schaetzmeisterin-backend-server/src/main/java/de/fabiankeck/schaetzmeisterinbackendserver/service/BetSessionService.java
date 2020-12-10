@@ -13,18 +13,28 @@ import java.util.stream.Collectors;
 @Service
 public class BetSessionService {
 
-    public void ask(BetSession betSession, String playerID, Question question) {
-        BetSessionPlayer player = betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
+    public void ask(BetSession betSession, String playerId, Question question) {
+        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession,playerId);
         if(!player.isDealing() || betSession.getQuestion()!=null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        markNextPlayerActive(betSession);
         betSession.setQuestion(question);
+    }
+
+    public void guess(BetSession betSession, String playerId, double guess) {
+        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession,playerId);
+        if(player.isDealing() || betSession.getQuestion()==null || player.isGuessed()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        player.setGuessed(true);
+        player.setGuess(guess);
     }
 
     public void bet(BetSession betSession, String playerId, int betValue){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
 
-        if(!betValueIsInAcceptableRange(betSession,player,betValue)){
+        if(!betValueIsInAcceptableRange(betSession,player,betValue) || player.isDealing()){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
@@ -70,5 +80,8 @@ public class BetSessionService {
         }
 
         return player;
+    }
+    private BetSessionPlayer getPlayerIfPresentOrThrow(BetSession betSession, String playerID){
+        return betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
     }
 }

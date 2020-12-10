@@ -1,5 +1,6 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
 import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
@@ -31,6 +32,11 @@ public class GameController {
     @PostMapping("ask/{gameId}")
     public Game ask(@PathVariable String gameId,  Principal principal,@RequestBody Question question){
         return gameService.ask(gameId,principal.getName(),question);
+    }
+
+    @PostMapping("/guess/{gameId}")
+    public Game guess(@PathVariable String gameId,  Principal principal,@RequestBody GuessDto guessDto){
+        return gameService.guess(gameId,principal.getName(),guessDto.getGuess());
     }
 
     @PostMapping("/bet/{gameId}")

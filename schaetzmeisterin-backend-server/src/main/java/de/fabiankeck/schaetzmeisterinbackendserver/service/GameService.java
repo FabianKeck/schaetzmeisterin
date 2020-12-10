@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +60,14 @@ public class GameService {
         return game;
     }
 
+    public Game guess(String gameId, String userId, double guess) {
+        Game game = getGameWithValidUser(gameId,userId);
+        betSessionService.guess(game.getBetSession(),userId,guess);
+        gameDao.save(game);
+        return game;
+    }
+
     public Game bet(String gameId, String userId, int betValue) {
-        //assure, that dealer won't bet
         Game game = getGameWithValidUser(gameId,userId);
         betSessionService.bet(game.getBetSession(), userId, betValue);
         gameDao.save(game);
