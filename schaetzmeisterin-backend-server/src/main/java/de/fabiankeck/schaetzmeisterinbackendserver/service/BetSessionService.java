@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -16,12 +15,13 @@ import java.util.stream.Collectors;
 public class BetSessionService {
 
     public void ask(BetSession betSession, String playerId, Question question) {
-        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession,playerId);
-        if(!player.isDealing() || betSession.getQuestion()!=null){
+        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession, playerId);
+        if (!player.isDealing() || betSession.getQuestion() != null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         markNextPlayerActive(betSession);
         betSession.setQuestion(question);
+        //maybe initiate new Bet session here, when
     }
 
     public void guess(BetSession betSession, String playerId, double guess) {
@@ -44,7 +44,9 @@ public class BetSessionService {
         player.setCash(player.getCash()-betValue);
         player.setBetted(true);
         evaluateBetSessionIfNecessary(betSession);
-
+        if(betSession.isFinished()){
+            return;
+        }
         markNextPlayerActive(betSession);
     }
     public void fold(BetSession betSession, String playerId){
@@ -53,6 +55,11 @@ public class BetSessionService {
         player.setBetted(true);
         player.setFolded(true);
         evaluateBetSessionIfNecessary(betSession);
+        if(betSession.isFinished()){
+            return;
+        }
+
+        markNextPlayerActive(betSession);
     }
 
     private void markNextPlayerActive(BetSession betSession) {
@@ -90,7 +97,7 @@ public class BetSessionService {
     private BetSessionPlayer getPlayerIfPresentOrThrow(BetSession betSession, String playerID){
         return betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
     }
-    private void evaluateBetSessionIfNecessary(BetSession betSession) {
+    public void evaluateBetSessionIfNecessary(BetSession betSession) {
         boolean allPlayersHaveBeenActive = betSession.getPlayers().stream()
                 .allMatch(player -> player.isDealing() || player.isBetted());
         if (!allPlayersHaveBeenActive) return;
@@ -102,25 +109,13 @@ public class BetSessionService {
 
 
         BetSessionPlayer winner = playersStillBetting.stream().min(Comparator.comparingDouble(player -> Math.abs(player.getGuess() - betSession.getQuestion().getAnswer()))).orElseThrow(() -> new IllegalArgumentException("No Players here"));
+        winner.setWinner(true);
         winner.setCash(winner.getCash()+getPot(betSession));
-
-        initiateNewBetSession(betSession);
+        betSession.setFinished(true);
     }
+
     private int getPot(BetSession betSession){
         return betSession.getPlayers().stream().mapToInt(BetSessionPlayer::getCurrentBet).sum();
     }
-    private void initiateNewBetSession(BetSession betSession){
-
-        int currentDealerIndex= betSession.getPlayers().indexOf(betSession.getPlayers().stream().filter(BetSessionPlayer::isDealing).findAny().orElseThrow(()->new IllegalArgumentException("noPlayerDealing")));
-        betSession.getPlayers().get(currentDealerIndex).setDealing(false);
-        betSession.getPlayers().get((currentDealerIndex+1)%betSession.getPlayers().size()).setDealing(true);
-        betSession.setQuestion(null);
-        betSession.getPlayers().forEach(player->{
-            player.setGuessed(false);
-            player.setBetted(false);
-            player.setCurrentBet(0);
-        });
-    }
-
 
 }
