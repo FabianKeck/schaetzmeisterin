@@ -7,6 +7,7 @@ import styled from 'styled-components/macro';
 import CardTable from '../PlayComponents/CardTable';
 import QuestionCard from '../PlayComponents/QuestionCard';
 import AskingAndGuessIng from '../PlayComponents/AskingAndGuessIng';
+import FinishedQuestionCard from '../PlayComponents/FinishedQuestionCard';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
@@ -36,7 +37,7 @@ export default function PlayPage() {
             game.betSession.players[game.betSession.activePlayerIndex]
           }
         />
-        {askingAndGuessingInProgress && (
+        {askingAndGuessingInProgress ? (
           <AskingAndGuessIng
             name={playerData.name}
             dealing={playerData.dealing}
@@ -45,10 +46,18 @@ export default function PlayPage() {
             ask={ask}
             guess={guess}
           />
-        )}
-
-        {game.betSession.question && (
+        ) : (
           <QuestionCard>{game.betSession.question.question}</QuestionCard>
+        )}
+        {game.betSession.finished && (
+          <FinishedQuestionCard
+            winning={playerData.winner}
+            winnerName={game.betSession.players.find(
+              (player) => player.winning
+            )}
+            question={game.betSession.question}
+            potSize={calcPot()}
+          />
         )}
         <SelfCard
           name={playerData.name}
