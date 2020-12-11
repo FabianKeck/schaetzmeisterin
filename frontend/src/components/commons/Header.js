@@ -15,7 +15,6 @@ export default function Header({ children }) {
 const HeaderStyled = styled.header`
   display: flex;
   justify-content: space-between;
-  background: var(--color-red);
   padding: var(--size-s);
   img {
     height: 40px;
@@ -27,6 +26,7 @@ const HeaderStyled = styled.header`
 
 const HeadingStyled = styled.h1`
   margin: 0;
+  text-shadow: var(--size-xxs) var(--size-xxs) var(--size-xs) #222;
   color: var(--color-golden);
   letter-spacing: 2px;
   font-weight: normal;
