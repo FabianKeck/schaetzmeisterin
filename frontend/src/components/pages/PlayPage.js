@@ -36,7 +36,7 @@ export default function PlayPage() {
           )}
           potValue={calcPot()}
           activePlayerId={
-            game.betSession.players[game.betSession.activePlayerIndex]
+            game.betSession.players[game.betSession.activePlayerIndex].id
           }
         />
         {askingAndGuessingInProgress ? (
