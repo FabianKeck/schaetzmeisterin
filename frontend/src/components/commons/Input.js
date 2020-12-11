@@ -11,6 +11,5 @@ const InputStyled = styled.input`
   border-radius: var(--size-xxs);
   box-shadow: inset 0 0 var(--size-xs) #000;
   background-color: var(--color-golden);
-  width: 70%;
   outline: none;
 `;

@@ -120,7 +120,8 @@ const Actions = styled.div`
   display: grid;
   grid-gap: var(--size-s);
   form {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 70% 1fr;
+    grid-gap: var(--size-s);
   }
 `;

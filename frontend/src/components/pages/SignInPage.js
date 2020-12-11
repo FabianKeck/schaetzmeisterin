@@ -15,11 +15,12 @@ export default function SignInPage() {
 
   return (
     <>
-      <Header>Sign in </Header>
+      <Header>Schaetzmeisterin </Header>
       <main>
         <FormStyled onSubmit={handleSubmit}>
           <LabelStyled>
-            Please Enter Your Name to sign in to game {gameid}:
+            Please enter Your Name to sign into{' '}
+            {gameid ? 'game' + gameid : 'a new game'}.
             <Input value={name} onChange={handleNameChange} />
           </LabelStyled>
           <ActionButton>Sign in</ActionButton>
@@ -47,6 +48,8 @@ const FormStyled = styled.form`
   grid-auto-rows: min-content;
   grid-template-columns: 1fr;
   padding: var(--size-m);
+  input {
+  }
 `;
 
 const LabelStyled = styled.label`
