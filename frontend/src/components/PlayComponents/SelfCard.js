@@ -2,30 +2,45 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import ActionButton from '../commons/ActionButton';
 import Input from '../commons/Input';
-import { GiTwoCoins, GiCardAceSpades } from 'react-icons/gi';
+import {
+  GiTwoCoins,
+  GiCardAceSpades,
+  GiCrossMark,
+  GiCheckMark,
+} from 'react-icons/gi';
 import { Card } from '../commons/Card';
 
 export default function SelfCard({
-  name,
+  player,
   guess,
   bet,
   fold,
   minBet,
-  cash,
   active,
   disableActions,
 }) {
   const [betValue, setBetValue] = useState(minBet);
   const betTooSmall = betValue < minBet;
-  const betTooLarge = betValue > cash;
+  const betTooLarge = betValue > player.cash;
   return (
     <SelfCardStyled active={active}>
       <section>
-        <p>{name}</p>
         <p>
-          <GiTwoCoins /> {cash}
+          {player.dealing ? (
+            <div>you deal</div>
+          ) : player.folded ? (
+            <GiCrossMark />
+          ) : (
+            <GiCheckMark />
+          )}
+          {player.name}
         </p>
-        <p>Minimum Bet: {minBet}</p>
+        <p>
+          <GiTwoCoins /> {player.cash}
+        </p>
+        <p>
+          <div>Minimum Bet:</div> {minBet}
+        </p>
         {!!guess && (
           <p>
             <GiCardAceSpades /> {guess}
@@ -35,7 +50,7 @@ export default function SelfCard({
       <Actions>
         {minBet ? (
           <ActionButton
-            disabled={!active || minBet > cash || disableActions}
+            disabled={!active || minBet > player.cash || disableActions}
             onClick={handleCall}
           >
             call
@@ -89,11 +104,12 @@ export default function SelfCard({
 
 const SelfCardStyled = styled(Card)`
   display: grid;
-  grid-gap: var(--size-s);
-  grid-template-columns: 1fr 1fr;
+  grid-gap: var(--size-m);
+  grid-template-columns: 1fr 2fr;
   grid-auto-rows: 1fr;
 
   p {
+    justify-content: space-between;
     display: flex;
     align-items: center;
     margin: 0;

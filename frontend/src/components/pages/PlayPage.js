@@ -62,12 +62,10 @@ export default function PlayPage() {
           />
         )}
         <SelfCard
-          name={playerData.name}
-          guess={playerData.guess}
+          player={playerData}
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}
-          cash={playerData.cash}
           active={active}
           disableActions={
             askingAndGuessingInProgress || game.betSession.finished
