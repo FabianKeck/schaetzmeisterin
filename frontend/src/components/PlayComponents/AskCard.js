@@ -58,7 +58,9 @@ export default function AskCard({ ask }) {
 const AskCardStyled = styled(Card)`
   box-shadow: var(--size-s) var(--size-s) var(--size-l) var(--size-s) #222;
   position: absolute;
-  bottom: 50%;
+  bottom: 20%;
+  left: 50%;
+  transform: translate(-50%, 0);
   z-index: 1;
 
   form {

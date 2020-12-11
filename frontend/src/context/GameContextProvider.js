@@ -8,12 +8,12 @@ import {
   betPost,
   foldPost,
   getGame,
-} from '../service/GameService';
+} from '../service/gameService';
 import UserContext from '../context/UserContext';
 import {
   loadGameDataFromLocalStorage,
   saveGameDataToLocalStorage,
-} from '../service/LocalStorage';
+} from '../service/localStorage';
 
 export default function GameContextProvider({ children }) {
   const [game, setGame] = useState(loadGameDataFromLocalStorage);

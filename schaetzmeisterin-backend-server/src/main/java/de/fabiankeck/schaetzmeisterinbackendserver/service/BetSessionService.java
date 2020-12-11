@@ -1,12 +1,13 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -14,12 +15,13 @@ import java.util.stream.Collectors;
 public class BetSessionService {
 
     public void ask(BetSession betSession, String playerId, Question question) {
-        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession,playerId);
-        if(!player.isDealing() || betSession.getQuestion()!=null){
+        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession, playerId);
+        if (!player.isDealing() || betSession.getQuestion() != null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         markNextPlayerActive(betSession);
         betSession.setQuestion(question);
+        //maybe initiate new Bet session here, when
     }
 
     public void guess(BetSession betSession, String playerId, double guess) {
@@ -40,13 +42,23 @@ public class BetSessionService {
 
         player.setCurrentBet(player.getCurrentBet()+betValue);
         player.setCash(player.getCash()-betValue);
-
+        player.setBetted(true);
+        evaluateBetSessionIfNecessary(betSession);
+        if(betSession.isFinished()){
+            return;
+        }
         markNextPlayerActive(betSession);
     }
     public void fold(BetSession betSession, String playerId){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
-        markNextPlayerActive(betSession);
+        player.setBetted(true);
         player.setFolded(true);
+        evaluateBetSessionIfNecessary(betSession);
+        if(betSession.isFinished()){
+            return;
+        }
+
+        markNextPlayerActive(betSession);
     }
 
     private void markNextPlayerActive(BetSession betSession) {
@@ -84,4 +96,32 @@ public class BetSessionService {
     private BetSessionPlayer getPlayerIfPresentOrThrow(BetSession betSession, String playerID){
         return betSession.getPlayers().stream().filter(betSessionPlayer -> betSessionPlayer.getId().equals(playerID)).findAny().orElseThrow(()-> new ResponseStatusException(HttpStatus.FORBIDDEN));
     }
+    public void evaluateBetSessionIfNecessary(BetSession betSession) {
+        boolean allPlayersHaveBeenActive = betSession.getPlayers().stream()
+                .allMatch(player -> player.isDealing() || player.isBetted());
+        if (!allPlayersHaveBeenActive) return;
+
+        List<BetSessionPlayer> playersStillBetting = betSession.getPlayers().stream().filter(player -> !player.isDealing()).filter(player->!player.isFolded()).collect(Collectors.toList());
+        //all players bet is equal ?
+        if(playersStillBetting.size()==1){
+            finishBetSessionandDeclareWinner(betSession,playersStillBetting.get(0));
+            return;
+        }
+        int aBet = playersStillBetting.get(0).getCurrentBet();
+        if (playersStillBetting.stream().anyMatch(player -> player.getCurrentBet() != aBet)) return;
+
+
+        BetSessionPlayer winner = playersStillBetting.stream().min(Comparator.comparingDouble(player -> Math.abs(player.getGuess() - betSession.getQuestion().getAnswer()))).orElseThrow(() -> new IllegalArgumentException("No Players here"));
+       finishBetSessionandDeclareWinner(betSession,winner);
+    }
+    private void finishBetSessionandDeclareWinner(BetSession betSession, BetSessionPlayer winner){
+        winner.setWinner(true);
+        winner.setCash(winner.getCash()+getPot(betSession));
+        betSession.setFinished(true);
+    }
+
+    private int getPot(BetSession betSession){
+        return betSession.getPlayers().stream().mapToInt(BetSessionPlayer::getCurrentBet).sum();
+    }
+
 }

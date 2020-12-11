@@ -15,5 +15,5 @@ public class BetSession {
     private int activePlayerIndex;
     private List<BetSessionPlayer> players;
     private Question question;
-
+    private boolean finished;
 }

@@ -5,13 +5,23 @@ import Input from '../commons/Input';
 import { GiTwoCoins, GiCardAceSpades } from 'react-icons/gi';
 import { Card } from '../commons/Card';
 
-export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
+export default function SelfCard({
+  name,
+  guess,
+  bet,
+  fold,
+  minBet,
+  cash,
+  active,
+  disableActions,
+}) {
   const [betValue, setBetValue] = useState(minBet);
   const betTooSmall = betValue < minBet;
   const betTooLarge = betValue > cash;
   return (
     <SelfCardStyled active={active}>
       <section>
+        <p>{name}</p>
         <p>
           <GiTwoCoins /> {cash}
         </p>
@@ -25,17 +35,20 @@ export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
       <Actions>
         {minBet ? (
           <ActionButton
-            disabled={!active || minBet > cash}
+            disabled={!active || minBet > cash || disableActions}
             onClick={handleCall}
           >
             call
           </ActionButton>
         ) : (
-          <ActionButton disabled={!active} onClick={handleCheck}>
+          <ActionButton
+            disabled={!active || disableActions}
+            onClick={handleCheck}
+          >
             check
           </ActionButton>
         )}
-        <ActionButton disabled={!active} onClick={fold}>
+        <ActionButton disabled={!active || disableActions} onClick={handleFold}>
           fold
         </ActionButton>
         {betTooSmall && <p>Your Bet is too small. Please enter a larger bet</p>}
@@ -44,7 +57,9 @@ export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
         )}
         <form onSubmit={handleRaiseSubmit}>
           <Input value={betValue} onChange={handleBetValueChange} />
-          <ActionButton disabled={betTooSmall || betTooLarge || !active}>
+          <ActionButton
+            disabled={betTooSmall || betTooLarge || !active || disableActions}
+          >
             raise
           </ActionButton>
         </form>
@@ -54,6 +69,10 @@ export default function SelfCard({ guess, bet, fold, minBet, cash, active }) {
 
   function handleBetValueChange(event) {
     setBetValue(event.target.value);
+  }
+
+  function handleFold() {
+    fold();
   }
 
   function handleRaiseSubmit(event) {

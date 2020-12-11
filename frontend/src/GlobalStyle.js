@@ -24,15 +24,16 @@ export default createGlobalStyle`
     font-family: 'EB Garamond', serif;
   }
   
-  body{
-    max-width: 800px;
-  }
+ 
   body{
   background-image: url(${backgroundImage});
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: auto 100%;
     background-color: var(--color-red);
+    max-width: 800px;
+    margin:auto;
+    color: var(--color-golden);
   }
   
     input, textarea {
