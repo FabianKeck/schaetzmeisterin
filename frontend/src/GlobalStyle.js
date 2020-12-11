@@ -1,5 +1,4 @@
 import { createGlobalStyle } from 'styled-components';
-import backgroundImage from './assets/poker-table-long.jpg';
 
 export default createGlobalStyle`
   :root{
@@ -26,11 +25,7 @@ export default createGlobalStyle`
   
  
   body{
-  background-image: url(${backgroundImage});
-    background-repeat: no-repeat;
-    background-position: center bottom;
-    background-size: auto 100%;
-    background-color: var(--color-red);
+    background: radial-gradient(#aA0000, #5A0000);
     max-width: 800px;
     margin:auto;
     color: var(--color-golden);

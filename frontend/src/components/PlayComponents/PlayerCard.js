@@ -1,13 +1,25 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { GiPayMoney, GiTwoCoins, GiCheckMark } from 'react-icons/gi';
+import {
+  GiPayMoney,
+  GiTwoCoins,
+  GiCheckMark,
+  GiCrossMark,
+} from 'react-icons/gi';
 import { Card } from '../commons/Card';
 
 export default function PlayerCard({ player, row, column, active }) {
   return (
     <PlayerCardStyled row={row} column={column} active={active}>
       <p>
-        <GiCheckMark /> {player.name}
+        {player.dealing ? (
+          <div>deals</div>
+        ) : player.folded ? (
+          <GiCrossMark />
+        ) : (
+          <GiCheckMark />
+        )}
+        {player.name}
       </p>
       <p>
         <GiTwoCoins />

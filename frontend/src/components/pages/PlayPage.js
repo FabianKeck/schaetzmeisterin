@@ -36,7 +36,7 @@ export default function PlayPage() {
           )}
           potValue={calcPot()}
           activePlayerId={
-            game.betSession.players[game.betSession.activePlayerIndex]
+            game.betSession.players[game.betSession.activePlayerIndex].id
           }
         />
         {askingAndGuessingInProgress ? (
@@ -54,20 +54,18 @@ export default function PlayPage() {
         {game.betSession.finished && (
           <FinishedQuestionCard
             winning={playerData.winner}
-            winnerName={game.betSession.players.find(
-              (player) => player.winning
-            )}
+            winnerName={
+              game.betSession.players.find((player) => player.winner).name
+            }
             question={game.betSession.question}
             potSize={calcPot()}
           />
         )}
         <SelfCard
-          name={playerData.name}
-          guess={playerData.guess}
+          player={playerData}
           bet={bet}
           fold={fold}
           minBet={calcMinBet()}
-          cash={playerData.cash}
           active={active}
           disableActions={
             askingAndGuessingInProgress || game.betSession.finished
