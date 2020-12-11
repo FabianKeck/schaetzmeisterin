@@ -19,8 +19,8 @@ export default function SignInPage() {
       <main>
         <FormStyled onSubmit={handleSubmit}>
           <LabelStyled>
-            Please enter Your Name to sign into{' '}
-            {gameid ? 'game' + gameid : 'a new game'}.
+            Please enter your name to sign into{' '}
+            {gameid ? 'game ' + gameid : 'a new game'}.
             <Input value={name} onChange={handleNameChange} />
           </LabelStyled>
           <ActionButton>Sign in</ActionButton>
