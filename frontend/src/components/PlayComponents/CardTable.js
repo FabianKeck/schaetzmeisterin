@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import PlayerCard from './PlayerCard';
 import { GiCoins } from 'react-icons/gi';
+import backgroundImage from '../../assets/poker-table.png';
 
 export default function CardTable({ players, potValue, activePlayerId }) {
   return (
@@ -36,6 +37,10 @@ export default function CardTable({ players, potValue, activePlayerId }) {
 }
 
 const CardTableStyled = styled.div`
+  background-image: url(${backgroundImage});
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: auto 100%;
   position: relative;
   display: grid;
 
