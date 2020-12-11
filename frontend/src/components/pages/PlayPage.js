@@ -54,9 +54,9 @@ export default function PlayPage() {
         {game.betSession.finished && (
           <FinishedQuestionCard
             winning={playerData.winner}
-            winnerName={game.betSession.players.find(
-              (player) => player.winning
-            )}
+            winnerName={
+              game.betSession.players.find((player) => player.winner).name
+            }
             question={game.betSession.question}
             potSize={calcPot()}
           />
