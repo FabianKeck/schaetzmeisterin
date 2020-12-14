@@ -35,5 +35,8 @@ export default createGlobalStyle`
     font-size: 1em;
     font-family: inherit;
   }
+  *{
+    box-sizing: border-box;
+  }
  
 `;
