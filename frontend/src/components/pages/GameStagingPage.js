@@ -3,7 +3,7 @@ import GameContext from '../../context/GameContext';
 import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import UserContext from '../../context/UserContext';
-import ActionButton from '../commons/ActionButton';
+import { Button } from '../commons/Button';
 import { Card } from '../commons/Card';
 
 export default function GameStagingPage() {
@@ -25,12 +25,12 @@ export default function GameStagingPage() {
             ))}
           </UlStyled>
         </Card>
-        <ActionButton
+        <Button
           disabled={lessThanThreePlayers}
           onClick={() => startGame(game.id)}
         >
           Start Game!
-        </ActionButton>
+        </Button>
 
         {lessThanThreePlayers && (
           <p>

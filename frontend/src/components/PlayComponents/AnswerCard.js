@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import { Card } from '../commons/Card';
 import Input from '../commons/Input';
-import ActionButton from '../commons/ActionButton';
+import { Button } from '../commons/Button';
 
 export default function AnswerCard({ question, guess }) {
   const [guessString, setGuessString] = useState('');
@@ -18,9 +18,7 @@ export default function AnswerCard({ question, guess }) {
             onChange={(event) => setGuessString(event.target.value)}
           />
         </label>
-        <ActionButton disabled={!guessIsValidNumberString}>
-          Submit!
-        </ActionButton>
+        <Button disabled={!guessIsValidNumberString}>Submit!</Button>
       </form>
     </AnswerCardStyled>
   );
