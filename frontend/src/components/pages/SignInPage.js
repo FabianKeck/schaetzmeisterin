@@ -4,7 +4,7 @@ import Header from '../commons/Header';
 import styled from 'styled-components/macro';
 import GameContext from '../../context/GameContext';
 import Input from '../commons/Input';
-import ActionButton from '../commons/ActionButton';
+import { Button } from '../commons/Button';
 
 export default function SignInPage() {
   const { gameid } = useParams();
@@ -23,7 +23,7 @@ export default function SignInPage() {
             {gameid ? 'game ' + gameid : 'a new game'}.
             <Input value={name} onChange={handleNameChange} />
           </LabelStyled>
-          <ActionButton>Sign in</ActionButton>
+          <Button>Sign in</Button>
           {signInFailed && <p>{signInFailed}</p>}
         </FormStyled>
       </main>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/macro';
-import ActionButton from '../commons/ActionButton';
+import { Button } from '../commons/Button';
 import Input from '../commons/Input';
 import {
   GiTwoCoins,
@@ -49,34 +49,31 @@ export default function SelfCard({
       </section>
       <Actions>
         {minBet ? (
-          <ActionButton
+          <Button
             disabled={!active || minBet > player.cash || disableActions}
             onClick={handleCall}
           >
             call
-          </ActionButton>
+          </Button>
         ) : (
-          <ActionButton
-            disabled={!active || disableActions}
-            onClick={handleCheck}
-          >
+          <Button disabled={!active || disableActions} onClick={handleCheck}>
             check
-          </ActionButton>
+          </Button>
         )}
-        <ActionButton disabled={!active || disableActions} onClick={handleFold}>
+        <Button disabled={!active || disableActions} onClick={handleFold}>
           fold
-        </ActionButton>
+        </Button>
         {betTooSmall && <p>Your Bet is too small. Please enter a larger bet</p>}
         {betTooLarge && (
           <p>Your bet exceeds your cash. Please enter a smaller Bet</p>
         )}
         <form onSubmit={handleRaiseSubmit}>
           <Input value={betValue} onChange={handleBetValueChange} />
-          <ActionButton
+          <Button
             disabled={betTooSmall || betTooLarge || !active || disableActions}
           >
             raise
-          </ActionButton>
+          </Button>
         </form>
       </Actions>
     </SelfCardStyled>

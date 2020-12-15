@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Input from '../commons/Input';
-import ActionButton from '../commons/ActionButton';
+import { Button } from '../commons/Button';
 import { Card } from '../commons/Card';
 
 const initialState = { question: '', answer: '' };
@@ -35,7 +35,7 @@ export default function AskCard({ ask }) {
             placeholder="only numbers. eg: '3', '4.5' "
           />
         </label>
-        <ActionButton disabled={!validData}>Submit question</ActionButton>
+        <Button disabled={!validData}>Submit question</Button>
       </form>
     </AskCardStyled>
   );

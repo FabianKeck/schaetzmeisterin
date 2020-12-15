@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import Header from '../commons/Header';
 import UserContext from '../../context/UserContext';
 import GameContext from '../../context/GameContext';
@@ -9,21 +9,20 @@ import QuestionCard from '../PlayComponents/QuestionCard';
 import AskingAndGuessIng from '../PlayComponents/AskingAndGuessIng';
 import FinishedQuestionCard from '../PlayComponents/FinishedQuestionCard';
 import ReactConfetti from 'react-confetti';
+import {
+  getPlayerData,
+  getMinBet,
+  isActive,
+  getPot,
+} from '../../utils/gameDataUtils';
 
 export default function PlayPage() {
   const { userData } = useContext(UserContext);
   const { game, ask, guess, bet, fold } = useContext(GameContext);
-  const [active, setActive] = useState(false);
-  useEffect(() => {
-    setActive(isActive(userData.playerId));
-    // eslint-disable-next-line
-  }, [game, userData.playerId]);
   const askingAndGuessingInProgress = game.betSession.players.some(
     (player) => !(player.dealing || player.guessed)
   );
-  const playerData = game.betSession.players.find(
-    (player) => player.id === userData.playerId
-  );
+  const playerData = getPlayerData(game, userData.playerId);
   const partyTime = playerData.winner;
 
   return (
@@ -34,7 +33,7 @@ export default function PlayPage() {
           players={game.betSession.players.filter(
             (player) => player.id !== userData.playerId
           )}
-          potValue={calcPot()}
+          potValue={getPot(game)}
           activePlayerId={
             game.betSession.players[game.betSession.activePlayerIndex].id
           }
@@ -58,15 +57,15 @@ export default function PlayPage() {
               game.betSession.players.find((player) => player.winner).name
             }
             question={game.betSession.question}
-            potSize={calcPot()}
+            potSize={getPot(game)}
           />
         )}
         <SelfCard
           player={playerData}
           bet={bet}
           fold={fold}
-          minBet={calcMinBet()}
-          active={active}
+          minBet={getMinBet(game, playerData.id)}
+          active={isActive(game, playerData.id)}
           disableActions={
             askingAndGuessingInProgress || game.betSession.finished
           }
@@ -80,22 +79,6 @@ export default function PlayPage() {
       )}
     </>
   );
-
-  function calcMinBet() {
-    return (
-      Math.max(...game.betSession.players.map((player) => player.currentBet)) -
-      playerData.currentBet
-    );
-  }
-  function isActive(id) {
-    return id === game.betSession.players[game.betSession.activePlayerIndex].id;
-  }
-
-  function calcPot() {
-    return game.betSession.players
-      .map((player) => player.currentBet)
-      .reduce((sum, currentBet) => sum + currentBet);
-  }
 }
 const PlayPageStyled = styled.main`
   display: grid;

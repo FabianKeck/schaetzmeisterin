@@ -41,13 +41,13 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: frontend-build
-          path: schaetzmeisterin-backend-server/src/main/resources/static
+          path: backend/src/main/resources/static
       - name: Build with Maven
-        run: mvn -B package -DskipTests --file schaetzmeisterin-backend-server/pom.xml
+        run: mvn -B package -DskipTests --file backend/pom.xml
       - uses: actions/upload-artifact@v2
         with:
           name: schaetzmeisterin.jar
-          path: schaetzmeisterin-backend-server/target/schaetzmeisterin.jar
+          path: backend/target/schaetzmeisterin.jar
 
   deploy:
     name: deploy to heroku
@@ -56,11 +56,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: create target folder
-        run: mkdir schaetzmeisterin-backend-server/target
+        run: mkdir backend/target
       - uses: actions/download-artifact@v2
         with:
           name: schaetzmeisterin.jar
-          path: schaetzmeisterin-backend-server/target
+          path: backend/target
       - name: login to heroku container
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
