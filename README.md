@@ -15,7 +15,7 @@ With schätzmeisterin it is possible, to play schätzmeisteschaft online.
 
 ### Showdown
 - A question is evaluated, once all players have submitted any kind of bet, and the remaining players (those who have not folded) all have pushed the same mount of money to the pot.
-- The remaining player with the guess, that is closest, to the correct answer will be rewarded with the pot.
+- The remaining player with  closest guess to the correct answer will be rewarded with the pot.
 
 ## License
 
