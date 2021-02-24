@@ -135,52 +135,6 @@ class BetSessionServiceTest {
     }
 
     @Test
-    @DisplayName("ask should set question")
-    public void askSetQuestionTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question expected= Question.builder().question("'Question").answer(2.5).build();
-
-        //when
-        betSessionService.ask(betSession,betSession.getPlayers().get(0).getId(),expected);
-        Question actual = betSession.getQuestion();
-        //then
-        assertThat(actual.getAnswer(), is(expected.getAnswer()));
-        assertThat(actual.getQuestion(), is(expected.getQuestion()));
-
-    }
-    @Test
-    @DisplayName("Ask should throw if player is not dealing")
-    public void askWithWrongPlayerTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question expected= Question.builder().question("'Question").answer(2.5).build();
-
-        //when
-        assertThrows(ResponseStatusException.class,()->betSessionService.ask(betSession,betSession.getPlayers().get(1).getId(),expected));
-        //then
-        assertThat(betSession.getQuestion(), is(nullValue()));
-    }
-    @Test
-    @DisplayName("Ask should throw if question is already defined")
-    public void askWithQuestionPlayedTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question firstQuestion= Question.builder().question("'Question").answer(2.5).build();
-        betSession.setQuestion(firstQuestion);
-        Question newQuestion = Question.builder().question("another Question").answer(0).build();
-
-
-        //when
-        assertThrows(ResponseStatusException.class,()->betSessionService.ask(betSession,betSession.getPlayers().get(0).getId(),newQuestion));
-        //then
-        assertThat(betSession.getQuestion(), is(firstQuestion));
-    }
-
-    @Test
     @DisplayName("guess with user who is not dealing should set playersGuess")
     public void guessSetGuessTest(){
         //given
