@@ -134,72 +134,7 @@ class BetSessionServiceTest {
         assertThat(betSession.getActivePlayerIndex(),is(2));
     }
 
-    @Test
-    @DisplayName("guess with user who is not dealing should set playersGuess")
-    public void guessSetGuessTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question question = Question.builder().question("'Question").answer(2.5).build();
-        int guessingPlayerIndex=1;
-        betSession.setQuestion(question);
-        double guess = 2.5;
 
-        //when
-        betSessionService.guess(betSession,betSession.getPlayers().get(guessingPlayerIndex).getId(),guess);
-        //then
-        assertThat(betSession.getPlayers().get(guessingPlayerIndex).getGuess(), is(guess));
-        assertThat(betSession.getPlayers().get(guessingPlayerIndex).isGuessed(), is(true));
-    }
-
-    @Test
-    @DisplayName("guess with dealing User should throw")
-    public void guessWithDealingUserTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question question = Question.builder().question("'Question").answer(2.5).build();
-        int guessingPlayerIndex=0;
-        betSession.setQuestion(question);
-        double guess = 2.5;
-
-        //when
-        assertThrows(ResponseStatusException.class,()->betSessionService.guess(betSession,betSession.getPlayers().get(guessingPlayerIndex).getId(),guess));
-
-        //then
-        assertThat(betSession.getPlayers().get(guessingPlayerIndex).isGuessed(), is(false));
-    }
-    @Test
-    @DisplayName("guess with guessed User should throw")
-    public void guessWithGuessedUserTest(){
-        //given
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question question = Question.builder().question("'Question").answer(2.5).build();
-        int guessingPlayerIndex=1;
-        betSession.setQuestion(question);
-        betSession.getPlayers().get(guessingPlayerIndex).setGuessed(true);
-        double initialGuess = 2.5;
-        betSession.getPlayers().get(guessingPlayerIndex).setGuess(initialGuess);
-
-        //when
-        assertThrows(ResponseStatusException.class,()->betSessionService.guess(betSession,betSession.getPlayers().get(guessingPlayerIndex).getId(),3.));
-
-        //then
-        assertThat(betSession.getPlayers().get(guessingPlayerIndex).getGuess(), is(initialGuess));
-    }
-
-    @Test
-    @DisplayName("Guess with nonparticipating userId should throw")
-    public void guessWithNonparticipatingUserTest(){
-        BetSession betSession = getBetSessionWithThreePlayers();
-        betSession.getPlayers().get(0).setDealing(true);
-        Question question = Question.builder().question("'Question").answer(2.5).build();
-        betSession.setQuestion(question);
-
-        assertThrows(ResponseStatusException.class,()->betSessionService.guess(betSession,"wrongId",3.));
-
-    }
 
     private BetSession getBetSessionWithThreePlayers(){
         BetSessionPlayer player1 = BetSessionPlayer.builder().id("1").name("Jane").cash(100).build();
