@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class BetSessionService {
     private final GuessHandler guessHandler = new GuessHandler();
     private final AskHandler askHandler = new AskHandler();
+    private final PlaceBetHandler placeBetHandler = new PlaceBetHandler();
 
     public void ask(BetSession betSession, String playerId, Question question) {
         askHandler.handle(betSession, playerId, question);
@@ -28,20 +30,7 @@ public class BetSessionService {
     }
 
     public void bet(BetSession betSession, String playerId, int betValue){
-        BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
-
-        if(!betValueIsInAcceptableRange(betSession,player,betValue) || player.isDealing()){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        player.setCurrentBet(player.getCurrentBet()+betValue);
-        player.setCash(player.getCash()-betValue);
-        player.setBetted(true);
-        evaluateBetSessionIfNecessary(betSession);
-        if(betSession.isFinished()){
-            return;
-        }
-        markNextPlayerActive(betSession);
+        placeBetHandler.handle(betSession, playerId, betValue);
     }
     public void fold(BetSession betSession, String playerId){
         BetSessionPlayer player = getPlayerIfActiveOrThrow(betSession,playerId);
@@ -66,17 +55,6 @@ public class BetSessionService {
         betSession.setActivePlayerIndex(nextPlayerIndex);
     }
 
-    private boolean betValueIsInAcceptableRange(BetSession betSession, BetSessionPlayer player, int betValue){
-        boolean betValueIsSmallerThanOrEqualsPlayerCash = betValue <= player.getCash();
-        boolean betValueIsLargerThanOrEqualsMinimumBet = betValue >= betSession.getPlayers().
-                stream().
-                map((BetSessionPlayer::getCurrentBet))
-                .mapToInt(Integer::intValue)
-                .max()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                - player.getCurrentBet();
-        return betValueIsSmallerThanOrEqualsPlayerCash && betValueIsLargerThanOrEqualsMinimumBet;
-    }
 
     private BetSessionPlayer getPlayerIfActiveOrThrow(BetSession betSession ,String playerId){
         BetSessionPlayer player = betSession.getPlayers().get(betSession.getActivePlayerIndex());

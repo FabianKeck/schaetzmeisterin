@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public abstract class BetActionHandler {
+    //Todo Make Generic <actionInfoType>
     BetSession betSession;
     protected BetSessionPlayer player;
 
@@ -34,8 +35,8 @@ public abstract class BetActionHandler {
     }
 
     protected abstract boolean isActionAllowed();
-
     protected abstract void handleAction();
+
     private void setNextPlayerActive(){
         if(betSession.getPlayers().stream().filter(player->!player.isFolded()).count()<=1){ //this can be removed, when the BetSessionEvaluation is implemented
             throw new IllegalArgumentException("There are no players, that have not folded.");
