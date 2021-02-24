@@ -1,16 +1,8 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-public class GuessHandler extends BetActionHandler{
-    double guess;
-    public void handle(BetSession betSession, String playerId, double guess){
-        this.guess= guess;
-        this.handle(betSession,playerId);
-    }
+public class GuessHandler extends BetActionHandler<Double>{
 
     @Override
     protected boolean isActionAllowed() {
@@ -20,7 +12,7 @@ public class GuessHandler extends BetActionHandler{
     @Override
     protected void handleAction() {
         player.setGuessed(true);
-        player.setGuess(guess);
+        player.setGuess(actionParameter);
     }
 
     @Override

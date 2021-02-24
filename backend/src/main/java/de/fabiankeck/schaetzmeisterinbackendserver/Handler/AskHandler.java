@@ -5,13 +5,8 @@ import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class AskHandler extends BetActionHandler{
-    private Question question   ;
+public class AskHandler extends BetActionHandler<Question>{
 
-    public void handle(BetSession betSession, String playerId, Question question) {
-        this.question = question;
-        this.handle(betSession, playerId);
-    }
 
     @Override
     protected boolean isActionAllowed() {
@@ -20,7 +15,7 @@ public class AskHandler extends BetActionHandler{
 
     @Override
     protected void handleAction() {
-        this.betSession.setQuestion(this.question);
+        this.betSession.setQuestion(this.actionParameter);
     }
 
     @Override
