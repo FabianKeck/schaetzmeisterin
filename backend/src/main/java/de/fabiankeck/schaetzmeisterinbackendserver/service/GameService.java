@@ -1,6 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
@@ -22,15 +23,17 @@ public class GameService {
     private final BetSessionService betSessionService;
 
     private final AskHandler askHandler;
+    private final GuessHandler guessHandler;
 
 
     @Autowired
-    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler) {
+    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler, GuessHandler guessHandler) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;
         this.userDao = userDao;
         this.betSessionService = betSessionService;
         this.askHandler = askHandler;
+        this.guessHandler = guessHandler;
     }
 
 
@@ -65,7 +68,7 @@ public class GameService {
 
     public Game guess(String gameId, String userId, double guess) {
         Game game = getGameWithValidUser(gameId,userId);
-        betSessionService.guess(game.getBetSession(),userId,guess);
+        guessHandler.handle(game.getBetSession(),userId,guess);
         gameDao.save(game);
         return game;
     }

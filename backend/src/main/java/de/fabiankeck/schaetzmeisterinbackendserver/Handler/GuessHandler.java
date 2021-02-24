@@ -1,7 +1,8 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GuessHandler extends BetActionHandler<Double>{
 
     @Override

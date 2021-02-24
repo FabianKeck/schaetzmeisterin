@@ -1,13 +1,13 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import java.util.*;
@@ -29,8 +29,9 @@ class GameServiceTest {
     BetSessionService betSessionService = mock(BetSessionService.class);
 
     private final AskHandler askHandler = mock(AskHandler.class);
+    private final GuessHandler guessHandler = mock(GuessHandler.class);
 
-    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler);
+    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler, guessHandler);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -224,10 +225,6 @@ class GameServiceTest {
         Game initial = getGameWithThreeUsers(gameId);
         Game updated = getGameWithThreeUsers(gameId);
         Question question = Question.builder().question("question").answer(1).build();
-        initial.getBetSession().getPlayers().get(0).setDealing(true);
-        initial.getBetSession().setQuestion(question);
-        updated.getBetSession().getPlayers().get(0).setDealing(true);
-        updated.getBetSession().setQuestion(question);
         updated.getBetSession().getPlayers().get(1).setGuess(guess);
 
 
@@ -237,14 +234,14 @@ class GameServiceTest {
         doAnswer(invocationOnMock -> {
             ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(1).setGuess(guess);
             return null;
-        }).when(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+        }).when(guessHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
 
         Game actual = gameService.guess(gameId,initial.getPlayers().get(1).getId(), guess);
         //then
 
         assertThat(actual,is(updated));
         verify(gameDao).save(updated);
-        verify(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+        verify(guessHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
     }
 
 

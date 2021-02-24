@@ -18,14 +18,10 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class BetSessionService {
-    private final GuessHandler guessHandler = new GuessHandler();
     private final PlaceBetHandler placeBetHandler = new PlaceBetHandler();
     private final FoldHandler foldHandler = new FoldHandler();
 
 
-    public void guess(BetSession betSession, String playerId, double guess) {
-        guessHandler.handle(betSession, playerId, guess);
-    }
 
     public void bet(BetSession betSession, String playerId, int betValue){
         placeBetHandler.handle(betSession, playerId, betValue);
