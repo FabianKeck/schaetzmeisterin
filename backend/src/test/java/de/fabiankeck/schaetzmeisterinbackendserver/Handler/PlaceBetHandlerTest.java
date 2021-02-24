@@ -71,5 +71,34 @@ class PlaceBetHandlerTest {
         assertThat(betSession.getPlayers().get(1).getCash(),is(100));
     }
 
+    @Test
+    @DisplayName("Dealing player should be skipped, when updating active player Index")
+    public void skipsDealingUserTest(){
+        //given
+        BetSession betSession = BetSessionCreationHelper.getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(1).setDealing(true);
+
+        //when
+        placeBetHandler.handle(betSession,betSession.getPlayers().get(0).getId(),1);
+
+        //then
+        assertThat(betSession.getActivePlayerIndex(),is(2));
+    }
+
+    @Test
+    @DisplayName("folded player should be skipped, when updating active player Index")
+    public void skipsFoldedUserTest(){
+        //given
+        BetSession betSession = BetSessionCreationHelper.getBetSessionWithThreePlayers();
+        betSession.getPlayers().get(1).setFolded(true);
+
+        //when
+        placeBetHandler.handle(betSession,betSession.getPlayers().get(0).getId(),1);
+
+        //then
+        assertThat(betSession.getActivePlayerIndex(),is(2));
+
+    }
+
 
 }
