@@ -19,13 +19,9 @@ import java.util.stream.Collectors;
 @Service
 public class BetSessionService {
     private final GuessHandler guessHandler = new GuessHandler();
-    private final AskHandler askHandler = new AskHandler();
     private final PlaceBetHandler placeBetHandler = new PlaceBetHandler();
     private final FoldHandler foldHandler = new FoldHandler();
 
-    public void ask(BetSession betSession, String playerId, Question question) {
-        askHandler.handle(betSession, playerId, question);
-    }
 
     public void guess(BetSession betSession, String playerId, double guess) {
         guessHandler.handle(betSession, playerId, guess);

@@ -1,13 +1,14 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +27,10 @@ class GameServiceTest {
     SmUserDao userDao= mock(SmUserDao.class);
     GameDao gameDao = mock(GameDao.class);
     BetSessionService betSessionService = mock(BetSessionService.class);
-    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService);
+
+    private final AskHandler askHandler = mock(AskHandler.class);
+
+    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -184,7 +188,7 @@ class GameServiceTest {
         verify(betSessionService).bet(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
     }
        @Test
-    @DisplayName(" Ask with valid user should return updated Game and sve to DB")
+    @DisplayName(" Ask with valid user should load game, invoke askHandler.ask, save to DB and return updated game")
     public void AskWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -201,14 +205,14 @@ class GameServiceTest {
         doAnswer(invocationOnMock -> {
             ((BetSession)invocationOnMock.getArgument(0)).setQuestion(question);
             return null;
-        }).when(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+        }).when(askHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
 
         gameService.ask(gameId,initial.getPlayers().get(0).getId(), question);
         //then
 
         updated.getBetSession().setQuestion(question);
         verify(gameDao).save(updated);
-        verify(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+        verify(askHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
     }
 
     @Test

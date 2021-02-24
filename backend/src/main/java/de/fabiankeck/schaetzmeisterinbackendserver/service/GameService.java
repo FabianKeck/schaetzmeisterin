@@ -1,8 +1,8 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +21,20 @@ public class GameService {
     private final SmUserDao userDao;
     private final BetSessionService betSessionService;
 
+    private final AskHandler askHandler;
+
 
     @Autowired
-    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService) {
+    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;
         this.userDao = userDao;
         this.betSessionService = betSessionService;
+        this.askHandler = askHandler;
     }
 
 
-    public Game userSignIn(String userId, Optional<String> gameId) {
+    public Game userSignIn(String userId, Optional<String> gameId) { 
         Game game =  getGameByIdOrInit(gameId);
 
         if(game.isStarted()){
@@ -55,7 +58,7 @@ public class GameService {
 
     public Game ask(String gameId, String userId, Question question) {
         Game game = getGameWithValidUser(gameId,userId);
-        betSessionService.ask(game.getBetSession(),userId,question);
+        askHandler.handle(game.getBetSession(),userId,question);
         gameDao.save(game);
         return game;
     }
