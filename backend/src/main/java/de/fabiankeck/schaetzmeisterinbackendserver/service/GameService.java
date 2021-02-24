@@ -1,6 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.FoldHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
@@ -21,22 +22,30 @@ public class GameService {
     private final GameDao gameDao;
     private final IdUtils idUtils;
     private final SmUserDao userDao;
-    private final BetSessionService betSessionService;
 
     private final AskHandler askHandler;
     private final GuessHandler guessHandler;
     private final PlaceBetHandler placeBetHandler;
+    private final FoldHandler foldHandler;
 
 
     @Autowired
-    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler, GuessHandler guessHandler, PlaceBetHandler placeBetHandler) {
+    public GameService(
+            GameDao gameDao,
+            IdUtils idUtils,
+            SmUserDao userDao,
+            AskHandler askHandler,
+            GuessHandler guessHandler,
+            PlaceBetHandler placeBetHandler,
+            FoldHandler foldHandler
+    ) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;
         this.userDao = userDao;
-        this.betSessionService = betSessionService;
         this.askHandler = askHandler;
         this.guessHandler = guessHandler;
         this.placeBetHandler = placeBetHandler;
+        this.foldHandler = foldHandler;
     }
 
 
@@ -85,7 +94,7 @@ public class GameService {
 
     public Game fold(String gameId, String playerId) {
         Game game = getGameWithValidUser(gameId,playerId);
-        betSessionService.fold(game.getBetSession(),playerId);
+        foldHandler.handle(game.getBetSession(),playerId);
         gameDao.save(game);
         return game;
     }

@@ -1,6 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.FoldHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
@@ -27,13 +28,21 @@ class GameServiceTest {
     IdUtils idUtils = mock(IdUtils.class);
     SmUserDao userDao= mock(SmUserDao.class);
     GameDao gameDao = mock(GameDao.class);
-    BetSessionService betSessionService = mock(BetSessionService.class);
 
     private final AskHandler askHandler = mock(AskHandler.class);
     private final GuessHandler guessHandler = mock(GuessHandler.class);
     private final PlaceBetHandler placeBetHandler = mock(PlaceBetHandler.class);
+    private final FoldHandler foldHandler = mock(FoldHandler.class);
 
-    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler, guessHandler, placeBetHandler);
+    GameService gameService = new GameService(
+            gameDao,
+            idUtils,
+            userDao,
+            askHandler,
+            guessHandler,
+            placeBetHandler,
+            foldHandler
+    );
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -241,6 +250,31 @@ class GameServiceTest {
         assertThat(actual,is(updated));
         verify(gameDao).save(updated);
         verify(guessHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+    }
+
+    @Test
+    @DisplayName("Fold with valid user should return updated Game and sve to DB")
+    public void foldWithValidUserTest(){
+        //given
+        String gameId ="gameId";
+        double guess= 2.5;
+        Game initial = getGameWithThreeUsers(gameId);
+        Game updated = getGameWithThreeUsers(gameId);
+        updated.getBetSession().getPlayers().get(1).setFolded(true);
+
+        //when
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        doAnswer(invocationOnMock -> {
+            ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(1).setFolded(true);
+            return null;
+        }).when(foldHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId());
+
+        Game actual = gameService.fold(gameId,initial.getPlayers().get(1).getId());
+        //then
+
+        assertThat(actual,is(updated));
+        verify(gameDao).save(updated);
+        verify(foldHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId());
     }
 
 

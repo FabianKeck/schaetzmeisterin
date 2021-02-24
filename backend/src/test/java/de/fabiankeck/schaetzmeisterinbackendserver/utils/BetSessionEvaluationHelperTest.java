@@ -3,7 +3,6 @@ package de.fabiankeck.schaetzmeisterinbackendserver.utils;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
-import de.fabiankeck.schaetzmeisterinbackendserver.service.BetSessionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 
 class BetSessionEvaluationHelperTest {
     @Test
