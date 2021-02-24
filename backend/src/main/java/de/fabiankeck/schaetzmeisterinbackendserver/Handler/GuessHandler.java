@@ -16,6 +16,11 @@ public class GuessHandler extends BetActionHandler<Double>{
     }
 
     @Override
+    protected void setNextPlayerActive() {
+        //don't set next Player active
+    }
+
+    @Override
     protected void evaluateBetSessionIfNecessary() {
         // no Evaluation necessary
     }

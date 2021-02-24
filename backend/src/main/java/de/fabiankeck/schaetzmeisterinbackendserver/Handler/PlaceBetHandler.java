@@ -21,11 +21,6 @@ public class PlaceBetHandler extends BetActionHandler<Integer>{
         player.setBetted(true);
     }
 
-    @Override
-    protected void evaluateBetSessionIfNecessary() {
-
-    }
-
     private boolean betValueIsInAcceptableRange(){
         boolean betValueIsSmallerThanOrEqualsPlayerCash = this.actionParameter <= this.player.getCash();
         boolean betValueIsLargerThanOrEqualsMinimumBet = this.actionParameter >= this.betSession.getPlayers().

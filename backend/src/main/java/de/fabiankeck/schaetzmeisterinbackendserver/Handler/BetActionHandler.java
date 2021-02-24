@@ -2,14 +2,19 @@ package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.utils.BetSessionEvaluationHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public abstract class BetActionHandler<T> {
-    //Todo Make Generic <actionInfoType>
     BetSession betSession;
     protected BetSessionPlayer player;
     protected T actionParameter;
+
 
 
     public void handle(BetSession betSession, String id, T actionParameter ){
@@ -37,7 +42,7 @@ public abstract class BetActionHandler<T> {
     protected abstract boolean isActionAllowed();
     protected abstract void handleAction();
 
-    private void setNextPlayerActive(){
+    protected void setNextPlayerActive(){
         if(betSession.getPlayers().stream().filter(player->!player.isFolded()).count()<=1){ //this can be removed, when the BetSessionEvaluation is implemented
             throw new IllegalArgumentException("There are no players, that have not folded.");
         }
@@ -48,6 +53,8 @@ public abstract class BetActionHandler<T> {
         betSession.setActivePlayerIndex(nextPlayerIndex);
 
     }
-    protected abstract void evaluateBetSessionIfNecessary();
+    protected void evaluateBetSessionIfNecessary(){
+        BetSessionEvaluationHelper.evaluateBetSessionIfNecessary(betSession);
+    }
 
 }

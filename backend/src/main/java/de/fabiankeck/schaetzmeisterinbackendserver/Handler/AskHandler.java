@@ -18,8 +18,9 @@ public class AskHandler extends BetActionHandler<Question>{
         this.betSession.setQuestion(this.actionParameter);
     }
 
+
     @Override
     protected void evaluateBetSessionIfNecessary() {
-
+        // no evaluation needs to be done, after asking
     }
 }
