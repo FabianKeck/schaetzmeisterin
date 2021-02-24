@@ -1,5 +1,6 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
 import lombok.extern.log4j.Log4j2;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.channels.spi.AbstractSelectionKey;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,16 +16,11 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class BetSessionService {
-    private GuessHandler guessHandler = new GuessHandler();
+    private final GuessHandler guessHandler = new GuessHandler();
+    private final AskHandler askHandler = new AskHandler();
 
     public void ask(BetSession betSession, String playerId, Question question) {
-        BetSessionPlayer player = getPlayerIfPresentOrThrow(betSession, playerId);
-        if (!player.isDealing() || betSession.getQuestion() != null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        markNextPlayerActive(betSession);
-        betSession.setQuestion(question);
-        //maybe initiate new Bet session here, when
+        askHandler.handle(betSession, playerId, question);
     }
 
     public void guess(BetSession betSession, String playerId, double guess) {

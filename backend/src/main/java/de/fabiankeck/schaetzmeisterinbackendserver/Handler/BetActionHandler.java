@@ -37,6 +37,14 @@ public abstract class BetActionHandler {
 
     protected abstract void handleAction();
     private void setNextPlayerActive(){
+        if(betSession.getPlayers().stream().filter(player->!player.isFolded()).count()<=1){ //this can be removed, when the BetSessionEvaluation is implemented
+            throw new IllegalArgumentException("There are no players, that have not folded.");
+        }
+        int nextPlayerIndex = (betSession.getActivePlayerIndex()+1) % betSession.getPlayers().size();
+        while (betSession.getPlayers().get(nextPlayerIndex).isFolded()|| betSession.getPlayers().get(nextPlayerIndex).isDealing()){
+            nextPlayerIndex = (nextPlayerIndex+1)% betSession.getPlayers().size();
+        }
+        betSession.setActivePlayerIndex(nextPlayerIndex);
 
     }
     protected abstract void evaluateBetSessionIfNecessary();
