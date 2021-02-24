@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
@@ -30,8 +31,9 @@ class GameServiceTest {
 
     private final AskHandler askHandler = mock(AskHandler.class);
     private final GuessHandler guessHandler = mock(GuessHandler.class);
+    private final PlaceBetHandler placeBetHandler = mock(PlaceBetHandler.class);
 
-    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler, guessHandler);
+    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService, askHandler, guessHandler, placeBetHandler);
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -164,32 +166,31 @@ class GameServiceTest {
         }
     }
     @Test
-    @DisplayName(" Bet with valid user and correct bet should update game")
+    @DisplayName("Bet with valid user and correct bet should update game")
     public void BetWithValidUserTest(){
         //given
         String gameId ="gameId";
         int betValue = 2;
         Game initial = getGameWithThreeUsers(gameId);
         Game updated = getGameWithThreeUsers(gameId);
-        updated.getBetSession().setActivePlayerIndex(1);
         updated.getBetSession().getPlayers().get(0).setCurrentBet(betValue);
 
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
         doAnswer(invocationOnMock -> {
-            ((BetSession)invocationOnMock.getArgument(0)).setActivePlayerIndex(1);
             ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(0).setCurrentBet(betValue);
             return null;
-        }).when(betSessionService).bet(initial.getBetSession(), initial.getPlayers().get(0).getId(),betValue);
-
+        }).when(placeBetHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),betValue);
 
         gameService.bet(gameId,initial.getPlayers().get(0).getId(), betValue);
+
         //then
         verify(gameDao).save(updated);
-        verify(betSessionService).bet(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
+        verify(placeBetHandler).handle(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
     }
-       @Test
-    @DisplayName(" Ask with valid user should load game, invoke askHandler.ask, save to DB and return updated game")
+
+    @Test
+    @DisplayName("Ask with valid user should load game, invoke askHandler.ask, save to DB and return updated game")
     public void AskWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -217,7 +218,7 @@ class GameServiceTest {
     }
 
     @Test
-    @DisplayName(" guess with valid user should return updated Game and sve to DB")
+    @DisplayName("Guess with valid user should return updated Game and sve to DB")
     public void guessWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -226,8 +227,6 @@ class GameServiceTest {
         Game updated = getGameWithThreeUsers(gameId);
         Question question = Question.builder().question("question").answer(1).build();
         updated.getBetSession().getPlayers().get(1).setGuess(guess);
-
-
 
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));

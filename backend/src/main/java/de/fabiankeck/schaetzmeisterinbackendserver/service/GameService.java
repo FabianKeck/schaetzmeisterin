@@ -2,6 +2,7 @@ package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
@@ -24,16 +25,18 @@ public class GameService {
 
     private final AskHandler askHandler;
     private final GuessHandler guessHandler;
+    private final PlaceBetHandler placeBetHandler;
 
 
     @Autowired
-    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler, GuessHandler guessHandler) {
+    public GameService(GameDao gameDao, IdUtils idUtils, SmUserDao userDao, BetSessionService betSessionService, AskHandler askHandler, GuessHandler guessHandler, PlaceBetHandler placeBetHandler) {
         this.gameDao = gameDao;
         this.idUtils = idUtils;
         this.userDao = userDao;
         this.betSessionService = betSessionService;
         this.askHandler = askHandler;
         this.guessHandler = guessHandler;
+        this.placeBetHandler = placeBetHandler;
     }
 
 
@@ -75,7 +78,7 @@ public class GameService {
 
     public Game bet(String gameId, String userId, int betValue) {
         Game game = getGameWithValidUser(gameId,userId);
-        betSessionService.bet(game.getBetSession(), userId, betValue);
+        placeBetHandler.handle(game.getBetSession(), userId, betValue);
         gameDao.save(game);
         return game;
     }

@@ -18,14 +18,9 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 public class BetSessionService {
-    private final PlaceBetHandler placeBetHandler = new PlaceBetHandler();
     private final FoldHandler foldHandler = new FoldHandler();
 
 
-
-    public void bet(BetSession betSession, String playerId, int betValue){
-        placeBetHandler.handle(betSession, playerId, betValue);
-    }
 
     public void fold(BetSession betSession, String playerId){
         foldHandler.handle(betSession,playerId,null);
