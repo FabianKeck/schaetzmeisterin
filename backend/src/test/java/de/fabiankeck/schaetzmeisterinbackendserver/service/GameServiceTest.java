@@ -11,6 +11,7 @@ import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,8 +45,9 @@ class GameServiceTest {
             foldHandler
     );
 
+
     @Test
-    @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
+    @DisplayName("userSignIn(String) with emptyGameID should return a new Game Object and call IdUtils.createID")
     public void userSignInTest(){
         //given
 
@@ -65,7 +67,7 @@ class GameServiceTest {
 
         when(userDao.findById(user.getId())).thenReturn(Optional.of(user));
         when(gameDao.save(expected)).thenReturn(expected);
-        Game actual = gameService.userSignIn("123" ,Optional.empty());
+        Game actual = gameService.userSignIn("123");
         //then
         assertThat(actual,is(expected));
         verify(idUtils).createId();
@@ -94,7 +96,7 @@ class GameServiceTest {
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
         when(gameDao.save(updated)).thenReturn(updated);
         when(userDao.findById(userToAdd.getId())).thenReturn(Optional.of(userToAdd));
-        Game actual = gameService.userSignIn(userToAdd.getId(),Optional.of(gameId));
+        Game actual = gameService.userSignIn(userToAdd.getId(), gameId);
         //then
         assertThat(actual.getId(),is(gameId));
         assertThat(actual.getPlayers().stream().map(Player::getId).collect(Collectors.toList()), containsInAnyOrder("123","456"));
@@ -102,12 +104,12 @@ class GameServiceTest {
         verify(gameDao).save(updated);
     }
   @Test
-    @DisplayName("userSignIn with invalid GameId should throw Httpstatus-exception")
+    @DisplayName("userSignIn with invalid GameId should throw NotFound")
     public void signInWithInvalidId(){
         //when
 
       try {
-          gameService.userSignIn("123",Optional.of("id"));
+          gameService.userSignIn("123","id");
           fail();
       } catch (Exception e) {
           assertThat(e.getMessage(),is(HttpStatus.NOT_FOUND.toString()));
@@ -146,12 +148,7 @@ class GameServiceTest {
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
 
         //when
-         try{
-             gameService.startGame(gameId, "otherId");
-             fail();
-         }catch (Exception e){
-             //
-         }
+        assertThrows(ResponseStatusException.class,()->gameService.startGame(gameId, "otherId"));
     }
 
     @Test
@@ -167,13 +164,9 @@ class GameServiceTest {
         when(gameDao.findById(gameId)).thenReturn(Optional.of(game));
 
         //when
-        try{
-            gameService.userSignIn(initialUser.getId(),Optional.of(gameId));
-            fail();
-        }catch (Exception e){
-            //
+        assertThrows(ResponseStatusException.class, ()->gameService.userSignIn(initialUser.getId(), gameId));
         }
-    }
+
     @Test
     @DisplayName("Bet with valid user and correct bet should update game")
     public void BetWithValidUserTest(){

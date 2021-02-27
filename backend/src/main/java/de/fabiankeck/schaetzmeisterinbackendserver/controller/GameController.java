@@ -20,8 +20,11 @@ public class GameController {
     }
 
     @PostMapping({"/signin/{gameId}","/signin"})
-    public Game signIn(@PathVariable Optional<String> gameId, Principal principal){
-        return gameService.userSignIn(principal.getName(), gameId );
+    public Game signIn(@PathVariable(required = false) String gameId, Principal principal){
+        Optional<String> gameIdOptional = Optional.ofNullable(gameId);
+        return gameIdOptional
+                .map(id -> gameService.userSignIn(principal.getName(), id ))
+                .orElse(gameService.userSignIn(principal.getName()));
     }
 
     @PostMapping("startgame/{gameId}")
