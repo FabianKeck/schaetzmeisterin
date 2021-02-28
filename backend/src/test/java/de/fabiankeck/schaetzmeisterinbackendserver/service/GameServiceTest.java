@@ -1,5 +1,9 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.FoldHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
+import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
 import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
@@ -7,7 +11,6 @@ import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,8 +28,21 @@ class GameServiceTest {
     IdUtils idUtils = mock(IdUtils.class);
     SmUserDao userDao= mock(SmUserDao.class);
     GameDao gameDao = mock(GameDao.class);
-    BetSessionService betSessionService = mock(BetSessionService.class);
-    GameService gameService = new GameService(gameDao, idUtils, userDao, betSessionService);
+
+    private final AskHandler askHandler = mock(AskHandler.class);
+    private final GuessHandler guessHandler = mock(GuessHandler.class);
+    private final PlaceBetHandler placeBetHandler = mock(PlaceBetHandler.class);
+    private final FoldHandler foldHandler = mock(FoldHandler.class);
+
+    GameService gameService = new GameService(
+            gameDao,
+            idUtils,
+            userDao,
+            askHandler,
+            guessHandler,
+            placeBetHandler,
+            foldHandler
+    );
 
     @Test
     @DisplayName("userSignIn with emptyGameID should return a new Game Object and call IdUtils.createID")
@@ -159,32 +175,31 @@ class GameServiceTest {
         }
     }
     @Test
-    @DisplayName(" Bet with valid user and correct bet should update game")
+    @DisplayName("Bet with valid user and correct bet should update game")
     public void BetWithValidUserTest(){
         //given
         String gameId ="gameId";
         int betValue = 2;
         Game initial = getGameWithThreeUsers(gameId);
         Game updated = getGameWithThreeUsers(gameId);
-        updated.getBetSession().setActivePlayerIndex(1);
         updated.getBetSession().getPlayers().get(0).setCurrentBet(betValue);
 
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
         doAnswer(invocationOnMock -> {
-            ((BetSession)invocationOnMock.getArgument(0)).setActivePlayerIndex(1);
             ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(0).setCurrentBet(betValue);
             return null;
-        }).when(betSessionService).bet(initial.getBetSession(), initial.getPlayers().get(0).getId(),betValue);
-
+        }).when(placeBetHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),betValue);
 
         gameService.bet(gameId,initial.getPlayers().get(0).getId(), betValue);
+
         //then
         verify(gameDao).save(updated);
-        verify(betSessionService).bet(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
+        verify(placeBetHandler).handle(initial.getBetSession(),initial.getPlayers().get(0).getId(),betValue);
     }
-       @Test
-    @DisplayName(" Ask with valid user should return updated Game and sve to DB")
+
+    @Test
+    @DisplayName("Ask with valid user should load game, invoke askHandler.ask, save to DB and return updated game")
     public void AskWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -201,18 +216,18 @@ class GameServiceTest {
         doAnswer(invocationOnMock -> {
             ((BetSession)invocationOnMock.getArgument(0)).setQuestion(question);
             return null;
-        }).when(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+        }).when(askHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
 
         gameService.ask(gameId,initial.getPlayers().get(0).getId(), question);
         //then
 
         updated.getBetSession().setQuestion(question);
         verify(gameDao).save(updated);
-        verify(betSessionService).ask(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
+        verify(askHandler).handle(initial.getBetSession(), initial.getPlayers().get(0).getId(),question);
     }
 
     @Test
-    @DisplayName(" guess with valid user should return updated Game and sve to DB")
+    @DisplayName("Guess with valid user should return updated Game and sve to DB")
     public void guessWithValidUserTest(){
         //given
         String gameId ="gameId";
@@ -220,27 +235,46 @@ class GameServiceTest {
         Game initial = getGameWithThreeUsers(gameId);
         Game updated = getGameWithThreeUsers(gameId);
         Question question = Question.builder().question("question").answer(1).build();
-        initial.getBetSession().getPlayers().get(0).setDealing(true);
-        initial.getBetSession().setQuestion(question);
-        updated.getBetSession().getPlayers().get(0).setDealing(true);
-        updated.getBetSession().setQuestion(question);
         updated.getBetSession().getPlayers().get(1).setGuess(guess);
-
-
 
         //when
         when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
         doAnswer(invocationOnMock -> {
             ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(1).setGuess(guess);
             return null;
-        }).when(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+        }).when(guessHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
 
         Game actual = gameService.guess(gameId,initial.getPlayers().get(1).getId(), guess);
         //then
 
         assertThat(actual,is(updated));
         verify(gameDao).save(updated);
-        verify(betSessionService).guess(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+        verify(guessHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId(),guess);
+    }
+
+    @Test
+    @DisplayName("Fold with valid user should return updated Game and sve to DB")
+    public void foldWithValidUserTest(){
+        //given
+        String gameId ="gameId";
+        double guess= 2.5;
+        Game initial = getGameWithThreeUsers(gameId);
+        Game updated = getGameWithThreeUsers(gameId);
+        updated.getBetSession().getPlayers().get(1).setFolded(true);
+
+        //when
+        when(gameDao.findById(gameId)).thenReturn(Optional.of(initial));
+        doAnswer(invocationOnMock -> {
+            ((BetSession)invocationOnMock.getArgument(0)).getPlayers().get(1).setFolded(true);
+            return null;
+        }).when(foldHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId());
+
+        Game actual = gameService.fold(gameId,initial.getPlayers().get(1).getId());
+        //then
+
+        assertThat(actual,is(updated));
+        verify(gameDao).save(updated);
+        verify(foldHandler).handle(initial.getBetSession(), initial.getPlayers().get(1).getId());
     }
 
 
