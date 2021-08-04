@@ -49,12 +49,17 @@ public class GameService {
     }
 
 
-    public Game userSignIn(String userId, Optional<String> gameId) { 
-        Game game =  getGameByIdOrInit(gameId);
-
-        if(game.isStarted()){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    public Game userSignIn(String userId, String gameId) {
+        Game game = gameDao.findById(gameId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (game.isStarted()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        addPlayer(game, userId);
+        return game;
+    }
+
+    public Game userSignIn(String userId){
+        Game game = initNewGame();
         addPlayer(game, userId);
         return game;
     }
@@ -124,14 +129,6 @@ public class GameService {
                 .collect(Collectors.toList());
         betSessionPlayers.get(0).setDealing(true);
         return BetSession.builder().players(betSessionPlayers).build();
-    }
-
-
-    private Game getGameByIdOrInit(Optional<String> gameId){
-        if(gameId.isEmpty()){
-            return initNewGame();
-        }
-        return gameDao.findById(gameId.get()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     private Game getGameWithValidUser(String gameId, String userId){
