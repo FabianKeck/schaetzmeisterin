@@ -1,7 +1,7 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSession;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSessionPlayer;
 
 import java.util.List;
 

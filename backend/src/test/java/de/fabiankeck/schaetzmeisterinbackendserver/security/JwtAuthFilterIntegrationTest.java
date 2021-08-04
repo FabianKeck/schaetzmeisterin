@@ -1,10 +1,10 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.security;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.SignInUserDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
+import de.fabiankeck.schaetzmeisterinbackendserver.game.GameService;
+import de.fabiankeck.schaetzmeisterinbackendserver.game.GameDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SignInUserDto;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;

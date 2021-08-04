@@ -1,6 +1,5 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.dao;
+package de.fabiankeck.schaetzmeisterinbackendserver.user;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface SmUserDao extends PagingAndSortingRepository <SmUser, String>{

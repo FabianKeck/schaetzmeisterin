@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.dto;
+package de.fabiankeck.schaetzmeisterinbackendserver.question;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

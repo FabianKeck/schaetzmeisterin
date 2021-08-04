@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.dto;
+package de.fabiankeck.schaetzmeisterinbackendserver.user;
 
 
 import lombok.AllArgsConstructor;

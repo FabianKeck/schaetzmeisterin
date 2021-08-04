@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.controller;
+package de.fabiankeck.schaetzmeisterinbackendserver.reactforwarding;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

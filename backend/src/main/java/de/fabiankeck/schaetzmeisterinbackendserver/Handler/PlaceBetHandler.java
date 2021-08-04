@@ -1,6 +1,6 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSessionPlayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;

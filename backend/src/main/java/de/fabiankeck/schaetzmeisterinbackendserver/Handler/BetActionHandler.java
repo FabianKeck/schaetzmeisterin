@@ -1,14 +1,10 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSession;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSessionPlayer;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.BetSessionEvaluationHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class BetActionHandler<T> {
     BetSession betSession;

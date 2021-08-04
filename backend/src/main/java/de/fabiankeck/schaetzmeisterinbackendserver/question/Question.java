@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.model;
+package de.fabiankeck.schaetzmeisterinbackendserver.question;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Player {
-    private String id;
-    private String name;
+public class Question {
+    private String question;
+    private double answer;
 }

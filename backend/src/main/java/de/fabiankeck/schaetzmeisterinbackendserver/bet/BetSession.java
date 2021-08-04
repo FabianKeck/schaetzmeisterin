@@ -1,5 +1,6 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.model;
+package de.fabiankeck.schaetzmeisterinbackendserver.bet;
 
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

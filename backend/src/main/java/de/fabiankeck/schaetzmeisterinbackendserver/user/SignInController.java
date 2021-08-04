@@ -1,6 +1,5 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.controller;
+package de.fabiankeck.schaetzmeisterinbackendserver.user;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.service.SignInService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

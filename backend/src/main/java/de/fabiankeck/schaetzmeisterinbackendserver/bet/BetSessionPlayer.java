@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.model;
+package de.fabiankeck.schaetzmeisterinbackendserver.bet;
 
 
 import lombok.AllArgsConstructor;

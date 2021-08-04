@@ -1,13 +1,13 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.controller;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Player;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
+import de.fabiankeck.schaetzmeisterinbackendserver.game.GameDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.GuessDto;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetDto;
+import de.fabiankeck.schaetzmeisterinbackendserver.game.Game;
+import de.fabiankeck.schaetzmeisterinbackendserver.game.Player;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

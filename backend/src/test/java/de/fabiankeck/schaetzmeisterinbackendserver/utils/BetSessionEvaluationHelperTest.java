@@ -1,8 +1,8 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.utils;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSession;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.BetSessionPlayer;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSession;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,8 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.service;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.SmUser;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SignInService;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUser;
 import de.fabiankeck.schaetzmeisterinbackendserver.security.JwtUtils;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.junit.jupiter.api.Test;

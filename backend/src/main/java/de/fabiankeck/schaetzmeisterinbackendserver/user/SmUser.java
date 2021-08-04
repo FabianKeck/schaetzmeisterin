@@ -1,4 +1,4 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.model;
+package de.fabiankeck.schaetzmeisterinbackendserver.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

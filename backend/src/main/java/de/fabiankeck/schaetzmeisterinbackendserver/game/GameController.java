@@ -1,10 +1,8 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.controller;
+package de.fabiankeck.schaetzmeisterinbackendserver.game;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.GuessDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
-import de.fabiankeck.schaetzmeisterinbackendserver.service.GameService;
-import de.fabiankeck.schaetzmeisterinbackendserver.dto.BetDto;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Game;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.GuessDto;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -33,18 +31,18 @@ public class GameController {
     }
 
     @PostMapping("ask/{gameId}")
-    public Game ask(@PathVariable String gameId,  Principal principal,@RequestBody Question question){
-        return gameService.ask(gameId,principal.getName(),question);
+    public Game ask(@PathVariable String gameId, Principal principal, @RequestBody Question question){
+        return gameService.ask(gameId, principal.getName(),question);
     }
 
     @PostMapping("/guess/{gameId}")
-    public Game guess(@PathVariable String gameId,  Principal principal,@RequestBody GuessDto guessDto){
-        return gameService.guess(gameId,principal.getName(),guessDto.getGuess());
+    public Game guess(@PathVariable String gameId,  Principal principal, @RequestBody GuessDto guessDto){
+        return gameService.guess(gameId, principal.getName(),guessDto.getGuess());
     }
 
     @PostMapping("/bet/{gameId}")
     public Game bet(@PathVariable String gameId,  Principal principal ,@RequestBody BetDto bet){
-        return gameService.bet(gameId,principal.getName(),bet.getBetValue());
+        return gameService.bet(gameId, principal.getName(), bet.getBetValue());
     }
 
     @PostMapping("/fold/{gameId}")
@@ -54,6 +52,6 @@ public class GameController {
 
     @GetMapping("{gameId}")
     public Game getGame(@PathVariable String gameId, Principal principal){
-        return gameService.getGame(gameId,principal.getName());
+        return gameService.getGame(gameId, principal.getName());
     }
 }

@@ -1,6 +1,6 @@
 package de.fabiankeck.schaetzmeisterinbackendserver.Handler;
 
-import de.fabiankeck.schaetzmeisterinbackendserver.model.Question;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
 import org.springframework.stereotype.Component;
 
 @Component

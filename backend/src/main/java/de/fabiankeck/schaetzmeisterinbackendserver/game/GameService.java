@@ -1,12 +1,13 @@
-package de.fabiankeck.schaetzmeisterinbackendserver.service;
+package de.fabiankeck.schaetzmeisterinbackendserver.game;
 
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.AskHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.FoldHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.GuessHandler;
 import de.fabiankeck.schaetzmeisterinbackendserver.Handler.PlaceBetHandler;
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.GameDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.dao.SmUserDao;
-import de.fabiankeck.schaetzmeisterinbackendserver.model.*;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSession;
+import de.fabiankeck.schaetzmeisterinbackendserver.bet.BetSessionPlayer;
+import de.fabiankeck.schaetzmeisterinbackendserver.user.SmUserDao;
+import de.fabiankeck.schaetzmeisterinbackendserver.question.Question;
 import de.fabiankeck.schaetzmeisterinbackendserver.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
